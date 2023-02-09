@@ -21,6 +21,7 @@ namespace Display
         Timer tmrTick;
         int position, speed, height, maxPosition;
         bool enableScrollText = false;
+        
 
         public TextEx()
         {
