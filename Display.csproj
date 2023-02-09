@@ -148,5 +148,8 @@
   <ItemGroup>
     <None Include="Resources\vinmec-icon.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bytech-icon1.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
