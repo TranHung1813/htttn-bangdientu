@@ -47,8 +47,6 @@
             this.timer_GetRTC = new System.Windows.Forms.Timer(this.components);
             this.guna2DragControl2 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.guna2DragControl3 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
-            this.guna2Elipse2 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.guna2Elipse3 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.panelThongBao.SuspendLayout();
@@ -83,9 +81,10 @@
             // 
             this.panelThongBao.BackColor = System.Drawing.Color.White;
             this.panelThongBao.Controls.Add(this.txtThongBao);
-            this.panelThongBao.Location = new System.Drawing.Point(5, 19);
+            this.panelThongBao.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panelThongBao.Location = new System.Drawing.Point(6, 20);
             this.panelThongBao.Name = "panelThongBao";
-            this.panelThongBao.Size = new System.Drawing.Size(1008, 99);
+            this.panelThongBao.Size = new System.Drawing.Size(1005, 98);
             this.panelThongBao.TabIndex = 2;
             // 
             // txtThongBao
@@ -117,9 +116,10 @@
             // 
             this.panelVanBan.BackColor = System.Drawing.Color.White;
             this.panelVanBan.Controls.Add(this.txtVanBan);
-            this.panelVanBan.Location = new System.Drawing.Point(7, 19);
+            this.panelVanBan.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panelVanBan.Location = new System.Drawing.Point(6, 20);
             this.panelVanBan.Name = "panelVanBan";
-            this.panelVanBan.Size = new System.Drawing.Size(428, 494);
+            this.panelVanBan.Size = new System.Drawing.Size(430, 493);
             this.panelVanBan.TabIndex = 1;
             // 
             // txtVanBan
@@ -156,6 +156,7 @@
             // guna2ControlBox1
             // 
             this.guna2ControlBox1.ControlBoxStyle = Guna.UI2.WinForms.Enums.ControlBoxStyle.Custom;
+            this.guna2ControlBox1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.guna2ControlBox1.CustomIconSize = 15F;
             this.guna2ControlBox1.Dock = System.Windows.Forms.DockStyle.Right;
             this.guna2ControlBox1.FillColor = System.Drawing.Color.Transparent;
@@ -172,11 +173,11 @@
             // lbTime
             // 
             this.lbTime.AutoSize = true;
-            this.lbTime.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbTime.Font = new System.Drawing.Font("Times New Roman", 17F, System.Drawing.FontStyle.Bold);
             this.lbTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(50)))), ((int)(((byte)(70)))));
-            this.lbTime.Location = new System.Drawing.Point(697, 10);
+            this.lbTime.Location = new System.Drawing.Point(673, 10);
             this.lbTime.Name = "lbTime";
-            this.lbTime.Size = new System.Drawing.Size(88, 23);
+            this.lbTime.Size = new System.Drawing.Size(106, 25);
             this.lbTime.TabIndex = 4;
             this.lbTime.Text = "Thời gian";
             // 
@@ -211,16 +212,6 @@
             // guna2DragControl3
             // 
             this.guna2DragControl3.TargetControl = this.lbTime;
-            // 
-            // guna2Elipse2
-            // 
-            this.guna2Elipse2.BorderRadius = 15;
-            this.guna2Elipse2.TargetControl = this.panelThongBao;
-            // 
-            // guna2Elipse3
-            // 
-            this.guna2Elipse3.BorderRadius = 15;
-            this.guna2Elipse3.TargetControl = this.panelVanBan;
             // 
             // frmMain
             // 
@@ -267,10 +258,8 @@
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl2;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl3;
         private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox1;
-        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse2;
         private System.Windows.Forms.Panel panelThongBao;
         private System.Windows.Forms.Panel panelVanBan;
-        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse3;
     }
 }
 

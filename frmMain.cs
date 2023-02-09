@@ -24,7 +24,6 @@ namespace Display
 
             axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/Yêu dấu theo gió bay.mp4";
             //axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/041d3e6b-29af-4dbc-9ee1-94655ddec328.mp4";
-            //axWindowsMediaPlayer1.URL = "https://pic.pikbest.com/00/37/73/62k888piCCUV.mp4";
             axWindowsMediaPlayer1.Ctlcontrols.play();
             axWindowsMediaPlayer1.settings.setMode("loop", true);
             axWindowsMediaPlayer1.uiMode = "none";
@@ -37,12 +36,7 @@ namespace Display
 
             InitParameters();
 
-            string DayNumber = "";
-            int day1 = (int)DateTime.Now.DayOfWeek;
-            if (day1 == 0) DayNumber = "Chủ nhật";
-            else DayNumber = "Thứ " + (day1 + 1).ToString();
-            lbTime.Text = DayNumber + ", " + DateTime.Now.Date.ToString("d/M/yyyy") + "  |  " + DateTime.Now.ToShortTimeString();
-            timer_GetRTC.Start();
+            ShowRTC(); // Hien thoi gian
         }
 
         private void InitParameters()
@@ -92,6 +86,11 @@ namespace Display
         }
 
         private void timer_GetRTC_Tick(object sender, EventArgs e)
+        {
+            ShowRTC(); // Hien thoi gian
+        }
+
+        private void ShowRTC()
         {
             string DayNumber = "";
             int day1 = (int)DateTime.Now.DayOfWeek;
