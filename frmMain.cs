@@ -35,6 +35,8 @@ namespace Display
             this.txtVanBan.Start();
 
             InitParameters();
+
+            ShowRTC(); // Hien thoi gian
         }
 
         private void InitParameters()
@@ -83,6 +85,19 @@ namespace Display
             }
         }
 
+        private void timer_GetRTC_Tick(object sender, EventArgs e)
+        {
+            ShowRTC(); // Hien thoi gian
+        }
+
+        private void ShowRTC()
+        {
+            string DayNumber = "";
+            int day1 = (int)DateTime.Now.DayOfWeek;
+            if (day1 == 0) DayNumber = "Chủ nhật";
+            else DayNumber = "Thứ " + (day1 + 1).ToString();
+            lbTime.Text = DayNumber + ", " + DateTime.Now.Date.ToString("d/M/yyyy") + "  |  " + DateTime.Now.ToShortTimeString();
+        }
     }
 
     public class DisplayMessage
