@@ -96,6 +96,18 @@
     <Compile Include="TextEx.Designer.cs">
       <DependentUpon>TextEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Page_Text.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Page_Text.Designer.cs">
+      <DependentUpon>Page_Text.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Page_VideoScreen.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Page_VideoScreen.Designer.cs">
+      <DependentUpon>Page_VideoScreen.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +121,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\Page_VideoScreen.resx">
+      <DependentUpon>Page_VideoScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -143,13 +158,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\NH_Bulletin_Board.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\vinmec-icon.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bytech-icon1.png" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
