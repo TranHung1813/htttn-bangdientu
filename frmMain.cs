@@ -17,26 +17,25 @@ namespace Display
     public partial class frmMain : Form
     {
         private Message mqttMessage;
+        private string _VideoUrl = "";
 
+        private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
         public frmMain()
         {
             InitializeComponent();
 
-            axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/Yêu dấu theo gió bay.mp4";
-            //axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/041d3e6b-29af-4dbc-9ee1-94655ddec328.mp4";
-            axWindowsMediaPlayer1.Ctlcontrols.play();
-            axWindowsMediaPlayer1.settings.setMode("loop", true);
-            axWindowsMediaPlayer1.uiMode = "none";
+            //axWindowsMediaPlayer1.fullScreen = true;
 
-            this.txtThongBao.SetSpeed = 1;
-            this.txtThongBao.Start();
+            //this.txtThongBao.SetSpeed = 1;
+            //this.txtThongBao.Start();
 
-            this.txtVanBan.SetSpeed = 1;
-            this.txtVanBan.Start();
+            //this.txtVanBan.SetSpeed = 1;
+            //this.txtVanBan.Start();
 
             InitParameters();
 
             ShowRTC(); // Hien thoi gian
+            Add_UserControl(page_VideoScreen);
         }
 
         private void InitParameters()
@@ -51,6 +50,14 @@ namespace Display
                         .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(@"Log\Warning-.txt", rollingInterval: RollingInterval.Day))
                         .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(@"Log\Error-.txt", rollingInterval: RollingInterval.Day))
                     .CreateLogger();
+        }
+
+        private void Add_UserControl(UserControl uc)
+        {
+            ContainerPanel.Controls.Clear();
+            ContainerPanel.Controls.Add(uc);
+            uc.Dock = DockStyle.Fill;
+            uc.BringToFront();
         }
 
         private void tick_Tick(object sender, EventArgs e)
@@ -74,15 +81,21 @@ namespace Display
                     var topic = newMessage.Topic;
                     var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
 
-                    txtThongBao.Text = payload.BanTinThongBao;
-                    txtVanBan.Text = payload.BanTinVanBan;
-                    axWindowsMediaPlayer1.URL = payload.VideoUrl;
+                    //txtThongBao.Text = payload.BanTinThongBao;
+                    //txtVanBan.Text = payload.BanTinVanBan;
+                    _VideoUrl = payload.VideoUrl;
+                    ShowVideo(_VideoUrl);
                 }
             }
             catch(Exception ex)
             {
                 Log.Error(ex, "ProcessNewMessage");
             }
+        }
+        private void ShowVideo(string Url)
+        {
+            Add_UserControl(page_VideoScreen);
+            page_VideoScreen.ShowVideo(Url);
         }
 
         private void timer_GetRTC_Tick(object sender, EventArgs e)
@@ -96,7 +109,7 @@ namespace Display
             int day1 = (int)DateTime.Now.DayOfWeek;
             if (day1 == 0) DayNumber = "Chủ nhật";
             else DayNumber = "Thứ " + (day1 + 1).ToString();
-            lbTime.Text = DayNumber + ", " + DateTime.Now.Date.ToString("d/M/yyyy") + "  |  " + DateTime.Now.ToShortTimeString();
+            //lbTime.Text = DayNumber + ", " + DateTime.Now.Date.ToString("d/M/yyyy") + "  |  " + DateTime.Now.ToShortTimeString();
         }
     }
 
