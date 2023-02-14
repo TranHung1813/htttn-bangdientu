@@ -65,6 +65,10 @@ namespace Display
                     }
                     break;
                 case Keys.F4:
+                    if (TabPageID == PAGE_VIDEO)
+                    {
+                        page_VideoScreen.StopVideo();
+                    }
                     if (TabPageID != PAGE_TEXT)
                     {
                         // Chuyen sang tab Text
@@ -73,6 +77,10 @@ namespace Display
                     }
                     break;
                 case Keys.F5:
+                    if (TabPageID == PAGE_VIDEO)
+                    {
+                        page_VideoScreen.StopVideo();
+                    }
                     if (TabPageID != PAGE_IMAGE)
                     {
                         // Chuyen sang tab Image
@@ -139,7 +147,7 @@ namespace Display
             }
         }
         private void ShowVideo(string Url)
-        {
+        { 
             Add_UserControl(page_VideoScreen);
             page_VideoScreen.ShowVideo(Url);
         }

@@ -12,34 +12,30 @@ namespace Display
 {
     public partial class Page_VideoScreen : UserControl
     {
+        private string _VideoURL = "";
         public Page_VideoScreen()
         {
             InitializeComponent();
 
-            //axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/Yêu dấu theo gió bay.mp4";
-            //axWindowsMediaPlayer1.URL = "https://dev-data.radiotech.vn/media/041d3e6b-29af-4dbc-9ee1-94655ddec328.mp4";
-            //axWindowsMediaPlayer1.URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
-            axWindowsMediaPlayer1.Ctlcontrols.play();
-            axWindowsMediaPlayer1.settings.setMode("loop", true);
-            axWindowsMediaPlayer1.uiMode = "none";
-
+            //_VideoURL = "https://dev-data.radiotech.vn/media/Yêu dấu theo gió bay.mp4";
+            //_VideoURL = "https://dev-data.radiotech.vn/media/041d3e6b-29af-4dbc-9ee1-94655ddec328.mp4";
+            _VideoURL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
         }
 
         public void ShowVideo(string url)
         {
-            axWindowsMediaPlayer1.URL = url;
-            axWindowsMediaPlayer1.URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
-        }
+            string[] @params = new string[] { "input-repeat=65535" };
 
-        private void axWindowsMediaPlayer1_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
-        {
-            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsPlaying)
+            try
             {
-                if (axWindowsMediaPlayer1.fullScreen == false)
-                {
-                    //axWindowsMediaPlayer1.fullScreen = true;
-                }
+                vlcControl1.Play(new Uri(_VideoURL), @params);
             }
+            catch
+            { }
+        }
+        public void StopVideo()
+        {
+            vlcControl1.Stop();
         }
     }
 }
