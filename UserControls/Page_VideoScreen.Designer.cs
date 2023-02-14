@@ -43,7 +43,7 @@ namespace Display
             this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(2, 2);
             this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
             this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(728, 396);
+            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(731, 402);
             this.axWindowsMediaPlayer1.TabIndex = 1;
             this.axWindowsMediaPlayer1.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axWindowsMediaPlayer1_PlayStateChange);
             // 
@@ -54,7 +54,7 @@ namespace Display
             this.AutoSize = true;
             this.Controls.Add(this.axWindowsMediaPlayer1);
             this.Name = "Page_VideoScreen";
-            this.Size = new System.Drawing.Size(731, 399);
+            this.Size = new System.Drawing.Size(736, 407);
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
             this.ResumeLayout(false);
 

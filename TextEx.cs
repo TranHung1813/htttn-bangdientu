@@ -21,6 +21,8 @@ namespace Display
         Timer tmrTick;
         int position, speed, height, maxPosition;
         bool enableScrollText = false;
+
+        Timer DelayText;
         
 
         public TextEx()
@@ -40,6 +42,11 @@ namespace Display
             enableScrollText = true;
             height = this.Size.Height;
             maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;
+
+            if (maxPosition < height)
+            {
+                SetSpeed = 0;
+            }
         }
 
         protected override void OnTextChanged(EventArgs e)
@@ -63,12 +70,24 @@ namespace Display
             if (position < -maxPosition)
             {
                 this.Size = new Size(Width, height);
-                position = height;                
+                position = 0;
+                tmrTick.Stop();
+
+                DelayText = new Timer();
+                DelayText.Tick += DelayText_Tick; ;
+                DelayText.Interval = 8000;
+                DelayText.Start();
             }
 
             position -= speed;
             Height += speed;
             Invalidate();
+        }
+
+        private void DelayText_Tick(object sender, EventArgs e)
+        {
+            tmrTick.Start();
+            DelayText.Stop();
         }
     }
 }

@@ -18,24 +18,69 @@ namespace Display
     {
         private Message mqttMessage;
         private string _VideoUrl = "";
+        private string _TxtThongBao = "";
+
+        private const int PAGE_VIDEO = 1;
+        private const int PAGE_TEXT = 2;
+        private const int PAGE_IMAGE = 3;
+        private int TabPageID = 0;
 
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
+        private Page_Text page_Text = new Page_Text();
+        private Page_Image page_Image = new Page_Image();
         public frmMain()
         {
             InitializeComponent();
 
-            //axWindowsMediaPlayer1.fullScreen = true;
-
-            //this.txtThongBao.SetSpeed = 1;
-            //this.txtThongBao.Start();
-
-            //this.txtVanBan.SetSpeed = 1;
-            //this.txtVanBan.Start();
-
             InitParameters();
 
             ShowRTC(); // Hien thoi gian
-            Add_UserControl(page_VideoScreen);
+
+            //Init key press event
+            this.KeyPreview = true;
+            this.KeyUp += FrmMain_KeyUp;
+
+            //ShowVideo(_VideoUrl);
+        }
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                MessageBox.Show("Escape was pressed");
+                e.Handled = true;
+            }
+
+            base.OnKeyUp(e);
+        }
+        private void FrmMain_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F3:
+                    if (TabPageID != PAGE_VIDEO)
+                    {
+                        // Chuyen sang tab xem Video
+                        TabPageID = PAGE_VIDEO;
+                        ShowVideo(_VideoUrl);
+                    }
+                    break;
+                case Keys.F4:
+                    if (TabPageID != PAGE_TEXT)
+                    {
+                        // Chuyen sang tab Text
+                        TabPageID = PAGE_TEXT;
+                        ShowText(_TxtThongBao);
+                    }
+                    break;
+                case Keys.F5:
+                    if (TabPageID != PAGE_IMAGE)
+                    {
+                        // Chuyen sang tab Image
+                        TabPageID = PAGE_IMAGE;
+                        ShowImage("");
+                    }
+                    break;
+            }
         }
 
         private void InitParameters()
@@ -81,10 +126,11 @@ namespace Display
                     var topic = newMessage.Topic;
                     var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
 
-                    //txtThongBao.Text = payload.BanTinThongBao;
+                    _TxtThongBao = payload.BanTinVanBan;
+                    ShowText(_TxtThongBao);
                     //txtVanBan.Text = payload.BanTinVanBan;
-                    _VideoUrl = payload.VideoUrl;
-                    ShowVideo(_VideoUrl);
+                    //_VideoUrl = payload.VideoUrl;
+                    //ShowVideo(_VideoUrl);
                 }
             }
             catch(Exception ex)
@@ -96,6 +142,17 @@ namespace Display
         {
             Add_UserControl(page_VideoScreen);
             page_VideoScreen.ShowVideo(Url);
+        }
+        private void ShowText(string Text)
+        {
+            page_Text = new Page_Text();
+            Add_UserControl(page_Text);
+            page_Text.ShowText(Text);
+        }
+        private void ShowImage(string ImageURL)
+        {
+            Add_UserControl(page_Image);
+            page_Image.ShowImage(ImageURL);
         }
 
         private void timer_GetRTC_Tick(object sender, EventArgs e)
@@ -111,6 +168,7 @@ namespace Display
             else DayNumber = "Thứ " + (day1 + 1).ToString();
             //lbTime.Text = DayNumber + ", " + DateTime.Now.Date.ToString("d/M/yyyy") + "  |  " + DateTime.Now.ToShortTimeString();
         }
+
     }
 
     public class DisplayMessage

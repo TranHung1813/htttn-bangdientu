@@ -35,7 +35,10 @@ namespace Display
         {
             if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsPlaying)
             {
-                axWindowsMediaPlayer1.fullScreen = true;
+                if (axWindowsMediaPlayer1.fullScreen == false)
+                {
+                    //axWindowsMediaPlayer1.fullScreen = true;
+                }
             }
         }
     }

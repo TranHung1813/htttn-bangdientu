@@ -8,13 +8,29 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Display.UserControls
+namespace Display
 {
     public partial class Page_Text : UserControl
     {
         public Page_Text()
         {
             InitializeComponent();
+        }
+
+        public void ShowText(string txt)
+        {
+            txtThongBao.Size = panelContainer.Size;
+            //txtThongBao.Text = txt;
+
+            timerDelayTextRun.Start();
+        }
+
+        private void timerDelayTextRun_Tick(object sender, EventArgs e)
+        {
+            txtThongBao.SetSpeed = 1;
+            txtThongBao.Start();
+
+            timerDelayTextRun.Stop();
         }
     }
 }
