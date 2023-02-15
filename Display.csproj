@@ -73,6 +73,12 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bunifu.UI.WinForms.BunifuButton">
+      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu.UI.WinForms.BunifuButton.dll</HintPath>
+    </Reference>
+    <Reference Include="Bunifu_UI_v1.5.3">
+      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_v1.5.3.dll</HintPath>
+    </Reference>
     <Reference Include="Flurl, Version=2.8.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Flurl.2.8.2\lib\net40\Flurl.dll</HintPath>
     </Reference>
@@ -80,7 +86,7 @@
       <HintPath>..\packages\Flurl.Http.2.4.2\lib\net46\Flurl.Http.dll</HintPath>
     </Reference>
     <Reference Include="Guna.UI2">
-      <HintPath>..\..\framwork-main\framwork-main\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna.UI-Framework-Lib-master\Guna.UI2 WinForms\.net 4.0\Guna.UI2.dll</HintPath>
+      <HintPath>C:\Users\Administrator\Downloads\framwork-main\framwork-main\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna.UI-Framework-Lib-master\Guna.UI2 WinForms\.net 4.0\Guna.UI2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MQTTnet, Version=4.1.4.563, Culture=neutral, PublicKeyToken=fdb7629f2e364a63, processorArchitecture=MSIL">
@@ -106,10 +112,12 @@
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.5.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -139,6 +147,9 @@
     <Compile Include="Message.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScrollText.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TextEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -151,17 +162,20 @@
     <Compile Include="UserControls\Page_Image.Designer.cs">
       <DependentUpon>Page_Image.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Page_Text.cs">
+    <Compile Include="UserControls\Page_TextShow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\Page_Text.Designer.cs">
-      <DependentUpon>Page_Text.cs</DependentUpon>
+    <Compile Include="UserControls\Page_TextShow.Designer.cs">
+      <DependentUpon>Page_TextShow.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Page_VideoScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UserControls\Page_VideoScreen.Designer.cs">
       <DependentUpon>Page_VideoScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PanelContainer.cs">
+      <SubType>Component</SubType>
     </Compile>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
@@ -179,8 +193,8 @@
     <EmbeddedResource Include="UserControls\Page_Image.resx">
       <DependentUpon>Page_Image.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\Page_Text.resx">
-      <DependentUpon>Page_Text.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\Page_TextShow.resx">
+      <DependentUpon>Page_TextShow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_VideoScreen.resx">
       <DependentUpon>Page_VideoScreen.cs</DependentUpon>

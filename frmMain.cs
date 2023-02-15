@@ -25,9 +25,16 @@ namespace Display
         private const int PAGE_IMAGE = 3;
         private int TabPageID = 0;
 
+        public static int parentX, parentY;
+        public static int Form_Height, Form_Width;
+
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
-        private Page_Text page_Text = new Page_Text();
+        private Page_TextShow page_Text = new Page_TextShow();
         private Page_Image page_Image = new Page_Image();
+
+        private PanelContainer panel_Video;
+        private PanelContainer panel_Text;
+        private PanelContainer panel_Image;
         public frmMain()
         {
             InitializeComponent();
@@ -40,13 +47,15 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
 
-            //ShowVideo(_VideoUrl);
+            panel_Video = new PanelContainer(this);
+            panel_Text = new PanelContainer(this);
+            panel_Image = new PanelContainer(this);
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {
-                MessageBox.Show("Escape was pressed");
+                this.Close();
                 e.Handled = true;
             }
 
@@ -60,8 +69,8 @@ namespace Display
                     if (TabPageID != PAGE_VIDEO)
                     {
                         // Chuyen sang tab xem Video
-                        TabPageID = PAGE_VIDEO;
                         ShowVideo(_VideoUrl);
+                        TabPageID = PAGE_VIDEO;
                     }
                     break;
                 case Keys.F4:
@@ -72,8 +81,8 @@ namespace Display
                     if (TabPageID != PAGE_TEXT)
                     {
                         // Chuyen sang tab Text
-                        TabPageID = PAGE_TEXT;
                         ShowText(_TxtThongBao);
+                        TabPageID = PAGE_TEXT;
                     }
                     break;
                 case Keys.F5:
@@ -84,9 +93,14 @@ namespace Display
                     if (TabPageID != PAGE_IMAGE)
                     {
                         // Chuyen sang tab Image
-                        TabPageID = PAGE_IMAGE;
                         ShowImage("");
+                        TabPageID = PAGE_IMAGE;
                     }
+                    break;
+
+                case Keys.F6:
+                    //FormLoad_Image modal = new FormLoad_Image();
+                    //modal.ShowDialog();
                     break;
             }
         }
@@ -105,12 +119,69 @@ namespace Display
                     .CreateLogger();
         }
 
-        private void Add_UserControl(UserControl uc)
+        private void Add_UserControl(PanelContainer panel, UserControl uc)
         {
-            ContainerPanel.Controls.Clear();
-            ContainerPanel.Controls.Add(uc);
+            panel.Controls.Clear();
+            panel.Controls.Add(uc);
             uc.Dock = DockStyle.Fill;
             uc.BringToFront();
+            //panel.Visible = true;
+            switch (TabPageID)
+            {
+                case PAGE_IMAGE:
+                    guna2Transition1.HideSync(panel_Image);
+                    break;
+
+                case PAGE_TEXT:
+                    guna2Transition1.HideSync(panel_Text);
+                    break;
+
+                case PAGE_VIDEO:
+                    guna2Transition1.HideSync(panel_Video);
+                    break;
+            }
+            panel.BringToFront();
+            guna2Transition1.ShowSync(panel);
+
+            //if (panel.Name == "panel_Video")
+            //{
+            //    guna2Transition1.ShowSync(panel_Video);
+            //    //if(panel_Image.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Image);
+            //    //}
+            //    //if (panel_Text.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Text);
+            //    //}
+            //    //return;
+            //}
+            //if (panel.Name == "panel_Text")
+            //{
+            //    guna2Transition1.ShowSync(panel_Text);
+            //    //if (panel_Image.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Image);
+            //    //}
+            //    //if (panel_Video.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Video);
+            //    //}
+            //    //return;
+            //}
+            //if (panel.Name == "panel_Image")
+            //{
+            //    guna2Transition1.ShowSync(panel_Image);
+            //    //if (panel_Video.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Video);
+            //    //}
+            //    //if (panel_Text.Visible == true)
+            //    //{
+            //    //    guna2Transition1.HideSync(panel_Text);
+            //    //}
+            //    //return;
+            //}
         }
 
         private void tick_Tick(object sender, EventArgs e)
@@ -147,20 +218,20 @@ namespace Display
             }
         }
         private void ShowVideo(string Url)
-        { 
-            Add_UserControl(page_VideoScreen);
+        {
             page_VideoScreen.ShowVideo(Url);
+            Add_UserControl(panel_Video, page_VideoScreen);
         }
         private void ShowText(string Text)
         {
-            page_Text = new Page_Text();
-            Add_UserControl(page_Text);
+            page_Text = new Page_TextShow();
+            Add_UserControl(panel_Text, page_Text);
             page_Text.ShowText(Text);
         }
         private void ShowImage(string ImageURL)
         {
-            Add_UserControl(page_Image);
             page_Image.ShowImage(ImageURL);
+            Add_UserControl(panel_Image, page_Image);
         }
 
         private void timer_GetRTC_Tick(object sender, EventArgs e)

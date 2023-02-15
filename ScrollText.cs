@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class TextEx : Label
+    public partial class ScrollText : Label
     {
         public int SetSpeed
         {
@@ -23,12 +21,10 @@ namespace Display
         bool enableScrollText = false;
 
         Timer DelayText;
-        
 
-        public TextEx()
+
+        public ScrollText()
         {
-            InitializeComponent();
-
             UseCompatibleTextRendering = true;
 
             tmrTick = new Timer();
