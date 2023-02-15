@@ -29,7 +29,7 @@ namespace Display
         public static int Form_Height, Form_Width;
 
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
-        private Page_TextShow page_Text = new Page_TextShow();
+        private Page_Text page_Text = new Page_Text();
         private Page_Image page_Image = new Page_Image();
 
         private PanelContainer panel_Video;
@@ -70,7 +70,6 @@ namespace Display
                     {
                         // Chuyen sang tab xem Video
                         ShowVideo(_VideoUrl);
-                        TabPageID = PAGE_VIDEO;
                     }
                     break;
                 case Keys.F4:
@@ -82,7 +81,6 @@ namespace Display
                     {
                         // Chuyen sang tab Text
                         ShowText(_TxtThongBao);
-                        TabPageID = PAGE_TEXT;
                     }
                     break;
                 case Keys.F5:
@@ -94,7 +92,6 @@ namespace Display
                     {
                         // Chuyen sang tab Image
                         ShowImage("");
-                        TabPageID = PAGE_IMAGE;
                     }
                     break;
 
@@ -221,17 +218,20 @@ namespace Display
         {
             page_VideoScreen.ShowVideo(Url);
             Add_UserControl(panel_Video, page_VideoScreen);
+            TabPageID = PAGE_VIDEO;
         }
         private void ShowText(string Text)
         {
-            page_Text = new Page_TextShow();
+            page_Text = new Page_Text();
             Add_UserControl(panel_Text, page_Text);
             page_Text.ShowText(Text);
+            TabPageID = PAGE_TEXT;
         }
         private void ShowImage(string ImageURL)
         {
             page_Image.ShowImage(ImageURL);
             Add_UserControl(panel_Image, page_Image);
+            TabPageID = PAGE_IMAGE;
         }
 
         private void timer_GetRTC_Tick(object sender, EventArgs e)
