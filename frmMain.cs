@@ -73,10 +73,6 @@ namespace Display
                     }
                     break;
                 case Keys.F4:
-                    if (TabPageID == PAGE_VIDEO)
-                    {
-                        page_VideoScreen.StopVideo();
-                    }
                     if (TabPageID != PAGE_TEXT)
                     {
                         // Chuyen sang tab Text
@@ -84,10 +80,6 @@ namespace Display
                     }
                     break;
                 case Keys.F5:
-                    if (TabPageID == PAGE_VIDEO)
-                    {
-                        page_VideoScreen.StopVideo();
-                    }
                     if (TabPageID != PAGE_IMAGE)
                     {
                         // Chuyen sang tab Image
@@ -116,13 +108,13 @@ namespace Display
                     .CreateLogger();
         }
 
-        private void Add_UserControl(PanelContainer panel, UserControl uc)
+        private void ShowPanel(PanelContainer panel, UserControl uc)
         {
             panel.Controls.Clear();
             panel.Controls.Add(uc);
             uc.Dock = DockStyle.Fill;
             uc.BringToFront();
-            //panel.Visible = true;
+
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
@@ -134,51 +126,11 @@ namespace Display
                     break;
 
                 case PAGE_VIDEO:
+                    page_VideoScreen.StopVideo();
                     guna2Transition1.HideSync(panel_Video);
                     break;
             }
-            panel.BringToFront();
-            guna2Transition1.ShowSync(panel);
-
-            //if (panel.Name == "panel_Video")
-            //{
-            //    guna2Transition1.ShowSync(panel_Video);
-            //    //if(panel_Image.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Image);
-            //    //}
-            //    //if (panel_Text.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Text);
-            //    //}
-            //    //return;
-            //}
-            //if (panel.Name == "panel_Text")
-            //{
-            //    guna2Transition1.ShowSync(panel_Text);
-            //    //if (panel_Image.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Image);
-            //    //}
-            //    //if (panel_Video.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Video);
-            //    //}
-            //    //return;
-            //}
-            //if (panel.Name == "panel_Image")
-            //{
-            //    guna2Transition1.ShowSync(panel_Image);
-            //    //if (panel_Video.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Video);
-            //    //}
-            //    //if (panel_Text.Visible == true)
-            //    //{
-            //    //    guna2Transition1.HideSync(panel_Text);
-            //    //}
-            //    //return;
-            //}
+            guna2Transition1.ShowSync(panel, true);
         }
 
         private void tick_Tick(object sender, EventArgs e)
@@ -217,20 +169,19 @@ namespace Display
         private void ShowVideo(string Url)
         {
             page_VideoScreen.ShowVideo(Url);
-            Add_UserControl(panel_Video, page_VideoScreen);
+            ShowPanel(panel_Video, page_VideoScreen);
             TabPageID = PAGE_VIDEO;
         }
         private void ShowText(string Text)
         {
-            page_Text = new Page_Text();
-            Add_UserControl(panel_Text, page_Text);
             page_Text.ShowText(Text);
+            ShowPanel(panel_Text, page_Text);
             TabPageID = PAGE_TEXT;
         }
         private void ShowImage(string ImageURL)
         {
             page_Image.ShowImage(ImageURL);
-            Add_UserControl(panel_Image, page_Image);
+            ShowPanel(panel_Image, page_Image);
             TabPageID = PAGE_IMAGE;
         }
 

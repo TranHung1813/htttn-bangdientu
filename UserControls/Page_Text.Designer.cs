@@ -54,8 +54,9 @@ namespace Display
             this.txtThongBao.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtThongBao.BackColor = System.Drawing.Color.LavenderBlush;
             this.txtThongBao.Font = new System.Drawing.Font("Siemens Slab", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
+            this.txtThongBao.ForeColor = System.Drawing.Color.Maroon;
             this.txtThongBao.Location = new System.Drawing.Point(0, 0);
             this.txtThongBao.Name = "txtThongBao";
             this.txtThongBao.SetSpeed = 1;

@@ -62,7 +62,6 @@ namespace Display
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.Controls.Add(this.panel1);
             this.Name = "Page_VideoScreen";
             this.Size = new System.Drawing.Size(736, 409);

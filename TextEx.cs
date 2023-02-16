@@ -30,6 +30,7 @@ namespace Display
             InitializeComponent();
 
             UseCompatibleTextRendering = true;
+            height = this.Size.Height;
 
             tmrTick = new Timer();
             tmrTick.Tick += tick;
@@ -41,13 +42,17 @@ namespace Display
         public void Start()
         {
             enableScrollText = true;
-            height = this.Size.Height;
             maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;
 
             if (maxPosition < height)
             {
                 SetSpeed = 0;
             }
+        }
+        public void Stop()
+        {
+            enableScrollText = false;
+            position = 0;
         }
 
         protected override void OnTextChanged(EventArgs e)
@@ -71,13 +76,14 @@ namespace Display
             if (position < -maxPosition)
             {
                 this.Size = new Size(Width, height);
-                position = 0;
-                tmrTick.Stop();
+                position = height;
+                //position = 0;
+                //tmrTick.Stop();
 
-                DelayText = new Timer();
-                DelayText.Tick += DelayText_Tick; ;
-                DelayText.Interval = 8000;
-                DelayText.Start();
+                //DelayText = new Timer();
+                //DelayText.Tick += DelayText_Tick; ;
+                //DelayText.Interval = 8000;
+                //DelayText.Start();
             }
 
             position -= speed;

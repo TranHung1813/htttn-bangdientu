@@ -35,7 +35,7 @@ namespace Display
         }
         public void StopVideo()
         {
-            vlcControl1.Stop();
+            vlcControl1.Pause();
         }
     }
 }
