@@ -66,25 +66,18 @@ namespace Display
             switch (e.KeyCode)
             {
                 case Keys.F3:
-                    if (TabPageID != PAGE_VIDEO)
-                    {
-                        // Chuyen sang tab xem Video
-                        ShowVideo(_VideoUrl);
-                    }
+                    // Chuyen sang tab xem Video
+                    ShowVideo(_VideoUrl);
                     break;
+
                 case Keys.F4:
-                    if (TabPageID != PAGE_TEXT)
-                    {
-                        // Chuyen sang tab Text
-                        ShowText(_TxtThongBao);
-                    }
+                    // Chuyen sang tab Text
+                    ShowText(_TxtThongBao);
                     break;
+
                 case Keys.F5:
-                    if (TabPageID != PAGE_IMAGE)
-                    {
-                        // Chuyen sang tab Image
-                        ShowImage("");
-                    }
+                    // Chuyen sang tab Image
+                    ShowImage("");
                     break;
 
                 case Keys.F6:
@@ -171,12 +164,13 @@ namespace Display
         }
         private void ShowVideo(string Url)
         {
-            page_VideoScreen.ShowVideo(Url);
             ShowPanel(panel_Video, page_VideoScreen);
+            page_VideoScreen.ShowVideo(Url);
             TabPageID = PAGE_VIDEO;
         }
         private void ShowText(string Text)
         {
+            page_Text = new Page_Text();
             page_Text.ShowText(Text);
             ShowPanel(panel_Text, page_Text);
             TabPageID = PAGE_TEXT;

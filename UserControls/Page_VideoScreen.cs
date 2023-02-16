@@ -51,7 +51,7 @@ namespace Display
         }
         public void StopVideo()
         {
-            _mp.Pause();
+            _mp.Stop();
         }
     }
 }
