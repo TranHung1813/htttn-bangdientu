@@ -171,6 +171,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form_TextOverlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_TextOverlay.Designer.cs">
+      <DependentUpon>Form_TextOverlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +191,12 @@
     </Compile>
     <Compile Include="TextEx.Designer.cs">
       <DependentUpon>TextEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextEx2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TextEx2.Designer.cs">
+      <DependentUpon>TextEx2.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Page_Image.cs">
       <SubType>UserControl</SubType>
@@ -207,6 +219,9 @@
     <Compile Include="UserControls\PanelContainer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Form_TextOverlay.resx">
+      <DependentUpon>Form_TextOverlay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>

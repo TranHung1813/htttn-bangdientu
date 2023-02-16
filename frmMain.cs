@@ -81,8 +81,8 @@ namespace Display
                     break;
 
                 case Keys.F6:
-                    //FormLoad_Image modal = new FormLoad_Image();
-                    //modal.ShowDialog();
+                    Form_TextOverlay form_TextOverlay = new Form_TextOverlay();
+                    form_TextOverlay.Show();
                     break;
             }
         }

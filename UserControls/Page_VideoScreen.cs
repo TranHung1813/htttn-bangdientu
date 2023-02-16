@@ -44,7 +44,7 @@ namespace Display
 
             try
             {
-                _mp.Play(new Media(_libVLC, new Uri(_VideoURL), @params));
+                _mp.Play(new Media(_libVLC, new Uri(url), @params));
             }
             catch
             { }
