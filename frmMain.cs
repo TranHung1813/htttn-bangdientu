@@ -119,15 +119,18 @@ namespace Display
             {
                 case PAGE_IMAGE:
                     guna2Transition1.HideSync(panel_Image);
+                    panel_Image.Visible = false;
                     break;
 
                 case PAGE_TEXT:
                     guna2Transition1.HideSync(panel_Text);
+                    panel_Text.Visible = false;
                     break;
 
                 case PAGE_VIDEO:
                     page_VideoScreen.StopVideo();
                     guna2Transition1.HideSync(panel_Video);
+                    panel_Video.Visible = false;
                     break;
             }
             guna2Transition1.ShowSync(panel, true);
@@ -155,10 +158,10 @@ namespace Display
                     var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
 
                     _TxtThongBao = payload.BanTinVanBan;
-                    ShowText(_TxtThongBao);
+                    //ShowText(_TxtThongBao);
                     //txtVanBan.Text = payload.BanTinVanBan;
-                    //_VideoUrl = payload.VideoUrl;
-                    //ShowVideo(_VideoUrl);
+                    _VideoUrl = payload.VideoUrl;
+                    ShowVideo(_VideoUrl);
                 }
             }
             catch(Exception ex)

@@ -30,7 +30,6 @@ namespace Display
             InitializeComponent();
 
             UseCompatibleTextRendering = true;
-            height = this.Size.Height;
 
             tmrTick = new Timer();
             tmrTick.Tick += tick;
@@ -42,6 +41,7 @@ namespace Display
         public void Start()
         {
             enableScrollText = true;
+            height = this.Size.Height;
             maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;
 
             if (maxPosition < height)
