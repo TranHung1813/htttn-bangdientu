@@ -49,11 +49,6 @@ namespace Display
                 SetSpeed = 0;
             }
         }
-        public void Stop()
-        {
-            enableScrollText = false;
-            position = 0;
-        }
 
         protected override void OnTextChanged(EventArgs e)
         {

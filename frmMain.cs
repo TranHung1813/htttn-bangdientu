@@ -31,6 +31,7 @@ namespace Display
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
         private Page_Text page_Text = new Page_Text();
         private Page_Image page_Image = new Page_Image();
+        private TextOverlay text_Overlay = new TextOverlay();
 
         private PanelContainer panel_Video;
         private PanelContainer panel_Text;
@@ -81,8 +82,8 @@ namespace Display
                     break;
 
                 case Keys.F6:
-                    Form_TextOverlay form_TextOverlay = new Form_TextOverlay();
-                    form_TextOverlay.Show();
+                    //Show Text Overlay
+                    Show_TextOverlay("");
                     break;
             }
         }
@@ -126,7 +127,12 @@ namespace Display
                     panel_Video.Visible = false;
                     break;
             }
-            guna2Transition1.ShowSync(panel, true);
+            try
+            {
+                guna2Transition1.ShowSync(panel, true);
+            }
+            catch
+            { }
         }
 
         private void tick_Tick(object sender, EventArgs e)
@@ -162,6 +168,8 @@ namespace Display
                 Log.Error(ex, "ProcessNewMessage");
             }
         }
+
+    //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
         private void ShowVideo(string Url)
         {
             ShowPanel(panel_Video, page_VideoScreen);
@@ -181,7 +189,22 @@ namespace Display
             ShowPanel(panel_Image, page_Image);
             TabPageID = PAGE_IMAGE;
         }
+        private void Show_TextOverlay(string Txt)
+        {
+            panel_TextOverlay.Visible = true;
 
+            panel_TextOverlay.Controls.Clear();
+            panel_TextOverlay.Controls.Add(text_Overlay);
+            text_Overlay.Dock = DockStyle.Fill;
+            text_Overlay.BringToFront();
+
+            text_Overlay.ShowTextOverlay(Txt);
+        }
+
+
+
+
+    //-----------------------------------------------------------------------------------------------------//
         private void timer_GetRTC_Tick(object sender, EventArgs e)
         {
             ShowRTC(); // Hien thoi gian

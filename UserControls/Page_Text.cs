@@ -20,8 +20,6 @@ namespace Display
 
         public void ShowText(string txt)
         {
-            txtThongBao.Stop();
-
             txtThongBao.Text = txt;
             timerDelayTextRun.Interval = 5000;
             timerDelayTextRun.Start();

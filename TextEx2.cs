@@ -19,45 +19,46 @@ namespace Display
         }
 
         Timer tmrTick;
-        int position, speed, width, maxPosition;
+        int position, speed, _Parent_Width;
         bool enableScrollText = false;
 
         public TextEx2()
         {
             InitializeComponent();
 
-            UseCompatibleTextRendering = true;
-
+            //UseCompatibleTextRendering = true;
+            AutoEllipsis = true;
+             
             tmrTick = new Timer();
             tmrTick.Tick += tick;
             tmrTick.Interval = 20;
-            tmrTick.Start();
+            //tmrTick.Start();
         }
 
-        public void Start()
+        public void Start(int Parent_Width)
         {
             enableScrollText = true;
-            width = this.Size.Width;
-            maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Width;
+            _Parent_Width = Parent_Width;
+            //maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font).Width;
 
-            if (maxPosition + 100 < width)
+            if (this.Width < Parent_Width)
             {
                 SetSpeed = 0;
             }
+            else
+            {
+                position = Parent_Width;
+                if (speed != 0) tmrTick.Interval = 1;
+                tmrTick.Start();
+            }
         }
 
-        public void Stop()
-        {
-            enableScrollText = false;
-            position = 0;
-        }
+        //protected override void OnTextChanged(EventArgs e)
+        //{
+        //    maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font).Width;
 
-        protected override void OnTextChanged(EventArgs e)
-        {
-            maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Width;
-
-            base.OnTextChanged(e);
-        }
+        //    base.OnTextChanged(e);
+        //}
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -70,14 +71,13 @@ namespace Display
         {
             if (!enableScrollText) return;
 
-            if (position < -maxPosition)
+            if (position < - Width)
             {
-                this.Size = new Size(width, Height);
-                position = width;
+                //this.Size = new Size(width, Height);
+                position = _Parent_Width;
             }
 
-            position -= speed;
-            Width += speed;
+            position -= 10;
             Invalidate();
         }
     }
