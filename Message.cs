@@ -46,7 +46,11 @@ namespace Display
             this.password = password;
             this.subcribeTopic += $"{clientId}/#";
 
-            new Task(async () => await InitMqtt()).Start();
+            try
+            {
+                new Task(async () => await InitMqtt()).Start();
+            }
+            catch { }
         }
 
         private async Task InitMqtt()

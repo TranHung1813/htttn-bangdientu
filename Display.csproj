@@ -80,6 +80,9 @@
     <Reference Include="Bunifu.UI.WinForms.BunifuButton">
       <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu.UI.WinForms.BunifuButton.dll</HintPath>
     </Reference>
+    <Reference Include="Bunifu.UI.WinForms.BunifuTransition">
+      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu.UI.WinForms.BunifuTransition.dll</HintPath>
+    </Reference>
     <Reference Include="Bunifu_UI_v1.5.3">
       <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_v1.5.3.dll</HintPath>
     </Reference>
@@ -198,6 +201,12 @@
     <Compile Include="UserControls\Page_Image.Designer.cs">
       <DependentUpon>Page_Image.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Page_Multi_Image.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Page_Multi_Image.Designer.cs">
+      <DependentUpon>Page_Multi_Image.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Page_Text.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -234,6 +243,9 @@
     </Compile>
     <EmbeddedResource Include="UserControls\Page_Image.resx">
       <DependentUpon>Page_Image.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Page_Multi_Image.resx">
+      <DependentUpon>Page_Multi_Image.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_Text.resx">
       <DependentUpon>Page_Text.cs</DependentUpon>

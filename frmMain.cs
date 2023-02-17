@@ -23,6 +23,7 @@ namespace Display
         private const int PAGE_VIDEO = 1;
         private const int PAGE_TEXT = 2;
         private const int PAGE_IMAGE = 3;
+        private const int PAGE_MULTI_IMAGE = 4;
         private int TabPageID = 0;
 
         public static int parentX, parentY;
@@ -36,6 +37,16 @@ namespace Display
         private PanelContainer panel_Video;
         private PanelContainer panel_Text;
         private PanelContainer panel_Image;
+        private PanelContainer panel_Multi_Image;
+
+        //1. Thread cho Text Overlay chay doc lap
+        //2. Debug voi man hinh lon
+        //3. Them Page hien multi Image
+        //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
+        //5. Code phan dieu khien voi Relay
+        //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát)
+        //7. Thiet ke lai giao dien Text Overlay
+        //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content
         public frmMain()
         {
             InitializeComponent();
@@ -51,6 +62,7 @@ namespace Display
             panel_Video = new PanelContainer(this);
             panel_Text = new PanelContainer(this);
             panel_Image = new PanelContainer(this);
+            panel_Multi_Image = new PanelContainer(this);
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -83,7 +95,22 @@ namespace Display
 
                 case Keys.F6:
                     //Show Text Overlay
-                    Show_TextOverlay("");
+                    Show_TextOverlay("Thông báo", "");
+                    break;
+
+                case Keys.F7:
+                    //Show Multi Image
+                    Page_Multi_Image page_Multi_Image = new Page_Multi_Image();
+                    ShowPanel(panel_Multi_Image, page_Multi_Image);
+                    TabPageID = PAGE_MULTI_IMAGE;
+
+                    string[] ImageURLs = new string[4];
+                    ImageURLs[0] = "http://placehold.it/120x120&text=image1";
+                    ImageURLs[1] = "http://placehold.it/120x120&text=image2";
+                    ImageURLs[2] = "http://placehold.it/120x120&text=image3";
+                    ImageURLs[3] = "http://placehold.it/120x120&text=image4";
+
+                    page_Multi_Image.Show_Multi_Image(ImageURLs, 4);
                     break;
             }
         }
@@ -159,8 +186,10 @@ namespace Display
                     _TxtThongBao = payload.BanTinVanBan;
                     //ShowText(_TxtThongBao);
                     //txtVanBan.Text = payload.BanTinVanBan;
-                    _VideoUrl = payload.VideoUrl;
-                    ShowVideo(_VideoUrl);
+                    //_VideoUrl = payload.VideoUrl;
+
+
+                    ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }
             catch(Exception ex)
@@ -189,20 +218,25 @@ namespace Display
             ShowPanel(panel_Image, page_Image);
             TabPageID = PAGE_IMAGE;
         }
-        private void Show_TextOverlay(string Txt)
+        private void Show_TextOverlay(string Title, string Content)
         {
-            panel_TextOverlay.Visible = true;
+            //panel_TextOverlay.Visible = true;
 
             panel_TextOverlay.Controls.Clear();
             panel_TextOverlay.Controls.Add(text_Overlay);
             text_Overlay.Dock = DockStyle.Fill;
             text_Overlay.BringToFront();
 
-            text_Overlay.ShowTextOverlay(Txt);
+            panel_TextOverlay.BringToFront();
+
+            try
+            {
+                guna2Transition1.ShowSync(panel_TextOverlay, true);
+            }
+            catch { }
+
+            text_Overlay.ShowTextOverlay(Content);
         }
-
-
-
 
     //-----------------------------------------------------------------------------------------------------//
         private void timer_GetRTC_Tick(object sender, EventArgs e)

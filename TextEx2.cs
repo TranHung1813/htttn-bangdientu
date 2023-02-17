@@ -77,7 +77,7 @@ namespace Display
                 position = _Parent_Width;
             }
 
-            position -= 10;
+            position -= 1;
             Invalidate();
         }
     }
