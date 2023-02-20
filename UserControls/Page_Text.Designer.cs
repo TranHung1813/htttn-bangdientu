@@ -32,9 +32,11 @@ namespace Display
             this.components = new System.ComponentModel.Container();
             this.timerDelayTextRun = new System.Windows.Forms.Timer(this.components);
             this.panelContainer = new System.Windows.Forms.Panel();
+            this.panel_TextRun = new Display.PanelEx();
             this.lb_Content = new Display.GrowLabel();
             this.lb_Title = new Display.GrowLabel();
             this.panelContainer.SuspendLayout();
+            this.panel_TextRun.SuspendLayout();
             this.SuspendLayout();
             // 
             // timerDelayTextRun
@@ -48,12 +50,24 @@ namespace Display
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelContainer.BackColor = System.Drawing.Color.White;
-            this.panelContainer.Controls.Add(this.lb_Content);
-            this.panelContainer.Controls.Add(this.lb_Title);
+            this.panelContainer.Controls.Add(this.panel_TextRun);
             this.panelContainer.Location = new System.Drawing.Point(15, 14);
             this.panelContainer.Name = "panelContainer";
             this.panelContainer.Size = new System.Drawing.Size(890, 391);
             this.panelContainer.TabIndex = 1;
+            // 
+            // panel_TextRun
+            // 
+            this.panel_TextRun.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel_TextRun.Controls.Add(this.lb_Content);
+            this.panel_TextRun.Controls.Add(this.lb_Title);
+            this.panel_TextRun.Location = new System.Drawing.Point(0, 0);
+            this.panel_TextRun.Name = "panel_TextRun";
+            this.panel_TextRun.SetSpeed = 0;
+            this.panel_TextRun.Size = new System.Drawing.Size(890, 391);
+            this.panel_TextRun.TabIndex = 3;
             // 
             // lb_Content
             // 
@@ -93,6 +107,7 @@ namespace Display
             this.Name = "Page_Text";
             this.Size = new System.Drawing.Size(920, 419);
             this.panelContainer.ResumeLayout(false);
+            this.panel_TextRun.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -102,5 +117,6 @@ namespace Display
         private System.Windows.Forms.Panel panelContainer;
         private GrowLabel lb_Title;
         private GrowLabel lb_Content;
+        private PanelEx panel_TextRun;
     }
 }

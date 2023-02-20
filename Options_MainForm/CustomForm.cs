@@ -82,10 +82,10 @@ namespace Display
             page_VideoScreen.ShowVideo(Url);
             TabPageID = PAGE_VIDEO;
         }
-        public void ShowText(string Text)
+        public void ShowText(string Title, string Content)
         {
             page_Text = new Page_Text();
-            page_Text.ShowText(Text);
+            page_Text.ShowText(Title, Content);
             ShowPanel(panel_Text, page_Text);
             TabPageID = PAGE_TEXT;
         }

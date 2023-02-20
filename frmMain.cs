@@ -93,7 +93,7 @@ namespace Display
                 case Keys.F4:
                     // Chuyen sang tab Text
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowText(_TxtThongBao);
+                        customForm.ShowText(_TxtThongBao, _TxtVanBan);
                     break;
 
                 case Keys.F5:

@@ -49,8 +49,6 @@ namespace Display
             else
             {
                 position = Parent_Width;
-                if (speed != 0) tmrTick.Interval = 1;
-                tmrTick.Start();
             }
         }
         public Color OutlineForeColor { get; set; }

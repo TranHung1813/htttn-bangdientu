@@ -13,18 +13,18 @@ namespace Display
     public partial class Page_Text : UserControl
     {
         private string _txt = "* Theo điểm a khoản 1 Điều 12 Nghị định 117/2020/NĐ-CP ngày 28/9/2020 của Chính phủ Quy định xử phạt hành chính trong lĩnh vực y tế: \r\n\r\n" +
-                              "* Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế. ";
+                              "* Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.\r\n\r\n";
         public Page_Text()
         {
             InitializeComponent();
             //txtThongBao.Size = panelContainer.Size;
         }
 
-        public void ShowText(string txt)
+        public void ShowText(string txt_Title, string txt_Content)
         {
             //txtThongBao.Text = txt;
             lb_Title.Text += "\r\n";
-            lb_Content.Text = _txt;
+            lb_Content.Text = _txt + _txt + _txt;
             timerDelayTextRun.Interval = 5000;
             timerDelayTextRun.Start();
         }
@@ -33,6 +33,9 @@ namespace Display
         {
             //txtThongBao.SetSpeed = 1;
             //txtThongBao.Start();
+            panel_TextRun.SetSpeed = 1;
+            int Text_Height = lb_Title.Height + lb_Content.Height;
+            panel_TextRun.Start(Text_Height);
 
             timerDelayTextRun.Stop();
         }

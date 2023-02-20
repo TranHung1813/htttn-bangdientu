@@ -29,6 +29,7 @@ namespace Display
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panelThongBao = new System.Windows.Forms.Panel();
@@ -37,6 +38,7 @@ namespace Display
             this.panelVanBan = new System.Windows.Forms.Panel();
             this.txtVanBan = new Display.TextEx();
             this.videoView1 = new LibVLCSharp.WinForms.VideoView();
+            this.Timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.panelThongBao.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -137,6 +139,11 @@ namespace Display
             this.videoView1.TabIndex = 6;
             this.videoView1.Text = "videoView1";
             // 
+            // Timer_DelayTextRun
+            // 
+            this.Timer_DelayTextRun.Interval = 5000;
+            this.Timer_DelayTextRun.Tick += new System.EventHandler(this.Timer_DelayTextRun_Tick);
+            // 
             // DefaultForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -165,5 +172,6 @@ namespace Display
         private System.Windows.Forms.Panel panelVanBan;
         private TextEx txtVanBan;
         private LibVLCSharp.WinForms.VideoView videoView1;
+        private System.Windows.Forms.Timer Timer_DelayTextRun;
     }
 }
