@@ -40,6 +40,7 @@ namespace Display
 
         public void Start()
         {
+            position = 0;
             enableScrollText = true;
             height = this.Size.Height;
             maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;

@@ -23,6 +23,11 @@ namespace Display
         private string _TxtVanBan = "";
 
         private CustomForm customForm = new CustomForm();
+        private DefaultForm defaultForm = new DefaultForm();
+
+        private const int DEFAULT_FORM = 1;
+        private const int CUSTOM_FORM = 2;
+        private int CurrentForm = DEFAULT_FORM;
 
         //1. Thread cho Text Overlay chay doc lap
         //2. Debug voi man hinh lon
@@ -32,6 +37,7 @@ namespace Display
         //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát)
         //7. Thiet ke lai giao dien Text Overlay
         //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content
+        //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
         public frmMain()
         {
             InitializeComponent();
@@ -42,7 +48,9 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
 
-            Add_UserControl(customForm);
+            //Add_UserControl(customForm);
+            Add_UserControl(defaultForm);
+            CurrentForm = DEFAULT_FORM;
 
         }
         protected override void OnKeyUp(KeyEventArgs e)
@@ -59,35 +67,57 @@ namespace Display
         {
             switch (e.KeyCode)
             {
+                case Keys.F1:
+                    if (CurrentForm != DEFAULT_FORM)
+                    {
+                        Add_UserControl(defaultForm);
+                        CurrentForm = DEFAULT_FORM;
+                    }
+                    break;
+
+                case Keys.F2:
+                    if (CurrentForm != CUSTOM_FORM)
+                    {
+                        Add_UserControl(customForm);
+                        CurrentForm = CUSTOM_FORM;
+                    }
+                    break;
                 case Keys.F3:
                     // Chuyen sang tab xem Video
-                    customForm.ShowVideo(_VideoUrl);
+                    if(CurrentForm == CUSTOM_FORM)
+                        customForm.ShowVideo(_VideoUrl);
                     break;
 
                 case Keys.F4:
                     // Chuyen sang tab Text
-                    customForm.ShowText(_TxtThongBao);
+                    if (CurrentForm == CUSTOM_FORM)
+                        customForm.ShowText(_TxtThongBao);
                     break;
 
                 case Keys.F5:
                     // Chuyen sang tab Image
-                    customForm.ShowImage("");
+                    if (CurrentForm == CUSTOM_FORM)
+                        customForm.ShowImage("");
                     break;
 
                 case Keys.F6:
                     //Show Text Overlay
-                    customForm.Show_TextOverlay("");
+                    if (CurrentForm == CUSTOM_FORM)
+                        customForm.Show_TextOverlay("");
                     break;
 
                 case Keys.F7:
                     //Show Multi Image
-                    string[] ImageURLs = new string[4];
-                    ImageURLs[0] = "http://placehold.it/120x120&text=image1";
-                    ImageURLs[1] = "http://placehold.it/120x120&text=image2";
-                    ImageURLs[2] = "http://placehold.it/120x120&text=image3";
-                    ImageURLs[3] = "http://placehold.it/120x120&text=image4";
+                    if (CurrentForm == CUSTOM_FORM)
+                    {
+                        string[] ImageURLs = new string[4];
+                        ImageURLs[0] = "http://placehold.it/120x120&text=image1";
+                        ImageURLs[1] = "http://placehold.it/120x120&text=image2";
+                        ImageURLs[2] = "http://placehold.it/120x120&text=image3";
+                        ImageURLs[3] = "http://placehold.it/120x120&text=image4";
 
-                    customForm.Show_Multi_Image(ImageURLs, 4);
+                        customForm.Show_Multi_Image(ImageURLs, 4);
+                    }
                     break;
             }
         }
@@ -98,6 +128,7 @@ namespace Display
             panelContainer.Controls.Add(uc);
             uc.Dock = DockStyle.Fill;
             uc.BringToFront();
+            uc.Focus();
         }
 
         private void InitParameters()
@@ -137,12 +168,13 @@ namespace Display
                     var topic = newMessage.Topic;
                     var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
 
-                    _TxtThongBao = payload.BanTinVanBan;
+                    _TxtThongBao = payload.BanTinThongBao;
                     //ShowText(_TxtThongBao);
                     _TxtVanBan = payload.BanTinVanBan;
                     _VideoUrl = payload.VideoUrl;
 
-                    customForm.ShowVideo(_VideoUrl);
+                    //customForm.ShowVideo(_VideoUrl);
+                    defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }

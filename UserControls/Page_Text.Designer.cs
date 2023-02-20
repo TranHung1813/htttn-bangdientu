@@ -30,10 +30,9 @@ namespace Display
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Page_Text));
             this.panelContainer = new System.Windows.Forms.Panel();
-            this.txtThongBao = new Display.TextEx();
             this.timerDelayTextRun = new System.Windows.Forms.Timer(this.components);
+            this.txtThongBao = new Display.TextEx();
             this.panelContainer.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,26 +48,29 @@ namespace Display
             this.panelContainer.Size = new System.Drawing.Size(890, 391);
             this.panelContainer.TabIndex = 1;
             // 
+            // timerDelayTextRun
+            // 
+            this.timerDelayTextRun.Interval = 10000;
+            this.timerDelayTextRun.Tick += new System.EventHandler(this.timerDelayTextRun_Tick);
+            // 
             // txtThongBao
             // 
             this.txtThongBao.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtThongBao.BackColor = System.Drawing.Color.LavenderBlush;
-            this.txtThongBao.Font = new System.Drawing.Font("Siemens Slab", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtThongBao.ForeColor = System.Drawing.Color.Maroon;
+            this.txtThongBao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.txtThongBao.Font = new System.Drawing.Font("Times New Roman", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtThongBao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.txtThongBao.Location = new System.Drawing.Point(0, 0);
             this.txtThongBao.Name = "txtThongBao";
             this.txtThongBao.SetSpeed = 1;
             this.txtThongBao.Size = new System.Drawing.Size(890, 391);
             this.txtThongBao.TabIndex = 0;
-            this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
+            this.txtThongBao.Text = "UBND thị trấn Bến Lức thông báo đến nhân dân \"Về việc đeo khẩu trang, hạn chế tập" +
+    " trung đông người trên địa bàn thị trấn Bến Lức\" Để chủ động kiểm soát, ngăn chặ" +
+    "n dịch bệnh Covid-19 gây ra.";
+            this.txtThongBao.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.txtThongBao.UseCompatibleTextRendering = true;
-            // 
-            // timerDelayTextRun
-            // 
-            this.timerDelayTextRun.Interval = 10000;
-            this.timerDelayTextRun.Tick += new System.EventHandler(this.timerDelayTextRun_Tick);
             // 
             // Page_Text
             // 

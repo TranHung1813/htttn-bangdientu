@@ -20,7 +20,7 @@ namespace Display
 
         public void ShowText(string txt)
         {
-            txtThongBao.Text = txt;
+            //txtThongBao.Text = txt;
             timerDelayTextRun.Interval = 5000;
             timerDelayTextRun.Start();
         }

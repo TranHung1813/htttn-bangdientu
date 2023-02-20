@@ -45,6 +45,7 @@ namespace Display
             panel.Controls.Add(uc);
             uc.Dock = DockStyle.Fill;
             uc.BringToFront();
+            uc.Focus();
 
             switch (TabPageID)
             {
@@ -119,6 +120,6 @@ namespace Display
             page_Multi_Image.Show_Multi_Image(ImageURLs, 4);
         }
 
-    //-----------------------------------------------------------------------------------------------------//
+        //-----------------------------------------------------------------------------------------------------//
     }
 }
