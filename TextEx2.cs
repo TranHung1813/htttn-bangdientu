@@ -33,7 +33,7 @@ namespace Display
             tmrTick = new Timer();
             tmrTick.Tick += tick;
             tmrTick.Interval = 20;
-            //tmrTick.Start();
+            tmrTick.Start();
         }
 
         public void Start(int Parent_Width)

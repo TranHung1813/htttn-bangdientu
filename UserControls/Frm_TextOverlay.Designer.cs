@@ -29,9 +29,11 @@ namespace Display
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Frm_TextOverlay));
             this.panel1 = new System.Windows.Forms.Panel();
             this.txtOverlay = new Display.TextEx2();
+            this.timer_DelayText = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,11 +67,16 @@ namespace Display
             this.txtOverlay.Text = resources.GetString("txtOverlay.Text");
             this.txtOverlay.UseCompatibleTextRendering = true;
             // 
+            // timer_DelayText
+            // 
+            this.timer_DelayText.Interval = 1000;
+            this.timer_DelayText.Tick += new System.EventHandler(this.timer_DelayText_Tick);
+            // 
             // Frm_TextOverlay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.Color.LawnGreen;
             this.ClientSize = new System.Drawing.Size(915, 53);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -85,5 +92,6 @@ namespace Display
 
         private System.Windows.Forms.Panel panel1;
         private TextEx2 txtOverlay;
+        private System.Windows.Forms.Timer timer_DelayText;
     }
 }

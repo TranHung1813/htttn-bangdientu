@@ -111,6 +111,7 @@ namespace Display
             frm_TextOverlay.ShowInTaskbar = false;
             frm_TextOverlay.Size = panel_TextOverlay.Size;
             frm_TextOverlay.ShowTextOverlay("");
+            //frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
         }
         public void Show_Multi_Image(string [] ImageURLs, int Number_Image)
