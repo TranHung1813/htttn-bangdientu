@@ -69,11 +69,14 @@ namespace Display
                 gp.AddString(Text, Font.FontFamily, (int)Font.Style,
                     Font.Size, ClientRectangle, sf);
                 e.Graphics.ScaleTransform(1.3f, 1.35f);
-                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
                 e.Graphics.DrawPath(outline, gp);
                 e.Graphics.FillPath(foreBrush, gp);
             }
         }
+
 
         //protected override void OnTextChanged(EventArgs e)
         //{
@@ -92,7 +95,7 @@ namespace Display
                 position = _Parent_Width;
             }
 
-            position -= 1;
+            position -= speed;
             Invalidate();
         }
     }

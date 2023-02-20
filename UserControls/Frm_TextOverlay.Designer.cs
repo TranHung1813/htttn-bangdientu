@@ -1,14 +1,14 @@
 ﻿
 namespace Display
 {
-    partial class TextOverlay
+    partial class Frm_TextOverlay
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -21,38 +21,29 @@ namespace Display
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #region Windows Form Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextOverlay));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Frm_TextOverlay));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
             this.txtOverlay = new Display.TextEx2();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.Color.LavenderBlush;
+            this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.txtOverlay);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(818, 53);
+            this.panel1.Size = new System.Drawing.Size(915, 53);
             this.panel1.TabIndex = 0;
-            // 
-            // timer_DelayTextRun
-            // 
-            this.timer_DelayTextRun.Interval = 3000;
-            this.timer_DelayTextRun.Tick += new System.EventHandler(this.timer_DelayTextRun_Tick);
             // 
             // txtOverlay
             // 
@@ -70,19 +61,20 @@ namespace Display
             this.txtOverlay.OutlineWidth = 3F;
             this.txtOverlay.SetSpeed = 0;
             this.txtOverlay.Size = new System.Drawing.Size(4851, 54);
-            this.txtOverlay.TabIndex = 3;
+            this.txtOverlay.TabIndex = 4;
             this.txtOverlay.Text = resources.GetString("txtOverlay.Text");
             this.txtOverlay.UseCompatibleTextRendering = true;
             // 
-            // TextOverlay
+            // Frm_TextOverlay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.LavenderBlush;
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.ClientSize = new System.Drawing.Size(915, 53);
             this.Controls.Add(this.panel1);
-            this.Name = "TextOverlay";
-            this.Size = new System.Drawing.Size(818, 53);
-            this.Load += new System.EventHandler(this.TextOverlay_Load);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "Frm_TextOverlay";
+            this.Text = "Frm_TextOverlay";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -93,6 +85,5 @@ namespace Display
 
         private System.Windows.Forms.Panel panel1;
         private TextEx2 txtOverlay;
-        private System.Windows.Forms.Timer timer_DelayTextRun;
     }
 }

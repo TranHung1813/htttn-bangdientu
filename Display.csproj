@@ -117,6 +117,7 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -207,6 +208,12 @@
     <Compile Include="TextEx2.Designer.cs">
       <DependentUpon>TextEx2.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Frm_TextOverlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserControls\Frm_TextOverlay.Designer.cs">
+      <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Page_Image.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -234,12 +241,6 @@
     <Compile Include="UserControls\PanelContainer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UserControls\TextOverlay.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControls\TextOverlay.Designer.cs">
-      <DependentUpon>TextOverlay.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -259,6 +260,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\Frm_TextOverlay.resx">
+      <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_Image.resx">
       <DependentUpon>Page_Image.cs</DependentUpon>
     </EmbeddedResource>
@@ -270,9 +274,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_VideoScreen.resx">
       <DependentUpon>Page_VideoScreen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\TextOverlay.resx">
-      <DependentUpon>TextOverlay.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace Display
 {
@@ -18,10 +19,11 @@ namespace Display
         private const int PAGE_MULTI_IMAGE = 4;
         private int TabPageID = 0;
 
+        Frm_TextOverlay frm_TextOverlay;
+
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
         private Page_Text page_Text = new Page_Text();
         private Page_Image page_Image = new Page_Image();
-        private TextOverlay text_Overlay = new TextOverlay();
         private Page_Multi_Image page_Multi_Image = new Page_Multi_Image();
 
         private PanelContainer panel_Video;
@@ -95,23 +97,21 @@ namespace Display
         }
         public void Show_TextOverlay(string Content)
         {
-            //panel_TextOverlay.Visible = true;
-
-            panel_TextOverlay.Controls.Clear();
-            panel_TextOverlay.Controls.Add(text_Overlay);
-            text_Overlay.Dock = DockStyle.Fill;
-            text_Overlay.BringToFront();
-
-            panel_TextOverlay.BackColor = Color.Transparent;
-            panel_TextOverlay.BringToFront();
-
-            try
+            if (frm_TextOverlay != null)
             {
-                guna2Transition1.ShowSync(panel_TextOverlay, true);
+                try
+                {
+                    frm_TextOverlay.Dispose();
+                }
+                catch { }
             }
-            catch { }
-
-            text_Overlay.ShowTextOverlay(Content);
+            frm_TextOverlay = new Frm_TextOverlay();
+            frm_TextOverlay.Location = panel_TextOverlay.Location;
+            frm_TextOverlay.StartPosition = FormStartPosition.Manual;
+            frm_TextOverlay.ShowInTaskbar = false;
+            frm_TextOverlay.Size = panel_TextOverlay.Size;
+            frm_TextOverlay.ShowTextOverlay("");
+            frm_TextOverlay.Show();
         }
         public void Show_Multi_Image(string [] ImageURLs, int Number_Image)
         {

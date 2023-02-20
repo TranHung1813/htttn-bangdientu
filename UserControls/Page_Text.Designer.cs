@@ -30,11 +30,17 @@ namespace Display
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.panelContainer = new System.Windows.Forms.Panel();
             this.timerDelayTextRun = new System.Windows.Forms.Timer(this.components);
-            this.txtThongBao = new Display.TextEx();
+            this.panelContainer = new System.Windows.Forms.Panel();
+            this.lb_Content = new Display.GrowLabel();
+            this.lb_Title = new Display.GrowLabel();
             this.panelContainer.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // timerDelayTextRun
+            // 
+            this.timerDelayTextRun.Interval = 10000;
+            this.timerDelayTextRun.Tick += new System.EventHandler(this.timerDelayTextRun_Tick);
             // 
             // panelContainer
             // 
@@ -42,35 +48,41 @@ namespace Display
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelContainer.BackColor = System.Drawing.Color.White;
-            this.panelContainer.Controls.Add(this.txtThongBao);
+            this.panelContainer.Controls.Add(this.lb_Content);
+            this.panelContainer.Controls.Add(this.lb_Title);
             this.panelContainer.Location = new System.Drawing.Point(15, 14);
             this.panelContainer.Name = "panelContainer";
             this.panelContainer.Size = new System.Drawing.Size(890, 391);
             this.panelContainer.TabIndex = 1;
             // 
-            // timerDelayTextRun
+            // lb_Content
             // 
-            this.timerDelayTextRun.Interval = 10000;
-            this.timerDelayTextRun.Tick += new System.EventHandler(this.timerDelayTextRun_Tick);
+            this.lb_Content.BackColor = System.Drawing.Color.Transparent;
+            this.lb_Content.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lb_Content.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F);
+            this.lb_Content.ForeColor = System.Drawing.Color.Navy;
+            this.lb_Content.Location = new System.Drawing.Point(0, 275);
+            this.lb_Content.Name = "lb_Content";
+            this.lb_Content.Size = new System.Drawing.Size(890, 230);
+            this.lb_Content.TabIndex = 2;
+            this.lb_Content.Text = "    UBND thị trấn Bến Lức thông báo đến nhân dân \"Về việc đeo khẩu trang, hạn chế" +
+    " tập trung đông người trên địa bàn thị trấn Bến Lức\" Để chủ động kiểm soát, ngăn" +
+    " chặn dịch bệnh Covid-19 gây ra.";
             // 
-            // txtThongBao
+            // lb_Title
             // 
-            this.txtThongBao.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtThongBao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.txtThongBao.Font = new System.Drawing.Font("Times New Roman", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtThongBao.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.txtThongBao.Location = new System.Drawing.Point(0, 0);
-            this.txtThongBao.Name = "txtThongBao";
-            this.txtThongBao.SetSpeed = 1;
-            this.txtThongBao.Size = new System.Drawing.Size(890, 391);
-            this.txtThongBao.TabIndex = 0;
-            this.txtThongBao.Text = "UBND thị trấn Bến Lức thông báo đến nhân dân \"Về việc đeo khẩu trang, hạn chế tập" +
+            this.lb_Title.BackColor = System.Drawing.Color.Transparent;
+            this.lb_Title.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lb_Title.Font = new System.Drawing.Font("Times New Roman", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_Title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lb_Title.Location = new System.Drawing.Point(0, 0);
+            this.lb_Title.Name = "lb_Title";
+            this.lb_Title.Size = new System.Drawing.Size(890, 275);
+            this.lb_Title.TabIndex = 1;
+            this.lb_Title.Text = "UBND thị trấn Bến Lức thông báo đến nhân dân \"Về việc đeo khẩu trang, hạn chế tập" +
     " trung đông người trên địa bàn thị trấn Bến Lức\" Để chủ động kiểm soát, ngăn chặ" +
     "n dịch bệnh Covid-19 gây ra.";
-            this.txtThongBao.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.txtThongBao.UseCompatibleTextRendering = true;
+            this.lb_Title.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // Page_Text
             // 
@@ -86,9 +98,9 @@ namespace Display
         }
 
         #endregion
-
-        private TextEx txtThongBao;
-        private System.Windows.Forms.Panel panelContainer;
         private System.Windows.Forms.Timer timerDelayTextRun;
+        private System.Windows.Forms.Panel panelContainer;
+        private GrowLabel lb_Title;
+        private GrowLabel lb_Content;
     }
 }
