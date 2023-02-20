@@ -49,7 +49,7 @@ namespace Display
             this.panelContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelContainer.BackColor = System.Drawing.Color.White;
+            this.panelContainer.BackColor = System.Drawing.Color.MistyRose;
             this.panelContainer.Controls.Add(this.panel_TextRun);
             this.panelContainer.Location = new System.Drawing.Point(15, 14);
             this.panelContainer.Name = "panelContainer";

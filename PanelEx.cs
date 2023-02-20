@@ -22,7 +22,7 @@ namespace Display
 
             tmrTick = new Timer();
             tmrTick.Tick += tick;
-            tmrTick.Interval = 20;
+            tmrTick.Interval = 40;
             tmrTick.Start();
         }
         public int SetSpeed

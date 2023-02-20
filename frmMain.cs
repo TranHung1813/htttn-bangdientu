@@ -27,7 +27,7 @@ namespace Display
 
         private const int DEFAULT_FORM = 1;
         private const int CUSTOM_FORM = 2;
-        private int CurrentForm = DEFAULT_FORM;
+        private int CurrentForm = 0;
 
         //1. Thread cho Text Overlay chay doc lap
         //2. Debug voi man hinh lon
@@ -38,6 +38,7 @@ namespace Display
         //7. Thiet ke lai giao dien Text Overlay (done)
         //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content
         //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
+        //10. Stop tat ca cac Timer sau khi da su dung xong
         public frmMain()
         {
             InitializeComponent();
@@ -49,8 +50,8 @@ namespace Display
             this.KeyUp += FrmMain_KeyUp;
 
             //Add_UserControl(customForm);
-            Add_UserControl(defaultForm);
-            CurrentForm = DEFAULT_FORM;
+            //Add_UserControl(defaultForm);
+            //CurrentForm = DEFAULT_FORM;
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -176,6 +177,12 @@ namespace Display
                     _VideoUrl = payload.VideoUrl;
 
                     //customForm.ShowVideo(_VideoUrl);
+                    // Chuyển sang Form Default
+                    if (CurrentForm != DEFAULT_FORM)
+                    {
+                        Add_UserControl(defaultForm);
+                        CurrentForm = DEFAULT_FORM;
+                    }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }

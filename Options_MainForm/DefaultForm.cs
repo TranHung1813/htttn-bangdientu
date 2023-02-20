@@ -20,9 +20,6 @@ namespace Display
         {
             InitializeComponent();
 
-            txtThongBao.SetSpeed = 1;
-            txtVanBan.SetSpeed = 1;
-
             Init_VLC_Library();
         }
 
@@ -49,10 +46,10 @@ namespace Display
 
         public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
         {
-            txtThongBao.Text = ThongBao;
-            txtThongBao.Size = panelThongBao.Size;
-            txtVanBan.Text = VanBan;
-            txtVanBan.Size = panelVanBan.Size;
+            //txtThongBao.Text = ThongBao;
+            //txtVanBan.Text = VanBan;
+
+            Timer_DelayTextRun.Interval = 5000;
             Timer_DelayTextRun.Start();
 
             ShowVideo(VideoURL);
@@ -60,8 +57,15 @@ namespace Display
 
         private void Timer_DelayTextRun_Tick(object sender, EventArgs e)
         {
-            txtThongBao.Start();
-            txtVanBan.Start();
+            panelThongBao.SetSpeed = 1;
+            int Text_Height1 = txtThongBao.Height;
+            panelThongBao.Start(Text_Height1);
+
+            panelVanBan.SetSpeed = 1;
+            int Text_Height2 = txtVanBan.Height;
+            panelVanBan.Start(Text_Height2);
+
+            Timer_DelayTextRun.Stop();
         }
     }
 }
