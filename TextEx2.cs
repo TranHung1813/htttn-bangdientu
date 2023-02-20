@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Display
 
             //UseCompatibleTextRendering = true;
             AutoEllipsis = true;
-             
+
             tmrTick = new Timer();
             tmrTick.Tick += tick;
             tmrTick.Interval = 20;
@@ -52,6 +53,27 @@ namespace Display
                 tmrTick.Start();
             }
         }
+        public Color OutlineForeColor { get; set; }
+        public float OutlineWidth { get; set; }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.TranslateTransform((float)position, 0);
+
+            e.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
+            using (GraphicsPath gp = new GraphicsPath())
+            using (Pen outline = new Pen(OutlineForeColor, OutlineWidth)
+            { LineJoin = LineJoin.Round })
+            using (StringFormat sf = new StringFormat())
+            using (Brush foreBrush = new SolidBrush(ForeColor))
+            {
+                gp.AddString(Text, Font.FontFamily, (int)Font.Style,
+                    Font.Size, ClientRectangle, sf);
+                e.Graphics.ScaleTransform(1.3f, 1.35f);
+                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                e.Graphics.DrawPath(outline, gp);
+                e.Graphics.FillPath(foreBrush, gp);
+            }
+        }
 
         //protected override void OnTextChanged(EventArgs e)
         //{
@@ -59,13 +81,6 @@ namespace Display
 
         //    base.OnTextChanged(e);
         //}
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.TranslateTransform((float)position, 0);
-
-            base.OnPaint(e);
-        }
 
         private void tick(object sender, EventArgs e)
         {

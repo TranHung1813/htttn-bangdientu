@@ -32,8 +32,8 @@ namespace Display
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextOverlay));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.txtOverlay = new Display.TextEx2();
             this.timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
+            this.txtOverlay = new Display.TextEx2();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,12 +42,17 @@ namespace Display
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.Color.SeaShell;
+            this.panel1.BackColor = System.Drawing.Color.LavenderBlush;
             this.panel1.Controls.Add(this.txtOverlay);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(818, 53);
             this.panel1.TabIndex = 0;
+            // 
+            // timer_DelayTextRun
+            // 
+            this.timer_DelayTextRun.Interval = 3000;
+            this.timer_DelayTextRun.Tick += new System.EventHandler(this.timer_DelayTextRun_Tick);
             // 
             // txtOverlay
             // 
@@ -58,28 +63,26 @@ namespace Display
             this.txtOverlay.AutoSize = true;
             this.txtOverlay.BackColor = System.Drawing.Color.Transparent;
             this.txtOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOverlay.ForeColor = System.Drawing.Color.Brown;
+            this.txtOverlay.ForeColor = System.Drawing.Color.White;
             this.txtOverlay.Location = new System.Drawing.Point(3, 3);
             this.txtOverlay.Name = "txtOverlay";
+            this.txtOverlay.OutlineForeColor = System.Drawing.Color.Lime;
+            this.txtOverlay.OutlineWidth = 3F;
             this.txtOverlay.SetSpeed = 0;
             this.txtOverlay.Size = new System.Drawing.Size(4851, 54);
             this.txtOverlay.TabIndex = 3;
             this.txtOverlay.Text = resources.GetString("txtOverlay.Text");
             this.txtOverlay.UseCompatibleTextRendering = true;
             // 
-            // timer_DelayTextRun
-            // 
-            this.timer_DelayTextRun.Interval = 3000;
-            this.timer_DelayTextRun.Tick += new System.EventHandler(this.timer_DelayTextRun_Tick);
-            // 
             // TextOverlay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
+            this.BackColor = System.Drawing.Color.LavenderBlush;
             this.Controls.Add(this.panel1);
             this.Name = "TextOverlay";
             this.Size = new System.Drawing.Size(818, 53);
+            this.Load += new System.EventHandler(this.TextOverlay_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

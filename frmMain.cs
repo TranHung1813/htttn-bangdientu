@@ -51,7 +51,6 @@ namespace Display
             //Add_UserControl(customForm);
             Add_UserControl(defaultForm);
             CurrentForm = DEFAULT_FORM;
-
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -68,6 +67,7 @@ namespace Display
             switch (e.KeyCode)
             {
                 case Keys.F1:
+                    // Chuyển sang Form Default
                     if (CurrentForm != DEFAULT_FORM)
                     {
                         Add_UserControl(defaultForm);
@@ -76,6 +76,7 @@ namespace Display
                     break;
 
                 case Keys.F2:
+                    // Chuyển sang Form Custom
                     if (CurrentForm != CUSTOM_FORM)
                     {
                         Add_UserControl(customForm);

@@ -36,5 +36,10 @@ namespace Display
 
             timer_DelayTextRun.Stop();
         }
+
+        private void TextOverlay_Load(object sender, EventArgs e)
+        {
+            //panel1.BackColor = Color.FromArgb(25, 100, 100, 100);
+        }
     }
 }

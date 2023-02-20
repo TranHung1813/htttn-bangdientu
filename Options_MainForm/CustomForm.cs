@@ -102,6 +102,7 @@ namespace Display
             text_Overlay.Dock = DockStyle.Fill;
             text_Overlay.BringToFront();
 
+            panel_TextOverlay.BackColor = Color.Transparent;
             panel_TextOverlay.BringToFront();
 
             try
