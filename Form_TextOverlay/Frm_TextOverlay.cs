@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
@@ -23,7 +24,7 @@ namespace Display
                 return baseParams;
             }
         }
-
+        private const int MAX_REPEAT_TIME = 1;
         private string _Text = "";
         public Frm_TextOverlay()
         {
@@ -31,6 +32,30 @@ namespace Display
 
             BackColor = Color.Gray;
             TransparencyKey = Color.Gray;
+
+            txtOverlay.NotifyEndProcess_TextRun += (object o, NotifyEndProcess e) =>
+            {
+                OnNotify_TextRun_Finish();
+            };
+        }
+        private event EventHandler<Notify_TextRun_Finish> _Notify_TextOverlay_Finish;
+        public event EventHandler<Notify_TextRun_Finish> Notify_TextOverlay_Finish
+        {
+            add
+            {
+                _Notify_TextOverlay_Finish += value;
+            }
+            remove
+            {
+                _Notify_TextOverlay_Finish -= value;
+            }
+        }
+        protected virtual void OnNotify_TextRun_Finish()
+        {
+            if (_Notify_TextOverlay_Finish != null)
+            {
+                _Notify_TextOverlay_Finish(this, new Notify_TextRun_Finish());
+            }
         }
 
         public void ShowTextOverlay(string Txt)
@@ -43,13 +68,21 @@ namespace Display
             timer_DelayText.Start();
         }
 
-        private void timer_DelayText_Tick(object sender, System.EventArgs e)
+        private void timer_DelayText_Tick(object sender, EventArgs e)
         {
             txtOverlay.Visible = true;
             txtOverlay.SetSpeed = 2;
+            txtOverlay.Max_Repeat_Time = MAX_REPEAT_TIME;
             txtOverlay.Start(panel1.Width);
 
             timer_DelayText.Stop();
+        }
+    }
+    public class Notify_TextRun_Finish : EventArgs
+    {
+        public Notify_TextRun_Finish()
+        {
+
         }
     }
 

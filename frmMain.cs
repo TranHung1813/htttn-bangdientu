@@ -29,16 +29,16 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private int CurrentForm = 0;
 
-        //1. Thread cho Text Overlay chay doc lap
+        //1. Thread cho Text Overlay chay doc lap (done)
         //2. Debug voi man hinh lon
         //3. Them Page hien multi Image
         //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
         //5. Code phan dieu khien voi Relay
-        //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát)
+        //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát) (done)
         //7. Thiet ke lai giao dien Text Overlay (done)
-        //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content
+        //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content (done)
         //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
-        //10. Stop tat ca cac Timer sau khi da su dung xong
+        //10. Stop tat ca cac Timer sau khi da su dung xong (khó)
         public frmMain()
         {
             InitializeComponent();

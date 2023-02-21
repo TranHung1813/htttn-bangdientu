@@ -17,12 +17,10 @@ namespace Display
         public Page_Text()
         {
             InitializeComponent();
-            //txtThongBao.Size = panelContainer.Size;
         }
 
         public void ShowText(string txt_Title, string txt_Content)
         {
-            //txtThongBao.Text = txt;
             lb_Title.Text += "\r\n";
             lb_Content.Text = _txt + _txt;
 
@@ -30,11 +28,13 @@ namespace Display
             timerDelayTextRun.Interval = 10000;
             timerDelayTextRun.Start();
         }
+        public void Close()
+        {
+            panel_TextRun.Stop();
+        }
 
         private void timerDelayTextRun_Tick(object sender, EventArgs e)
         {
-            //txtThongBao.SetSpeed = 1;
-            //txtThongBao.Start();
             panel_TextRun.SetSpeed = 1;
             int Text_Height = lb_Title.Height + lb_Content.Height;
             panel_TextRun.Start(Text_Height);

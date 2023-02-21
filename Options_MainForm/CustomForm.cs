@@ -51,30 +51,34 @@ namespace Display
             uc.BringToFront();
             uc.Focus();
 
-            //_panel2Switch = panel;
-            //EnableSwitch = true;
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
-                    guna2Transition1.HideSync(panel_Image);
+                    //guna2Transition1.HideSync(panel_Image);
                     panel_Image.Visible = false;
+
                     break;
 
                 case PAGE_TEXT:
-                    guna2Transition1.HideSync(panel_Text);
+                    //guna2Transition1.HideSync(panel_Text);
+                    page_Text.Close();
                     panel_Text.Visible = false;
+
                     break;
 
                 case PAGE_VIDEO:
                     page_VideoScreen.StopVideo();
                     //guna2Transition1.HideSync(panel_Video);
                     panel_Video.Visible = false;
+
+                    //panel.Visible = true;
+                    //guna2Transition1.ShowSync(panel);
                     break;
             }
             try
             {
-                panel.Visible = true;
-                //guna2Transition1.Show(panel, true);
+                //panel.Visible = true;
+                guna2Transition1.ShowSync(panel, true);
             }
             catch
             { }
@@ -128,14 +132,25 @@ namespace Display
             backGround.StartPosition = FormStartPosition.Manual;
             backGround.Size = panel_TextOverlay.Size;
             backGround.Location = panel_TextOverlay.Location;
-            backGround.ShowInTaskbar = false;
+            //backGround.ShowInTaskbar = false;
             backGround.Show();
             frm_TextOverlay.Owner = backGround;
 
             frm_TextOverlay.Location = panel_TextOverlay.Location;
             frm_TextOverlay.StartPosition = FormStartPosition.Manual;
-            frm_TextOverlay.ShowInTaskbar = false;
+            //frm_TextOverlay.ShowInTaskbar = false;
             frm_TextOverlay.Size = panel_TextOverlay.Size;
+            frm_TextOverlay.Notify_TextOverlay_Finish += (object o, Notify_TextRun_Finish e) =>
+            {
+                if(this.InvokeRequired)
+                {
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        frm_TextOverlay.Dispose();
+                        backGround.Dispose();
+                    });
+                }
+            };
             frm_TextOverlay.ShowTextOverlay("");
             //frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
