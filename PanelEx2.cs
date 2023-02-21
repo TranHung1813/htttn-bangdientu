@@ -11,14 +11,15 @@ using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class PanelEx : Panel
+    public partial class PanelEx2 : Panel
     {
         Thread trd_Handle_TextRun;
         //Timer tmrTick;
-        int position, speed, height, maxPosition;
+        int repeat_Count = 0;
+        int speed, width, maxPosition;
         bool enableScrollPanel = false;
 
-        public PanelEx()
+        public PanelEx2()
         {
             InitializeComponent();
 
@@ -31,6 +32,7 @@ namespace Display
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
+        public int Max_Repeat_Time { get; set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -54,21 +56,20 @@ namespace Display
             }
             base.Dispose(disposing);
         }
-
         public void Start(int Length_Text_Inside)
         {
-            position = 0;
-            height = this.Size.Height;
+            width = this.Size.Width;
             enableScrollPanel = true;
             maxPosition = Length_Text_Inside;
 
-            if (maxPosition < height)
+            if (maxPosition < width)
             {
                 SetSpeed = 0;
                 Thread_Stop();
             }
             else
             {
+                this.Location = new Point(width, this.Location.Y);
                 Thread_Start();
             }
         }
@@ -76,6 +77,25 @@ namespace Display
         {
             SetSpeed = 0;
             Thread_Stop();
+        }
+        private event EventHandler<NotifyEndProcess> _NotifyEndProcess_TextRun;
+        public event EventHandler<NotifyEndProcess> NotifyEndProcess_TextRun
+        {
+            add
+            {
+                _NotifyEndProcess_TextRun += value;
+            }
+            remove
+            {
+                _NotifyEndProcess_TextRun -= value;
+            }
+        }
+        protected virtual void OnNotifyEndProcess_TextRun(int Repeat_Count)
+        {
+            if (_NotifyEndProcess_TextRun != null)
+            {
+                _NotifyEndProcess_TextRun(this, new NotifyEndProcess(Repeat_Count));
+            }
         }
         private void Thread_Start()
         {
@@ -109,24 +129,37 @@ namespace Display
         {
             while (true)
             {
-                Thread.Sleep(50);
+                Thread.Sleep(20);
                 if (!enableScrollPanel) continue;
 
                 this.Invoke((MethodInvoker)delegate
                 {
                     // Running on the UI thread
-                    if (this.Location.Y < -maxPosition)
+                    if (this.Location.X < -maxPosition)
                     {
-                        this.Size = new Size(Width, height);
-                        this.Location = new Point(this.Location.X, height);
+                        if (++repeat_Count >= Max_Repeat_Time)
+                        {
+                            OnNotifyEndProcess_TextRun(repeat_Count);
+                            Stop();
+                        }
+                        this.Size = new Size(width, Height);
+                        this.Location = new Point(width, this.Location.Y);
                     }
 
-                    this.Location = new Point(this.Location.X, this.Location.Y - speed);
-                    Height += speed;
+                    this.Location = new Point(this.Location.X - speed, this.Location.Y);
+                    Width += speed;
                     //position -= speed;
                     Invalidate();
                 });
             }
+        }
+    }
+    public class NotifyEndProcess : EventArgs
+    {
+        public int Repeat_count = 0;
+        public NotifyEndProcess(int repeat_count)
+        {
+            Repeat_count = repeat_count;
         }
     }
 }

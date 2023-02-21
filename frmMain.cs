@@ -40,7 +40,7 @@ namespace Display
         //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content (done)
         //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
         //10. Stop tat ca cac Timer sau khi da su dung xong (tạm ổn)
-        //11. Khởi động cungd WIndow 
+        //11. Khởi động cungd WIndow (done)
         //12. tự khỏi động lại khi crash hay khi có lệnh từ server.
         public frmMain()
         {
@@ -208,6 +208,14 @@ namespace Display
             {
                 Log.Error(ex, "ProcessNewMessage");
             }
+        }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            string Project_Path = System.Reflection.Assembly.GetEntryAssembly().Location;
+
+            var processWatcher = new ProcessWatcherWrapper();
+            processWatcher.Execute(Project_Path, Project_Path);
         }
     }
 

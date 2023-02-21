@@ -43,9 +43,9 @@ namespace Display
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel_TextOverlay.BackColor = System.Drawing.Color.Gray;
             this.guna2Transition1.SetDecoration(this.panel_TextOverlay, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.panel_TextOverlay.Location = new System.Drawing.Point(0, 416);
+            this.panel_TextOverlay.Location = new System.Drawing.Point(0, 412);
             this.panel_TextOverlay.Name = "panel_TextOverlay";
-            this.panel_TextOverlay.Size = new System.Drawing.Size(915, 59);
+            this.panel_TextOverlay.Size = new System.Drawing.Size(915, 63);
             this.panel_TextOverlay.TabIndex = 1;
             this.panel_TextOverlay.Visible = false;
             // 
@@ -61,7 +61,7 @@ namespace Display
             animation1.MosaicCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicCoeff")));
             animation1.MosaicShift = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicShift")));
             animation1.MosaicSize = 0;
-            animation1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
+            animation1.Padding = new System.Windows.Forms.Padding(0);
             animation1.RotateCoeff = 0F;
             animation1.RotateLimit = 0F;
             animation1.ScaleCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.ScaleCoeff")));

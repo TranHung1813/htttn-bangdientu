@@ -77,8 +77,8 @@ namespace Display
             }
             try
             {
-                //panel.Visible = true;
-                guna2Transition1.ShowSync(panel, true);
+                panel.Visible = true;
+                //guna2Transition1.ShowSync(panel, true);
             }
             catch
             { }
@@ -149,6 +149,11 @@ namespace Display
                         frm_TextOverlay.Dispose();
                         backGround.Dispose();
                     });
+                }
+                else
+                {
+                    frm_TextOverlay.Dispose();
+                    backGround.Dispose();
                 }
             };
             frm_TextOverlay.ShowTextOverlay("");

@@ -34,33 +34,33 @@ namespace Display
 
             //UseCompatibleTextRendering = true;
             AutoEllipsis = true;
-            Max_Repeat_Time = 1;
+            //Max_Repeat_Time = 1;
 
-            tmrTick = new System.Threading.Timer(new TimerCallback(TickTimer),null, 100, 20);
+            //tmrTick = new System.Threading.Timer(new TimerCallback(TickTimer),null, 100, 20);
             //tmrTick.Tick += new EventHandler(tick); 
             //tmrTick.Interval = 20;
             //tmrTick.Start();
         }
 
-        private void TickTimer(object state)
-        {
-            //Thread.Sleep(20);
-            if (!enableScrollText) return;
+        //private void TickTimer(object state)
+        //{
+        //    //Thread.Sleep(20);
+        //    if (!enableScrollText) return;
 
-            if (position < -Width)
-            {
-                //this.Size = new Size(width, Height);
-                position = _Parent_Width;
-                if(++repeat_Count >= Max_Repeat_Time)
-                {
-                    OnNotifyEndProcess_TextRun(repeat_Count);
-                    Stop();
-                }
-            }
+        //    if (position < -Width)
+        //    {
+        //        //this.Size = new Size(width, Height);
+        //        position = _Parent_Width;
+        //        if(++repeat_Count >= Max_Repeat_Time)
+        //        {
+        //            OnNotifyEndProcess_TextRun(repeat_Count);
+        //            Stop();
+        //        }
+        //    }
 
-            position -= speed;
-            Invalidate();
-        }
+        //    position -= speed;
+        //    Invalidate();
+        //}
 
         protected override void Dispose(bool disposing)
         {
@@ -87,53 +87,35 @@ namespace Display
 
         public void Start(int Parent_Width)
         {
-            enableScrollText = true;
-            _Parent_Width = Parent_Width;
-            repeat_Count = 0;
+            //enableScrollText = true;
+            //_Parent_Width = Parent_Width;
+            //repeat_Count = 0;
             //maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font).Width;
 
-            if (this.Width < Parent_Width)
-            {
-                SetSpeed = 0;
-            }
-            else
-            {
-                position = Parent_Width;
-            }
+            //if (this.Width < Parent_Width)
+            //{
+            //    SetSpeed = 0;
+            //}
+            //else
+            //{
+            //    position = Parent_Width;
+            //}
         }
         public void Stop()
         {
             // Abort Thread
-            if (tmrTick != null)
-            {
-                try
-                {
-                    tmrTick.Dispose();
-                    tmrTick = null;
-                }
-                catch
-                { }
-            }
+            //if (tmrTick != null)
+            //{
+            //    try
+            //    {
+            //        tmrTick.Dispose();
+            //        tmrTick = null;
+            //    }
+            //    catch
+            //    { }
+            //}
         }
-        private event EventHandler<NotifyEndProcess> _NotifyEndProcess_TextRun;
-        public event EventHandler<NotifyEndProcess> NotifyEndProcess_TextRun
-        {
-            add
-            {
-                _NotifyEndProcess_TextRun += value;
-            }
-            remove
-            {
-                _NotifyEndProcess_TextRun -= value;
-            }
-        }
-        protected virtual void OnNotifyEndProcess_TextRun(int Repeat_Count)
-        {
-            if (_NotifyEndProcess_TextRun != null)
-            {
-                _NotifyEndProcess_TextRun(this, new NotifyEndProcess(Repeat_Count));
-            }
-        }
+       
         public Color OutlineForeColor { get; set; }
         public float OutlineWidth { get; set; }
         protected override void OnPaint(PaintEventArgs e)
@@ -169,24 +151,16 @@ namespace Display
 
         private void tick(object sender, EventArgs e)
         {
-            if (!enableScrollText) return;
+            //if (!enableScrollText) return;
 
-            if (position < -Width)
-            {
-                //this.Size = new Size(width, Height);
-                position = _Parent_Width;
-            }
+            //if (position < -Width)
+            //{
+            //    //this.Size = new Size(width, Height);
+            //    position = _Parent_Width;
+            //}
 
-            position -= speed;
-            Invalidate();
-        }
-    }
-    public class NotifyEndProcess : EventArgs
-    {
-        public int Repeat_count = 0;
-        public NotifyEndProcess(int repeat_count)
-        {
-            Repeat_count = repeat_count;
+            //position -= speed;
+            //Invalidate();
         }
     }
 }

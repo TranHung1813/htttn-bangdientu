@@ -206,6 +206,14 @@
     <Compile Include="PanelEx.Designer.cs">
       <DependentUpon>PanelEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="PanelEx2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelEx2.Designer.cs">
+      <DependentUpon>PanelEx2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProcessWatcher.cs" />
+    <Compile Include="ProcessWatcherWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextEx.cs">
