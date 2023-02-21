@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,9 +21,10 @@ namespace Display
             set { speed = value; Invalidate(); }
         }
 
-        Timer tmrTick;
+        //Timer tmrTick;
         int position, speed, _Parent_Width;
         bool enableScrollText = false;
+        Thread trd_Handle_TextRun;
 
         public TextEx2()
         {
@@ -31,10 +33,36 @@ namespace Display
             //UseCompatibleTextRendering = true;
             AutoEllipsis = true;
 
-            tmrTick = new Timer();
-            tmrTick.Tick += tick;
-            tmrTick.Interval = 20;
-            tmrTick.Start();
+            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            trd_Handle_TextRun.IsBackground = true;
+            trd_Handle_TextRun.Start();
+            //tmrTick = new Timer();
+            //tmrTick.Tick += tick;
+            //tmrTick.Interval = 20;
+            //tmrTick.Start();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            // Abort Thread
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch
+                { }
+            }
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
         }
 
         public void Start(int Parent_Width)
@@ -56,6 +84,10 @@ namespace Display
         public float OutlineWidth { get; set; }
         protected override void OnPaint(PaintEventArgs e)
         {
+            PaintAsync(e);
+        }
+        private async Task PaintAsync(PaintEventArgs e)
+        {
             e.Graphics.TranslateTransform((float)position, 0);
 
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -76,7 +108,7 @@ namespace Display
                 e.Graphics.FillPath(foreBrush, gp);
             }
         }
-        
+
 
         //protected override void OnTextChanged(EventArgs e)
         //{
@@ -85,18 +117,36 @@ namespace Display
         //    base.OnTextChanged(e);
         //}
 
-        private void tick(object sender, EventArgs e)
+        //private void tick(object sender, EventArgs e)
+        //{
+        //    if (!enableScrollText) return;
+
+        //    if (position < - Width)
+        //    {
+        //        //this.Size = new Size(width, Height);
+        //        position = _Parent_Width;
+        //    }
+
+        //    position -= speed;
+        //    Invalidate();
+        //}
+        private void ThreadTask_Handle_TextRun()
         {
-            if (!enableScrollText) return;
-
-            if (position < - Width)
+            while (true)
             {
-                //this.Size = new Size(width, Height);
-                position = _Parent_Width;
-            }
+                if (!enableScrollText) continue;
 
-            position -= speed;
-            Invalidate();
+                if (position < -Width)
+                {
+                    //this.Size = new Size(width, Height);
+                    position = _Parent_Width;
+                }
+
+                position -= speed;
+                Invalidate();
+
+                Thread.Sleep(20);
+            }
         }
     }
 }

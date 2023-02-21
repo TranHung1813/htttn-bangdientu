@@ -40,6 +40,12 @@ namespace Display
 
         public void ShowVideo(string url)
         {
+            //try
+            //{
+            //    _mp.Stop();
+            //}
+            //catch { }
+
             string[] @params = new string[] { "input-repeat=65535" };
 
             try
@@ -51,7 +57,11 @@ namespace Display
         }
         public void StopVideo()
         {
-            _mp.Stop();
+            Task.Run(() =>
+            {
+                _mp.Stop();
+            });
+
         }
     }
 }
