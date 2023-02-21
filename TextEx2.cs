@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,10 @@ namespace Display
         {
             e.Graphics.TranslateTransform((float)position, 0);
 
-            e.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            e.Graphics.FillEllipse(new SolidBrush(BackColor), ClientRectangle);
             using (GraphicsPath gp = new GraphicsPath())
             using (Pen outline = new Pen(OutlineForeColor, OutlineWidth)
             { LineJoin = LineJoin.Round })
@@ -67,14 +71,12 @@ namespace Display
                 gp.AddString(Text, Font.FontFamily, (int)Font.Style,
                     Font.Size, ClientRectangle, sf);
                 e.Graphics.ScaleTransform(1.3f, 1.35f);
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+
                 e.Graphics.DrawPath(outline, gp);
                 e.Graphics.FillPath(foreBrush, gp);
             }
         }
-
+        
 
         //protected override void OnTextChanged(EventArgs e)
         //{

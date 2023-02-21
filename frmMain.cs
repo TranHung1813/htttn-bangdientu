@@ -82,7 +82,7 @@ namespace Display
                     {
                         Add_UserControl(customForm);
                         CurrentForm = CUSTOM_FORM;
-                        customForm.ShowImage("");
+                        customForm.ShowText(_TxtThongBao, _TxtVanBan);
                     }
                     break;
                 case Keys.F3:

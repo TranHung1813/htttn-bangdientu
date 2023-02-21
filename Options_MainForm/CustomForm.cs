@@ -20,6 +20,7 @@ namespace Display
         private int TabPageID = 0;
 
         Frm_TextOverlay frm_TextOverlay;
+        Transparent_BackGround backGround;
 
         private Page_VideoScreen page_VideoScreen = new Page_VideoScreen();
         private Page_Text page_Text = new Page_Text();
@@ -79,7 +80,8 @@ namespace Display
         public void ShowVideo(string Url)
         {
             ShowPanel(panel_Video, page_VideoScreen);
-            page_VideoScreen.ShowVideo(Url);
+            //page_VideoScreen.ShowVideo(Url);
+            page_VideoScreen.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
             TabPageID = PAGE_VIDEO;
         }
         public void ShowText(string Title, string Content)
@@ -105,7 +107,25 @@ namespace Display
                 }
                 catch { }
             }
+            if (backGround != null)
+            {
+                try
+                {
+                    backGround.Dispose();
+                }
+                catch { }
+            }
+
             frm_TextOverlay = new Frm_TextOverlay();
+            backGround = new Transparent_BackGround();
+
+            backGround.StartPosition = FormStartPosition.Manual;
+            backGround.Size = panel_TextOverlay.Size;
+            backGround.Location = panel_TextOverlay.Location;
+            backGround.ShowInTaskbar = false;
+            backGround.Show();
+            frm_TextOverlay.Owner = backGround;
+
             frm_TextOverlay.Location = panel_TextOverlay.Location;
             frm_TextOverlay.StartPosition = FormStartPosition.Manual;
             frm_TextOverlay.ShowInTaskbar = false;
@@ -113,6 +133,7 @@ namespace Display
             frm_TextOverlay.ShowTextOverlay("");
             //frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
+            
         }
         public void Show_Multi_Image(string [] ImageURLs, int Number_Image)
         {

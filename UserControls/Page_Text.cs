@@ -24,7 +24,7 @@ namespace Display
         {
             //txtThongBao.Text = txt;
             lb_Title.Text += "\r\n";
-            lb_Content.Text = _txt + _txt + _txt;
+            lb_Content.Text = _txt + _txt;
             timerDelayTextRun.Interval = 5000;
             timerDelayTextRun.Start();
         }

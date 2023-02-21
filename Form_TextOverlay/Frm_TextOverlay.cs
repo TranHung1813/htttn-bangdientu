@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Display
@@ -28,8 +29,8 @@ namespace Display
         {
             InitializeComponent();
 
-            BackColor = Color.LawnGreen;
-            TransparencyKey = Color.LawnGreen;
+            BackColor = Color.Gray;
+            TransparencyKey = Color.Gray;
         }
 
         public void ShowTextOverlay(string Txt)
@@ -51,4 +52,5 @@ namespace Display
             timer_DelayText.Stop();
         }
     }
+
 }

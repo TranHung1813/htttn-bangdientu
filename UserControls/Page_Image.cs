@@ -25,14 +25,14 @@ namespace Display
 
         public void ShowImage(string Url)
         {
-            pictureBox1.Load(_ImageURL);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            //var result = GetImageAsync(_ImageURL);
-            //result.ContinueWith(task =>
-            //{
-            //    pictureBox1.Image = task.Result;
-            //    pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            //});
+            //pictureBox1.Load(_ImageURL);
+            //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            var result = GetImageAsync(_ImageURL);
+            result.ContinueWith(task =>
+            {
+                pictureBox1.Image = task.Result;
+                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            });
         }
 
         public async Task<Image> GetImageAsync(string url)

@@ -175,6 +175,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form_TextOverlay\Transparent_BackGround.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_TextOverlay\Transparent_BackGround.Designer.cs">
+      <DependentUpon>Transparent_BackGround.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -214,10 +220,10 @@
     <Compile Include="TextEx2.Designer.cs">
       <DependentUpon>TextEx2.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Frm_TextOverlay.cs">
+    <Compile Include="Form_TextOverlay\Frm_TextOverlay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserControls\Frm_TextOverlay.Designer.cs">
+    <Compile Include="Form_TextOverlay\Frm_TextOverlay.Designer.cs">
       <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Page_Image.cs">
@@ -247,6 +253,9 @@
     <Compile Include="UserControls\PanelContainer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Form_TextOverlay\Transparent_BackGround.resx">
+      <DependentUpon>Transparent_BackGround.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -266,7 +275,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UserControls\Frm_TextOverlay.resx">
+    <EmbeddedResource Include="Form_TextOverlay\Frm_TextOverlay.resx">
       <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_Image.resx">
