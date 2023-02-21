@@ -132,13 +132,13 @@ namespace Display
             backGround.StartPosition = FormStartPosition.Manual;
             backGround.Size = panel_TextOverlay.Size;
             backGround.Location = panel_TextOverlay.Location;
-            //backGround.ShowInTaskbar = false;
+            backGround.ShowInTaskbar = false;
             backGround.Show();
             frm_TextOverlay.Owner = backGround;
 
             frm_TextOverlay.Location = panel_TextOverlay.Location;
             frm_TextOverlay.StartPosition = FormStartPosition.Manual;
-            //frm_TextOverlay.ShowInTaskbar = false;
+            frm_TextOverlay.ShowInTaskbar = false;
             frm_TextOverlay.Size = panel_TextOverlay.Size;
             frm_TextOverlay.Notify_TextOverlay_Finish += (object o, Notify_TextRun_Finish e) =>
             {

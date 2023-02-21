@@ -1,4 +1,5 @@
-﻿using MQTTnet.Client;
+﻿using Microsoft.Win32;
+using MQTTnet.Client;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
@@ -29,7 +30,7 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private int CurrentForm = 0;
 
-        //1. Thread cho Text Overlay chay doc lap (done)
+        //1. Thread cho Text Overlay chay doc lap (tạm ổn)
         //2. Debug voi man hinh lon
         //3. Them Page hien multi Image
         //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
@@ -38,7 +39,9 @@ namespace Display
         //7. Thiet ke lai giao dien Text Overlay (done)
         //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content (done)
         //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
-        //10. Stop tat ca cac Timer sau khi da su dung xong (khó)
+        //10. Stop tat ca cac Timer sau khi da su dung xong (tạm ổn)
+        //11. Khởi động cungd WIndow 
+        //12. tự khỏi động lại khi crash hay khi có lệnh từ server.
         public frmMain()
         {
             InitializeComponent();
@@ -49,9 +52,23 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
 
+            RegisterInStartup(true);
             //Add_UserControl(customForm);
             //Add_UserControl(defaultForm);
             //CurrentForm = DEFAULT_FORM;
+        }
+        private void RegisterInStartup(bool isChecked)
+        {
+            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
+                    ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (isChecked)
+            {
+                registryKey.SetValue("ApplicationName", Application.ExecutablePath);
+            }
+            else
+            {
+                registryKey.DeleteValue("ApplicationName");
+            }
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
