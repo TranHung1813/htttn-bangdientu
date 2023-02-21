@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -50,6 +51,8 @@ namespace Display
             uc.BringToFront();
             uc.Focus();
 
+            //_panel2Switch = panel;
+            //EnableSwitch = true;
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
@@ -64,17 +67,20 @@ namespace Display
 
                 case PAGE_VIDEO:
                     page_VideoScreen.StopVideo();
-                    guna2Transition1.HideSync(panel_Video);
+                    //guna2Transition1.HideSync(panel_Video);
                     panel_Video.Visible = false;
                     break;
             }
             try
             {
-                guna2Transition1.ShowSync(panel, true);
+                panel.Visible = true;
+                //guna2Transition1.Show(panel, true);
             }
             catch
             { }
         }
+
+
 
     //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
         public void ShowVideo(string Url)

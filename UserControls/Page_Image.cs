@@ -27,6 +27,7 @@ namespace Display
         {
             //pictureBox1.Load(_ImageURL);
             //pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.Image = null;
             var result = GetImageAsync(_ImageURL);
             result.ContinueWith(task =>
             {

@@ -82,9 +82,9 @@ namespace Display
         }
         public Color OutlineForeColor { get; set; }
         public float OutlineWidth { get; set; }
-        protected override void OnPaint(PaintEventArgs e)
+        protected override async void OnPaint(PaintEventArgs e)
         {
-            PaintAsync(e);
+            await PaintAsync(e);
         }
         private async Task PaintAsync(PaintEventArgs e)
         {
