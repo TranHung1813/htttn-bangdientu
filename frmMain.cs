@@ -52,23 +52,10 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
 
-            RegisterInStartup(true);
+            //RegisterInStartup(false);
             //Add_UserControl(customForm);
             //Add_UserControl(defaultForm);
             //CurrentForm = DEFAULT_FORM;
-        }
-        private void RegisterInStartup(bool isChecked)
-        {
-            RegistryKey registryKey = Registry.CurrentUser.OpenSubKey
-                    ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            if (isChecked)
-            {
-                registryKey.SetValue("ApplicationName", Application.ExecutablePath);
-            }
-            else
-            {
-                registryKey.DeleteValue("ApplicationName");
-            }
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -208,14 +195,6 @@ namespace Display
             {
                 Log.Error(ex, "ProcessNewMessage");
             }
-        }
-
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            string Project_Path = System.Reflection.Assembly.GetEntryAssembly().Location;
-
-            var processWatcher = new ProcessWatcherWrapper();
-            processWatcher.Execute(Project_Path, Project_Path);
         }
     }
 

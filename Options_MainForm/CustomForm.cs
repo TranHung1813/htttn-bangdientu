@@ -96,6 +96,15 @@ namespace Display
         }
         public void ShowText(string Title, string Content)
         {
+            panel_Text.Visible = false;
+            if (page_Text != null)
+            {
+                try
+                {
+                    page_Text.Dispose();
+                }
+                catch { }
+            }
             page_Text = new Page_Text();
             page_Text.ShowText(Title, Content);
             ShowPanel(panel_Text, page_Text);
