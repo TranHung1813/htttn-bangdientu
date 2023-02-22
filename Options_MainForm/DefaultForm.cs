@@ -67,5 +67,10 @@ namespace Display
 
             Timer_DelayTextRun.Stop();
         }
+
+        public void DefaultForm_FitToContainer(int Height, int Width)
+        {
+            Utility.FitUserControlToContainer(this, Height, Width);
+        }
     }
 }

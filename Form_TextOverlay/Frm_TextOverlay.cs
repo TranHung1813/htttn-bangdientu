@@ -68,6 +68,7 @@ namespace Display
             txtOverlay.Text = _Text;
 
             panel_TxtOverlay.Visible = false;
+            timer_DelayText.Interval = 1000;
             timer_DelayText.Start();
         }
 
@@ -79,6 +80,11 @@ namespace Display
             panel_TxtOverlay.Start(txtOverlay.Width);
 
             timer_DelayText.Stop();
+        }
+
+        public void TxtOverlay_FitToContainer(int Height, int Width)
+        {
+            Utility.fitFormToContainer(this, this.Height, this.Width, Height, Width);
         }
     }
     public class Notify_TextRun_Finish : EventArgs

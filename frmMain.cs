@@ -31,7 +31,7 @@ namespace Display
         private int CurrentForm = 0;
 
         //1. Thread cho Text Overlay chay doc lap (tạm ổn)
-        //2. Debug voi man hinh lon
+        //2. Debug voi man hinh lon (done)
         //3. Them Page hien multi Image
         //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
         //5. Code phan dieu khien voi Relay
@@ -41,7 +41,8 @@ namespace Display
         //9. Check lai phan enable Scroll cua TextEx va TextEx2 khi thay doi do dai Text (done)
         //10. Stop tat ca cac Timer sau khi da su dung xong (tạm ổn)
         //11. Khởi động cungd WIndow (done)
-        //12. tự khỏi động lại khi crash hay khi có lệnh từ server.
+        //12. tự khỏi động lại khi crash hay khi có lệnh từ server. (1/2)
+        //13. Bug lâu lâu bấm lại F1 bị lỗi
         public frmMain()
         {
             InitializeComponent();
@@ -133,7 +134,7 @@ namespace Display
         {
             panelContainer.Controls.Clear();
             panelContainer.Controls.Add(uc);
-            uc.Dock = DockStyle.Fill;
+            //uc.Dock = DockStyle.Fill;
             uc.BringToFront();
             uc.Focus();
         }
@@ -158,6 +159,8 @@ namespace Display
         {
             ProcessNewMessage();
             SendHeartBeatTick();
+
+            //MessageBox.Show(panelContainer.Width.ToString() + panelContainer.Height.ToString()+ "," + this.Width.ToString() + this.Height.ToString());
         }
 
         private void SendHeartBeatTick()
@@ -195,6 +198,13 @@ namespace Display
             {
                 Log.Error(ex, "ProcessNewMessage");
             }
+        }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            Utility.fitFormToScreen(this, 768, 1366);
+            defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+            customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
         }
     }
 

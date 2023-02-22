@@ -115,7 +115,7 @@ namespace Display
                 this.Invoke((MethodInvoker)delegate
                 {
                     // Running on the UI thread
-                    if (this.Location.Y < -maxPosition)
+                    if (this.Location.Y < - maxPosition)
                     {
                         this.Size = new Size(Width, height);
                         this.Location = new Point(this.Location.X, height);

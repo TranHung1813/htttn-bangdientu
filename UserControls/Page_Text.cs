@@ -12,8 +12,8 @@ namespace Display
 {
     public partial class Page_Text : UserControl
     {
-        private string _txt = "* Theo điểm a khoản 1 Điều 12 Nghị định 117/2020/NĐ-CP ngày 28/9/2020 của Chính phủ Quy định xử phạt hành chính trong lĩnh vực y tế: \r\n\r\n" +
-                              "* Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.\r\n\r\n";
+        private string _txt = "* Theo điểm a khoản 1 Điều 12 Nghị định 117/2020/NĐ-CP ngày 28/9/2020 của Chính phủ Quy định xử phạt hành chính trong lĩnh vực y tế:\r\n\r\n" +
+                              "* Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.\r\n";
         public Page_Text()
         {
             InitializeComponent();
@@ -40,6 +40,10 @@ namespace Display
             panel_TextRun.Start(Text_Height);
 
             timerDelayTextRun.Stop();
+        }
+        public void PageText_FitToContainer(int Height, int Width)
+        {
+            Utility.FitUserControlToContainer(this, Height, Width);
         }
     }
     public class GrowLabel : Label

@@ -44,24 +44,19 @@ namespace Display
             // 
             // panel_TxtOverlay
             // 
-            this.panel_TxtOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel_TxtOverlay.BackColor = System.Drawing.Color.Transparent;
             this.panel_TxtOverlay.Controls.Add(this.txtOverlay);
             this.panel_TxtOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel_TxtOverlay.Location = new System.Drawing.Point(0, 0);
             this.panel_TxtOverlay.Margin = new System.Windows.Forms.Padding(0);
+            this.panel_TxtOverlay.Max_Repeat_Time = 0;
             this.panel_TxtOverlay.Name = "panel_TxtOverlay";
             this.panel_TxtOverlay.SetSpeed = 0;
-            this.panel_TxtOverlay.Size = new System.Drawing.Size(1023, 87);
+            this.panel_TxtOverlay.Size = new System.Drawing.Size(1023, 72);
             this.panel_TxtOverlay.TabIndex = 0;
             // 
             // txtOverlay
             // 
-            this.txtOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtOverlay.AutoEllipsis = true;
             this.txtOverlay.AutoSize = true;
             this.txtOverlay.BackColor = System.Drawing.Color.Transparent;
@@ -81,14 +76,13 @@ namespace Display
             // 
             // Frm_TextOverlay
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(37F, 73F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(1023, 87);
+            this.ClientSize = new System.Drawing.Size(1023, 72);
             this.Controls.Add(this.panel_TxtOverlay);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(18, 17, 18, 17);
+            this.Margin = new System.Windows.Forms.Padding(18, 18, 18, 18);
             this.Name = "Frm_TextOverlay";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;

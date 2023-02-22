@@ -84,9 +84,14 @@ namespace Display
             { }
         }
 
+        public void CustomForm_FitToContainer(int Height, int Width)
+        {
+            Utility.FitUserControlToContainer(this, Height, Width);
+        }
 
 
-    //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
+
+        //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
         public void ShowVideo(string Url)
         {
             ShowPanel(panel_Video, page_VideoScreen);
@@ -106,6 +111,7 @@ namespace Display
                 catch { }
             }
             page_Text = new Page_Text();
+            page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
             page_Text.ShowText(Title, Content);
             ShowPanel(panel_Text, page_Text);
             TabPageID = PAGE_TEXT;
@@ -148,7 +154,7 @@ namespace Display
             frm_TextOverlay.Location = panel_TextOverlay.Location;
             frm_TextOverlay.StartPosition = FormStartPosition.Manual;
             frm_TextOverlay.ShowInTaskbar = false;
-            frm_TextOverlay.Size = panel_TextOverlay.Size;
+            //frm_TextOverlay.Size = panel_TextOverlay.Size;
             frm_TextOverlay.Notify_TextOverlay_Finish += (object o, Notify_TextRun_Finish e) =>
             {
                 if(this.InvokeRequired)
@@ -166,6 +172,7 @@ namespace Display
                 }
             };
             frm_TextOverlay.ShowTextOverlay("");
+            frm_TextOverlay.TxtOverlay_FitToContainer(panel_TextOverlay.Height, panel_TextOverlay.Width);
             //frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
             

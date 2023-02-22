@@ -259,6 +259,7 @@
     <Compile Include="UserControls\PanelContainer.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Utility.cs" />
     <EmbeddedResource Include="Form_TextOverlay\Transparent_BackGround.resx">
       <DependentUpon>Transparent_BackGround.cs</DependentUpon>
     </EmbeddedResource>

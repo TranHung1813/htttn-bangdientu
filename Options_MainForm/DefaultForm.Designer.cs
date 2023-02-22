@@ -32,28 +32,26 @@ namespace Display
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panelThongBao = new Display.PanelEx();
             this.txtThongBao = new Display.GrowLabel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.panelVanBan = new Display.PanelEx();
             this.txtVanBan = new Display.GrowLabel();
             this.videoView1 = new LibVLCSharp.WinForms.VideoView();
             this.Timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.panelThongBao.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.panelVanBan.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.ForeColor = System.Drawing.Color.White;
@@ -63,6 +61,15 @@ namespace Display
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Thông báo";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.MistyRose;
+            this.panel1.Controls.Add(this.panelThongBao);
+            this.panel1.Location = new System.Drawing.Point(6, 20);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1005, 100);
+            this.panel1.TabIndex = 0;
             // 
             // panelThongBao
             // 
@@ -75,13 +82,12 @@ namespace Display
             this.panelThongBao.Location = new System.Drawing.Point(0, 0);
             this.panelThongBao.Name = "panelThongBao";
             this.panelThongBao.SetSpeed = 0;
-            this.panelThongBao.Size = new System.Drawing.Size(1005, 98);
+            this.panelThongBao.Size = new System.Drawing.Size(1005, 100);
             this.panelThongBao.TabIndex = 2;
             // 
             // txtThongBao
             // 
             this.txtThongBao.BackColor = System.Drawing.Color.Transparent;
-            this.txtThongBao.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtThongBao.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
             this.txtThongBao.Location = new System.Drawing.Point(0, 0);
@@ -92,8 +98,6 @@ namespace Display
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox2.Controls.Add(this.panel2);
             this.groupBox2.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.ForeColor = System.Drawing.Color.White;
@@ -103,6 +107,15 @@ namespace Display
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Văn bản";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.MistyRose;
+            this.panel2.Controls.Add(this.panelVanBan);
+            this.panel2.Location = new System.Drawing.Point(6, 20);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(430, 491);
+            this.panel2.TabIndex = 2;
             // 
             // panelVanBan
             // 
@@ -115,15 +128,14 @@ namespace Display
             this.panelVanBan.Location = new System.Drawing.Point(0, 0);
             this.panelVanBan.Name = "panelVanBan";
             this.panelVanBan.SetSpeed = 0;
-            this.panelVanBan.Size = new System.Drawing.Size(430, 493);
+            this.panelVanBan.Size = new System.Drawing.Size(430, 491);
             this.panelVanBan.TabIndex = 1;
             // 
             // txtVanBan
             // 
             this.txtVanBan.BackColor = System.Drawing.Color.Transparent;
-            this.txtVanBan.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtVanBan.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtVanBan.ForeColor = System.Drawing.Color.Black;
+            this.txtVanBan.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.txtVanBan.Location = new System.Drawing.Point(0, 0);
             this.txtVanBan.Name = "txtVanBan";
             this.txtVanBan.Size = new System.Drawing.Size(430, 1242);
@@ -132,9 +144,6 @@ namespace Display
             // 
             // videoView1
             // 
-            this.videoView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.videoView1.BackColor = System.Drawing.Color.Black;
             this.videoView1.Location = new System.Drawing.Point(461, 153);
             this.videoView1.MediaPlayer = null;
@@ -148,34 +157,9 @@ namespace Display
             this.Timer_DelayTextRun.Interval = 5000;
             this.Timer_DelayTextRun.Tick += new System.EventHandler(this.Timer_DelayTextRun_Tick);
             // 
-            // panel1
-            // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.Color.MistyRose;
-            this.panel1.Controls.Add(this.panelThongBao);
-            this.panel1.Location = new System.Drawing.Point(6, 20);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1005, 98);
-            this.panel1.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel2.BackColor = System.Drawing.Color.MistyRose;
-            this.panel2.Controls.Add(this.panelVanBan);
-            this.panel2.Location = new System.Drawing.Point(6, 20);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(430, 493);
-            this.panel2.TabIndex = 2;
-            // 
             // DefaultForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(50)))), ((int)(((byte)(70)))));
             this.Controls.Add(this.videoView1);
             this.Controls.Add(this.groupBox2);
@@ -183,12 +167,12 @@ namespace Display
             this.Name = "DefaultForm";
             this.Size = new System.Drawing.Size(1040, 673);
             this.groupBox1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.panelThongBao.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
             this.panelVanBan.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
