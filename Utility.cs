@@ -46,7 +46,6 @@ namespace Display
             foreach (Control item in form.Controls)
             {
                 fitControlsToContainer(item, Form_Height, Form_Width, Container_Height, Container_Width);
-                
             }
             //form.StartPosition = FormStartPosition.CenterScreen;
             //ReallyCenterToScreen(form);

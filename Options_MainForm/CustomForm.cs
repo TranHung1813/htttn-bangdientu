@@ -171,8 +171,8 @@ namespace Display
                     backGround.Dispose();
                 }
             };
-            frm_TextOverlay.ShowTextOverlay("");
             frm_TextOverlay.TxtOverlay_FitToContainer(panel_TextOverlay.Height, panel_TextOverlay.Width);
+            frm_TextOverlay.ShowTextOverlay("");
             //frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
             

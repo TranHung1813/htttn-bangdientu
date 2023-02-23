@@ -30,11 +30,11 @@ namespace Display
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Frm_TextOverlay));
             this.timer_DelayText = new System.Windows.Forms.Timer(this.components);
             this.panel_TxtOverlay = new Display.PanelEx2();
-            this.txtOverlay = new Display.TextEx2();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel_TxtOverlay.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // timer_DelayText
@@ -45,7 +45,7 @@ namespace Display
             // panel_TxtOverlay
             // 
             this.panel_TxtOverlay.BackColor = System.Drawing.Color.Transparent;
-            this.panel_TxtOverlay.Controls.Add(this.txtOverlay);
+            this.panel_TxtOverlay.Controls.Add(this.pictureBox1);
             this.panel_TxtOverlay.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel_TxtOverlay.Location = new System.Drawing.Point(0, 0);
             this.panel_TxtOverlay.Margin = new System.Windows.Forms.Padding(0);
@@ -55,40 +55,29 @@ namespace Display
             this.panel_TxtOverlay.Size = new System.Drawing.Size(1023, 72);
             this.panel_TxtOverlay.TabIndex = 0;
             // 
-            // txtOverlay
+            // pictureBox1
             // 
-            this.txtOverlay.AutoEllipsis = true;
-            this.txtOverlay.AutoSize = true;
-            this.txtOverlay.BackColor = System.Drawing.Color.Transparent;
-            this.txtOverlay.Font = new System.Drawing.Font("Arial", 31F, System.Drawing.FontStyle.Bold);
-            this.txtOverlay.ForeColor = System.Drawing.Color.Honeydew;
-            this.txtOverlay.Location = new System.Drawing.Point(0, 5);
-            this.txtOverlay.Margin = new System.Windows.Forms.Padding(0);
-            this.txtOverlay.Max_Repeat_Time = 0;
-            this.txtOverlay.Name = "txtOverlay";
-            this.txtOverlay.OutlineForeColor = System.Drawing.Color.Red;
-            this.txtOverlay.OutlineWidth = 3.5F;
-            this.txtOverlay.SetSpeed = 0;
-            this.txtOverlay.Size = new System.Drawing.Size(5225, 55);
-            this.txtOverlay.TabIndex = 4;
-            this.txtOverlay.Text = resources.GetString("txtOverlay.Text");
-            this.txtOverlay.UseCompatibleTextRendering = true;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(5225, 55);
+            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabStop = false;
             // 
             // Frm_TextOverlay
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(1023, 72);
+            this.ClientSize = new System.Drawing.Size(1023, 78);
             this.Controls.Add(this.panel_TxtOverlay);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(18, 18, 18, 18);
+            this.Margin = new System.Windows.Forms.Padding(18);
             this.Name = "Frm_TextOverlay";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Frm_TextOverlay";
             this.panel_TxtOverlay.ResumeLayout(false);
-            this.panel_TxtOverlay.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -97,6 +86,6 @@ namespace Display
 
         private PanelEx2 panel_TxtOverlay;
         private System.Windows.Forms.Timer timer_DelayText;
-        private TextEx2 txtOverlay;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
