@@ -118,13 +118,15 @@ namespace Display
                     //Show Multi Image
                     if (CurrentForm == CUSTOM_FORM)
                     {
+                        //pictureBox1.Load("https://fastly.picsum.photos/id/1026/1200/600.jpg?hmac=JwvbmRinwixVccKkAI-YCSQMCEFZOVWnGE6iReEqEAc");
+                        //pictureBox2.Load("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg");
                         string[] ImageURLs = new string[4];
-                        ImageURLs[0] = "http://placehold.it/120x120&text=image1";
-                        ImageURLs[1] = "http://placehold.it/120x120&text=image2";
+                        ImageURLs[0] = "https://fastly.picsum.photos/id/1026/1200/600.jpg?hmac=JwvbmRinwixVccKkAI-YCSQMCEFZOVWnGE6iReEqEAc";
+                        ImageURLs[1] = "https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg";
                         ImageURLs[2] = "http://placehold.it/120x120&text=image3";
                         ImageURLs[3] = "http://placehold.it/120x120&text=image4";
 
-                        customForm.Show_Multi_Image(ImageURLs, 4);
+                        customForm.Show_Multi_Image(ImageURLs, 2);
                     }
                     break;
             }

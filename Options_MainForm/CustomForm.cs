@@ -179,10 +179,9 @@ namespace Display
         }
         public void Show_Multi_Image(string [] ImageURLs, int Number_Image)
         {
+            page_Multi_Image.Show_Multi_Image(ImageURLs, 4);
             ShowPanel(panel_Multi_Image, page_Multi_Image);
             TabPageID = PAGE_MULTI_IMAGE;
-
-            page_Multi_Image.Show_Multi_Image(ImageURLs, 4);
         }
 
         //-----------------------------------------------------------------------------------------------------//

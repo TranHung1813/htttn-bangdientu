@@ -60,7 +60,7 @@ namespace Display
             this.txtOverlay.AutoEllipsis = true;
             this.txtOverlay.AutoSize = true;
             this.txtOverlay.BackColor = System.Drawing.Color.Transparent;
-            this.txtOverlay.Font = new System.Drawing.Font("Arial", 30F, System.Drawing.FontStyle.Bold);
+            this.txtOverlay.Font = new System.Drawing.Font("Arial", 31F, System.Drawing.FontStyle.Bold);
             this.txtOverlay.ForeColor = System.Drawing.Color.Honeydew;
             this.txtOverlay.Location = new System.Drawing.Point(0, 5);
             this.txtOverlay.Margin = new System.Windows.Forms.Padding(0);
@@ -69,7 +69,7 @@ namespace Display
             this.txtOverlay.OutlineForeColor = System.Drawing.Color.Red;
             this.txtOverlay.OutlineWidth = 3.5F;
             this.txtOverlay.SetSpeed = 0;
-            this.txtOverlay.Size = new System.Drawing.Size(5056, 53);
+            this.txtOverlay.Size = new System.Drawing.Size(5225, 55);
             this.txtOverlay.TabIndex = 4;
             this.txtOverlay.Text = resources.GetString("txtOverlay.Text");
             this.txtOverlay.UseCompatibleTextRendering = true;
