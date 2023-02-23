@@ -71,18 +71,18 @@ namespace Display
 
             // We move the inactive image to this location...
             SuspendLayout();
-            m_InactivePicture.Top = iDestinationTop;
+            m_InactivePicture.Top = 0;
             m_InactivePicture.Left = iDestinationLeft;
             m_InactivePicture.BringToFront();
             ResumeLayout();
 
             // We perform the transition which moves the active image off the
             // screen, and the inactive one onto the screen...
-            Transition t = new Transition(new TransitionType_EaseInEaseOut(2000));
+            Transition t = new Transition(new TransitionType_EaseInEaseOut(3000));
             t.add(m_InactivePicture, "Left", 0);
             t.add(m_InactivePicture, "Top", 0);
             t.add(m_ActivePicture, "Left", iDestinationLeft);
-            t.add(m_ActivePicture, "Top", iDestinationTop);
+            t.add(m_ActivePicture, "Top", 0);
             t.run();
 
             // We swap over which image is active and inactive for next time

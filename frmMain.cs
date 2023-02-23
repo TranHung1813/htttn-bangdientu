@@ -32,7 +32,7 @@ namespace Display
 
         //1. Thread cho Text Overlay chay doc lap (tạm ổn)
         //2. Debug voi man hinh lon (done)
-        //3. Them Page hien multi Image
+        //3. Them Page hien multi Image (done)
         //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
         //5. Code phan dieu khien voi Relay
         //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát) (done)
@@ -43,6 +43,8 @@ namespace Display
         //11. Khởi động cungd WIndow (done)
         //12. tự khỏi động lại khi crash hay khi có lệnh từ server. (1/2)
         //13. Bug lâu lâu bấm lại F1 bị lỗi
+        //14. Bug PanelEx không quay lại khi chạy hết
+        //15. Bug Page_Multi_Image chạy chưa Smooth
         public frmMain()
         {
             InitializeComponent();

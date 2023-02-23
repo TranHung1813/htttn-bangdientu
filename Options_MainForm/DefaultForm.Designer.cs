@@ -160,7 +160,7 @@ namespace Display
             // DefaultForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(50)))), ((int)(((byte)(70)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(20)))), ((int)(((byte)(30)))));
             this.Controls.Add(this.videoView1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
