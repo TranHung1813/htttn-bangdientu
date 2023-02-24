@@ -45,6 +45,7 @@ namespace Display
         //13. Bug lâu lâu bấm lại F1 bị lỗi
         //14. Bug PanelEx không quay lại khi chạy hết
         //15. Bug Page_Multi_Image chạy chưa Smooth
+        //16. Bug am thanh quay ve F1 khong tat (done)
         public frmMain()
         {
             InitializeComponent();
@@ -78,6 +79,7 @@ namespace Display
                     // Chuyển sang Form Default
                     if (CurrentForm != DEFAULT_FORM)
                     {
+                        customForm.Close();
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
                     }
@@ -88,6 +90,7 @@ namespace Display
                     if (CurrentForm != CUSTOM_FORM)
                     {
                         Add_UserControl(customForm);
+                        defaultForm.Close();
                         CurrentForm = CUSTOM_FORM;
                         customForm.ShowText(_TxtThongBao, _TxtVanBan);
                     }

@@ -77,15 +77,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bunifu.UI.WinForms.BunifuButton">
-      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu.UI.WinForms.BunifuButton.dll</HintPath>
-    </Reference>
-    <Reference Include="Bunifu.UI.WinForms.BunifuTransition">
-      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu.UI.WinForms.BunifuTransition.dll</HintPath>
-    </Reference>
-    <Reference Include="Bunifu_UI_v1.5.3">
-      <HintPath>C:\Users\Administrator\Downloads\pass is 123 azadeducation_Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_WinForms_1.11.5.1\Bunifu_UI_v1.5.3.dll</HintPath>
-    </Reference>
     <Reference Include="Flurl, Version=2.8.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Flurl.2.8.2\lib\net40\Flurl.dll</HintPath>
     </Reference>
@@ -166,15 +157,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="Transitions, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\dot-net-transitions.1.2.1.0\lib\net40-full\Transitions.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xamarin.Forms.3.2.0.871581\lib\netstandard2.0\Xamarin.Forms.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Forms.Platform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xamarin.Forms.3.2.0.871581\lib\netstandard2.0\Xamarin.Forms.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Forms.Xaml, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xamarin.Forms.3.2.0.871581\lib\netstandard2.0\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

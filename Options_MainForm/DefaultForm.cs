@@ -44,10 +44,21 @@ namespace Display
             { }
         }
 
+        public void Close()
+        {
+            panelThongBao.Stop();
+            panelVanBan.Stop();
+
+            Task.Run(() =>
+            {
+                _mp.Stop();
+            });
+        }
+
         public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
         {
-            txtThongBao.Text = ThongBao;
-            txtVanBan.Text = VanBan;
+            //txtThongBao.Text = ThongBao;
+            //txtVanBan.Text = VanBan;
 
             Timer_DelayTextRun.Interval = 5000;
             Timer_DelayTextRun.Start();

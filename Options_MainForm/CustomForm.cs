@@ -42,6 +42,27 @@ namespace Display
             panel_Image = new PanelContainer(this);
             panel_Multi_Image = new PanelContainer(this);
         }
+        public void Close()
+        {
+            switch (TabPageID)
+            {
+                case PAGE_IMAGE:
+                    panel_Image.Visible = false;
+
+                    break;
+
+                case PAGE_TEXT:
+                    page_Text.Close();
+                    panel_Text.Visible = false;
+
+                    break;
+
+                case PAGE_VIDEO:
+                    page_VideoScreen.StopVideo();
+                    panel_Video.Visible = false;
+                    break;
+            }
+        }
 
         private void ShowPanel(PanelContainer panel, UserControl uc)
         {
