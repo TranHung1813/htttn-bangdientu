@@ -24,9 +24,10 @@ namespace Display
         public int Max_Repeat_Time { get; set; }
 
         System.Threading.Timer tmrTick;
-        int position, speed, _Parent_Width;
-        int repeat_Count = 0;
-        bool enableScrollText = false;
+        int speed;
+        int position, _Parent_Width;
+        //int repeat_Count = 0;
+        //bool enableScrollText = false;
 
         public TextEx2()
         {

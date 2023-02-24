@@ -20,10 +20,7 @@ namespace Display
 
         Timer tmrTick;
         int position, speed, height, maxPosition;
-        bool enableScrollText = false;
-
-        Timer DelayText;
-        
+        bool enableScrollText = false;        
 
         public TextEx()
         {
@@ -85,12 +82,6 @@ namespace Display
             position -= speed;
             Height += speed;
             Invalidate();
-        }
-
-        private void DelayText_Tick(object sender, EventArgs e)
-        {
-            tmrTick.Start();
-            DelayText.Stop();
         }
     }
 }

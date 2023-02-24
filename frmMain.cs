@@ -82,6 +82,7 @@ namespace Display
                         customForm.Close();
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
+                        defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
                     }
                     break;
 
@@ -89,8 +90,8 @@ namespace Display
                     // Chuyển sang Form Custom
                     if (CurrentForm != CUSTOM_FORM)
                     {
-                        Add_UserControl(customForm);
                         defaultForm.Close();
+                        Add_UserControl(customForm);
                         CurrentForm = CUSTOM_FORM;
                         customForm.ShowText(_TxtThongBao, _TxtVanBan);
                     }

@@ -46,8 +46,14 @@ namespace Display
 
         public void Close()
         {
-            panelThongBao.Stop();
-            panelVanBan.Stop();
+            if (panelThongBao.State == PanelEx.RUNNING)
+            {
+                panelThongBao.Stop();
+            }
+            if (panelVanBan.State == PanelEx.RUNNING)
+            {
+                panelVanBan.Stop();
+            }
 
             Task.Run(() =>
             {

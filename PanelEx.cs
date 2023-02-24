@@ -15,7 +15,7 @@ namespace Display
     {
         Thread trd_Handle_TextRun;
         //Timer tmrTick;
-        int position, speed, height, maxPosition;
+        int locationY, speed, height, maxPosition;
         bool enableScrollPanel = false;
 
         public PanelEx()
@@ -31,7 +31,9 @@ namespace Display
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
-
+        public const int RUNNING = 1;
+        public const int STOPPED = 2;
+        public int State { get; set; }
         protected override void Dispose(bool disposing)
         {
             // Abort Thread
@@ -57,7 +59,7 @@ namespace Display
 
         public void Start(int Length_Text_Inside)
         {
-            position = 0;
+            locationY = this.Location.Y;
             height = this.Size.Height;
             enableScrollPanel = true;
             maxPosition = Length_Text_Inside;
@@ -70,12 +72,18 @@ namespace Display
             else
             {
                 Thread_Start();
+                State = RUNNING;
             }
         }
         public void Stop()
         {
             SetSpeed = 0;
             Thread_Stop();
+
+            this.Size = new Size(Width, height);
+            this.Location = new Point(this.Location.X, locationY);
+
+            State = STOPPED;
         }
         private void Thread_Start()
         {

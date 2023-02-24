@@ -22,7 +22,7 @@ namespace Display
         public void ShowText(string txt_Title, string txt_Content)
         {
             lb_Title.Text += "\r\n";
-            lb_Content.Text = _txt;// + _txt;
+            lb_Content.Text = _txt + _txt;
 
             timerDelayTextRun.Stop();
             timerDelayTextRun.Interval = 10000;
@@ -30,7 +30,10 @@ namespace Display
         }
         public void Close()
         {
-            panel_TextRun.Stop();
+            if(panel_TextRun.State == PanelEx.RUNNING)
+            {
+                panel_TextRun.Stop();
+            }
         }
 
         private void timerDelayTextRun_Tick(object sender, EventArgs e)
