@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,10 +67,31 @@ namespace Display
             //txtThongBao.Text = ThongBao;
             //txtVanBan.Text = VanBan;
 
-            Timer_DelayTextRun.Interval = 5000;
+            string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
+            Font font = new Font("Microsoft Sans Serif", 35);
+            pictureBox1.Width = panel1.Width;
+            pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(_Text, font, panel1.Width).Height * 1.3);
+            pictureBox1.Image = ConvertTextToImage(txtThongBao);
+            txtThongBao.Visible = false;
+
+            string _Text2 = "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).";
+            Font font2 = new Font("Microsoft Sans Serif", 35);
+            pictureBox2.Width = panel2.Width;
+            pictureBox2.Height = (int)(this.CreateGraphics().MeasureString(_Text2, font2, panel2.Width).Height * 1.3);
+            pictureBox2.Image = ConvertTextToImage(txtVanBan);
+            txtVanBan.Visible = false;
+
+            Timer_DelayTextRun.Interval = 10000;
             Timer_DelayTextRun.Start();
 
             ShowVideo(VideoURL);
+        }
+        public Bitmap ConvertTextToImage(Control control)
+        {
+            var bitmap = new Bitmap(control.Width, control.Height);
+            control.DrawToBitmap(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+
+            return bitmap;
         }
 
         private void Timer_DelayTextRun_Tick(object sender, EventArgs e)

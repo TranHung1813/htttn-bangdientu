@@ -19,8 +19,8 @@ namespace Display
         public Page_Image()
         {
             InitializeComponent();
-            //_ImageURL = "http://www.gravatar.com/avatar/6810d91caff032b202c50701dd3af745?d=identicon&r=PG";
-            _ImageURL = "https://source.unsplash.com/user/c_v_r/1900x800";
+            _ImageURL = "https://fastly.picsum.photos/id/1026/1200/600.jpg?hmac=JwvbmRinwixVccKkAI-YCSQMCEFZOVWnGE6iReEqEAc";
+            //_ImageURL = "https://source.unsplash.com/user/c_v_r/1900x800";
         }
 
         public void ShowImage(string Url)

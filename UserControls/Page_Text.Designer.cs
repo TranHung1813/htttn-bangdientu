@@ -35,8 +35,10 @@ namespace Display
             this.panel_TextRun = new Display.PanelEx();
             this.lb_Content = new Display.GrowLabel();
             this.lb_Title = new Display.GrowLabel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panelContainer.SuspendLayout();
             this.panel_TextRun.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // timerDelayTextRun
@@ -55,12 +57,14 @@ namespace Display
             // 
             // panel_TextRun
             // 
+            this.panel_TextRun.Controls.Add(this.pictureBox1);
             this.panel_TextRun.Controls.Add(this.lb_Content);
             this.panel_TextRun.Controls.Add(this.lb_Title);
             this.panel_TextRun.Location = new System.Drawing.Point(0, 0);
             this.panel_TextRun.Name = "panel_TextRun";
             this.panel_TextRun.SetSpeed = 0;
             this.panel_TextRun.Size = new System.Drawing.Size(900, 400);
+            this.panel_TextRun.State = 0;
             this.panel_TextRun.TabIndex = 3;
             // 
             // lb_Content
@@ -92,6 +96,17 @@ namespace Display
     "n dịch bệnh Covid-19 gây ra.";
             this.lb_Title.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
+            // 
             // Page_Text
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -101,6 +116,7 @@ namespace Display
             this.Size = new System.Drawing.Size(920, 420);
             this.panelContainer.ResumeLayout(false);
             this.panel_TextRun.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -111,5 +127,6 @@ namespace Display
         private GrowLabel lb_Title;
         private GrowLabel lb_Content;
         private PanelEx panel_TextRun;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

@@ -22,11 +22,39 @@ namespace Display
         public void ShowText(string txt_Title, string txt_Content)
         {
             lb_Title.Text += "\r\n";
-            lb_Content.Text = _txt + _txt;
+            lb_Content.Text = _txt ;
+
+            pictureBox1.Width = panel_TextRun.Width;
+            pictureBox1.Height = panel_TextRun.Height;
+
+
+            Bitmap BM_Ttle = ConvertTextToImage(lb_Title);
+            Bitmap BM_Content = ConvertTextToImage(lb_Content);
+            pictureBox1.Image = MergeImages(BM_Ttle, BM_Content);
+            lb_Content.Visible = false;
+            lb_Title.Visible = false;
 
             timerDelayTextRun.Stop();
             timerDelayTextRun.Interval = 10000;
             timerDelayTextRun.Start();
+        }
+        public Bitmap ConvertTextToImage(Control control)
+        {
+            var bitmap = new Bitmap(control.Width, control.Height);
+            control.DrawToBitmap(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+
+            return bitmap;
+        }
+        private Bitmap MergeImages(Image image1, Image image2)
+        {
+            Bitmap bitmap = new Bitmap(Math.Max(image1.Width, image2.Width), image1.Height + image2.Height);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                g.DrawImage(image1, 0, 0);
+                g.DrawImage(image2, 0, image1.Height);
+            }
+
+            return bitmap;
         }
         public void Close()
         {

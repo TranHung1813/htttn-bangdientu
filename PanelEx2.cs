@@ -14,7 +14,7 @@ namespace Display
     public partial class PanelEx2 : Panel
     {
         Thread trd_Handle_TextRun;
-        //Timer tmrTick;
+        System.Windows.Forms.Timer tmrTick;
         int repeat_Count = 0;
         int speed, width, maxPosition;
         bool enableScrollPanel = false;
@@ -22,11 +22,38 @@ namespace Display
         public PanelEx2()
         {
             InitializeComponent();
-
+            this.DoubleBuffered = true;
             trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
             trd_Handle_TextRun.IsBackground = true;
-            trd_Handle_TextRun.Start();
+            //trd_Handle_TextRun.Start();
+
+            tmrTick = new System.Windows.Forms.Timer();
+            tmrTick.Interval = 24;
+            tmrTick.Tick += TmrTick_Tick;
         }
+
+        private void TmrTick_Tick(object sender, EventArgs e)
+        {
+            if (!enableScrollPanel) return;
+
+            // Running on the UI thread
+            if (this.Location.X < -maxPosition)
+            {
+                if (++repeat_Count >= Max_Repeat_Time)
+                {
+                    OnNotifyEndProcess_TextRun(repeat_Count);
+                    Stop();
+                }
+                this.Size = new Size(width, Height);
+                this.Location = new Point(width, this.Location.Y);
+            }
+
+            this.Location = new Point(this.Location.X - speed, this.Location.Y);
+            Width += speed;
+            //position -= speed;
+            Invalidate();
+        }
+
         public int SetSpeed
         {
             get { return speed; }
@@ -65,18 +92,21 @@ namespace Display
             if (maxPosition < width)
             {
                 SetSpeed = 0;
-                Thread_Stop();
+                //Thread_Stop();
+                Timer_Stop();
             }
             else
             {
                 this.Location = new Point(width, this.Location.Y);
-                Thread_Start();
+                //Thread_Start();
+                Timer_Start();
             }
         }
         public void Stop()
         {
             SetSpeed = 0;
-            Thread_Stop();
+            //Thread_Stop();
+            Timer_Stop();
         }
         private event EventHandler<NotifyEndProcess> _NotifyEndProcess_TextRun;
         public event EventHandler<NotifyEndProcess> NotifyEndProcess_TextRun
@@ -125,11 +155,35 @@ namespace Display
             }
         }
 
+        private void Timer_Start()
+        {
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+            tmrTick.Start();
+        }
+        private void Timer_Stop()
+        {
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+        }
+
         private void ThreadTask_Handle_TextRun()
         {
             while (true)
             {
-                Thread.Sleep(20);
+                Thread.Sleep(300);
                 if (!enableScrollPanel) continue;
 
                 this.Invoke((MethodInvoker)delegate

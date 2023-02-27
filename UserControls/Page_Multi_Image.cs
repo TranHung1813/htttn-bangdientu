@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace Display
             if (Number_Image <= 1) return;
 
             Transition_Timer.Stop();
-            Transition_Timer.Interval = 10000;
+            Transition_Timer.Interval = 3000;
             Transition_Timer.Start();
             pictureBox1.Image = null;
 
@@ -50,46 +51,22 @@ namespace Display
                 result[CountImage] = GetImageAsync(ImageURLs[CountImage]);
                 result[CountImage].ContinueWith(task =>
                 {
-                    imageList.Add(task.Result);
-                    if(imageList.Count >= 2)
+                    imageList.Add((task.Result));
+
+                    if (imageList.Count >= Number_Image)
                     {
-                        pictureBox1.Image = imageList[0];
-                        pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-                        pictureBox2.Image = imageList[1];
-                        pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                        try
+                        {
+                            pictureBox1.Image = imageList[0];
+                            pictureBox2.Image = imageList[1];
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 });
             }
-        }
-        public void transitionPictures()
-        {
-            // We randomly choose where the current image is going to 
-            // slide off to (and where we are going to slide the inactive
-            // image in from)...
-            int iDestinationLeft = (m_Random.Next(2) == 0) ? Width : -Width;
-            int iDestinationTop = (m_Random.Next(3) - 1) * Height;
-
-            // We move the inactive image to this location...
-            SuspendLayout();
-            m_InactivePicture.Top = 0;
-            m_InactivePicture.Left = iDestinationLeft;
-            m_InactivePicture.BringToFront();
-            ResumeLayout();
-
-            // We perform the transition which moves the active image off the
-            // screen, and the inactive one onto the screen...
-            Transition t = new Transition(new TransitionType_EaseInEaseOut(3000));
-            t.add(m_InactivePicture, "Left", 0);
-            t.add(m_InactivePicture, "Top", 0);
-            t.add(m_ActivePicture, "Left", iDestinationLeft);
-            t.add(m_ActivePicture, "Top", 0);
-            t.run();
-
-            // We swap over which image is active and inactive for next time
-            // the function is called...
-            PictureBox tmp = m_ActivePicture;
-            m_ActivePicture = m_InactivePicture;
-            m_InactivePicture = tmp;
         }
 
         public async Task<Image> GetImageAsync(string url)
@@ -115,10 +92,71 @@ namespace Display
                 });
             return tcs.Task.Result;
         }
-
-        private void Transition_Timer_Tick(object sender, EventArgs e)
+        private int Image_Count = 0;
+        private void timer1_Tick(object sender, EventArgs e)
         {
+            if (Image_Count + 1 < imageList.Count)
+            {
+                pictureBox1.Image = imageList[Image_Count];
+                pictureBox2.Image = imageList[++Image_Count];
+            }
+            else
+            {
+                pictureBox1.Image = imageList[Image_Count];
+                pictureBox2.Image = imageList[0];
+                Image_Count = 0;
+            }
+
             transitionPictures();
+        }
+        public void transitionPictures()
+        {
+            // We randomly choose where the current image is going to 
+            // slide off to (and where we are going to slide the inactive
+            // image in from)...
+            int iDestinationTop;
+            int iDestinationLeft = (m_Random.Next(3) - 1) * Width;
+            if(iDestinationLeft == 0)
+            {
+                iDestinationTop = (m_Random.Next(2) == 0) ? Height: -Height;
+            }
+            else
+            {
+                iDestinationTop = 0;
+            }
+
+            // We move the inactive image to this location...
+            SuspendLayout();
+            m_InactivePicture.Top = iDestinationTop;
+            m_InactivePicture.Left = iDestinationLeft;
+            m_InactivePicture.BringToFront();
+            ResumeLayout();
+
+            // We perform the transition which moves the active image off the
+            // screen, and the inactive one onto the screen...
+            Transition t = new Transition(new TransitionType_EaseInEaseOut(2000));
+            t.add(m_InactivePicture, "Left", 0);
+            t.add(m_InactivePicture, "Top", 0);
+            //if(m_Random.Next(2) == 0)
+            //{
+            //    t.add(m_ActivePicture, "Left", -iDestinationLeft);
+            //    t.add(m_ActivePicture, "Top", -iDestinationTop);
+            //}
+            //else
+            //{
+            //    t.add(m_ActivePicture, "Left", iDestinationLeft);
+            //    t.add(m_ActivePicture, "Top", iDestinationTop);
+            //}
+
+            t.add(m_ActivePicture, "Left", iDestinationLeft);
+            t.add(m_ActivePicture, "Top", iDestinationTop);
+            t.run();
+
+            // We swap over which image is active and inactive for next time
+            // the function is called...
+            PictureBox tmp = m_ActivePicture;
+            m_ActivePicture = m_InactivePicture;
+            m_InactivePicture = tmp;
         }
     }
 }

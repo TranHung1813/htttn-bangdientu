@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Display
 {
@@ -30,6 +31,9 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private int CurrentForm = 0;
 
+        public int WM_SYSCOMMAND = 0x0112;
+        public int SC_MONITORPOWER = 0xF170;
+
         //1. Thread cho Text Overlay chay doc lap (tạm ổn)
         //2. Debug voi man hinh lon (done)
         //3. Them Page hien multi Image (done)
@@ -42,9 +46,9 @@ namespace Display
         //10. Stop tat ca cac Timer sau khi da su dung xong (tạm ổn)
         //11. Khởi động cungd WIndow (done)
         //12. tự khỏi động lại khi crash hay khi có lệnh từ server. (1/2)
-        //13. Bug lâu lâu bấm lại F1 bị lỗi
-        //14. Bug PanelEx không quay lại khi chạy hết
-        //15. Bug Page_Multi_Image chạy chưa Smooth
+        //13. Bug lâu lâu bấm lại F1 bị lỗi (done)
+        //14. Bug PanelEx không quay lại khi chạy hết (done)
+        //15. Bug Page_Multi_Image chạy chưa Smooth (done)
         //16. Bug am thanh quay ve F1 khong tat (done)
         public frmMain()
         {
@@ -127,16 +131,23 @@ namespace Display
                         //pictureBox1.Load("https://fastly.picsum.photos/id/1026/1200/600.jpg?hmac=JwvbmRinwixVccKkAI-YCSQMCEFZOVWnGE6iReEqEAc");
                         //pictureBox2.Load("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg");
                         string[] ImageURLs = new string[4];
-                        ImageURLs[0] = "https://fastly.picsum.photos/id/1026/1200/600.jpg?hmac=JwvbmRinwixVccKkAI-YCSQMCEFZOVWnGE6iReEqEAc";
-                        ImageURLs[1] = "https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg";
-                        ImageURLs[2] = "http://placehold.it/120x120&text=image3";
-                        ImageURLs[3] = "http://placehold.it/120x120&text=image4";
+                        ImageURLs[0] = "https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900";
+                        ImageURLs[1] = "https://images.unsplash.com/photo-1597429287872-86c80ff53f38?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMzAyMg&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900";
+                        ImageURLs[2] = "https://images.unsplash.com/photo-1597428963794-aba7182f3abf?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=768&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIxMTE5MQ&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1366";
+                        ImageURLs[3] = "https://images.unsplash.com/photo-1631193079266-4af74b218c86?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjkwOQ&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900";
 
-                        customForm.Show_Multi_Image(ImageURLs, 2);
+                        customForm.Show_Multi_Image(ImageURLs, 3);
                     }
+                    break;
+                case Keys.F8:
+                    SendMessage(this.Handle.ToInt32(), WM_SYSCOMMAND, SC_MONITORPOWER, 2);
                     break;
             }
         }
+ 
+
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
 
         private void Add_UserControl(Control uc)
         {

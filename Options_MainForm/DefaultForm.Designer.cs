@@ -33,21 +33,25 @@ namespace Display
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panelThongBao = new Display.PanelEx();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.txtThongBao = new Display.GrowLabel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.videoView1 = new LibVLCSharp.WinForms.VideoView();
-            this.Timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
             this.panelVanBan = new Display.PanelEx();
             this.txtVanBan = new Display.GrowLabel();
-            this.panelThongBao = new Display.PanelEx();
-            this.txtThongBao = new Display.GrowLabel();
+            this.videoView1 = new LibVLCSharp.WinForms.VideoView();
+            this.Timer_DelayTextRun = new System.Windows.Forms.Timer(this.components);
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panelThongBao.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
             this.panelVanBan.SuspendLayout();
-            this.panelThongBao.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -71,6 +75,41 @@ namespace Display
             this.panel1.Size = new System.Drawing.Size(1005, 100);
             this.panel1.TabIndex = 0;
             // 
+            // panelThongBao
+            // 
+            this.panelThongBao.BackColor = System.Drawing.Color.MistyRose;
+            this.panelThongBao.Controls.Add(this.pictureBox1);
+            this.panelThongBao.Controls.Add(this.txtThongBao);
+            this.panelThongBao.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panelThongBao.Location = new System.Drawing.Point(0, 0);
+            this.panelThongBao.Name = "panelThongBao";
+            this.panelThongBao.SetSpeed = 0;
+            this.panelThongBao.Size = new System.Drawing.Size(1005, 100);
+            this.panelThongBao.State = 0;
+            this.panelThongBao.TabIndex = 2;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 50);
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
+            // txtThongBao
+            // 
+            this.txtThongBao.BackColor = System.Drawing.Color.Transparent;
+            this.txtThongBao.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
+            this.txtThongBao.Location = new System.Drawing.Point(0, 0);
+            this.txtThongBao.Name = "txtThongBao";
+            this.txtThongBao.Size = new System.Drawing.Size(1005, 230);
+            this.txtThongBao.TabIndex = 1;
+            this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.panel2);
@@ -78,7 +117,7 @@ namespace Display
             this.groupBox2.ForeColor = System.Drawing.Color.White;
             this.groupBox2.Location = new System.Drawing.Point(13, 143);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(442, 518);
+            this.groupBox2.Size = new System.Drawing.Size(466, 518);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Văn bản";
@@ -89,27 +128,13 @@ namespace Display
             this.panel2.Controls.Add(this.panelVanBan);
             this.panel2.Location = new System.Drawing.Point(6, 20);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(430, 491);
+            this.panel2.Size = new System.Drawing.Size(454, 491);
             this.panel2.TabIndex = 2;
-            // 
-            // videoView1
-            // 
-            this.videoView1.BackColor = System.Drawing.Color.Black;
-            this.videoView1.Location = new System.Drawing.Point(461, 153);
-            this.videoView1.MediaPlayer = null;
-            this.videoView1.Name = "videoView1";
-            this.videoView1.Size = new System.Drawing.Size(569, 508);
-            this.videoView1.TabIndex = 6;
-            this.videoView1.Text = "videoView1";
-            // 
-            // Timer_DelayTextRun
-            // 
-            this.Timer_DelayTextRun.Interval = 5000;
-            this.Timer_DelayTextRun.Tick += new System.EventHandler(this.Timer_DelayTextRun_Tick);
             // 
             // panelVanBan
             // 
             this.panelVanBan.BackColor = System.Drawing.Color.MistyRose;
+            this.panelVanBan.Controls.Add(this.pictureBox2);
             this.panelVanBan.Controls.Add(this.txtVanBan);
             this.panelVanBan.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panelVanBan.Location = new System.Drawing.Point(0, 0);
@@ -126,32 +151,35 @@ namespace Display
             this.txtVanBan.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.txtVanBan.Location = new System.Drawing.Point(0, 0);
             this.txtVanBan.Name = "txtVanBan";
-            this.txtVanBan.Size = new System.Drawing.Size(430, 1242);
+            this.txtVanBan.Size = new System.Drawing.Size(454, 1196);
             this.txtVanBan.TabIndex = 0;
             this.txtVanBan.Text = resources.GetString("txtVanBan.Text");
             // 
-            // panelThongBao
+            // videoView1
             // 
-            this.panelThongBao.BackColor = System.Drawing.Color.MistyRose;
-            this.panelThongBao.Controls.Add(this.txtThongBao);
-            this.panelThongBao.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panelThongBao.Location = new System.Drawing.Point(0, 0);
-            this.panelThongBao.Name = "panelThongBao";
-            this.panelThongBao.SetSpeed = 0;
-            this.panelThongBao.Size = new System.Drawing.Size(1005, 100);
-            this.panelThongBao.State = 0;
-            this.panelThongBao.TabIndex = 2;
+            this.videoView1.BackColor = System.Drawing.Color.Black;
+            this.videoView1.Location = new System.Drawing.Point(485, 153);
+            this.videoView1.MediaPlayer = null;
+            this.videoView1.Name = "videoView1";
+            this.videoView1.Size = new System.Drawing.Size(545, 508);
+            this.videoView1.TabIndex = 6;
+            this.videoView1.Text = "videoView1";
             // 
-            // txtThongBao
+            // Timer_DelayTextRun
             // 
-            this.txtThongBao.BackColor = System.Drawing.Color.Transparent;
-            this.txtThongBao.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
-            this.txtThongBao.Location = new System.Drawing.Point(0, 0);
-            this.txtThongBao.Name = "txtThongBao";
-            this.txtThongBao.Size = new System.Drawing.Size(1005, 230);
-            this.txtThongBao.TabIndex = 1;
-            this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
+            this.Timer_DelayTextRun.Interval = 10000;
+            this.Timer_DelayTextRun.Tick += new System.EventHandler(this.Timer_DelayTextRun_Tick);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(100, 50);
+            this.pictureBox2.TabIndex = 3;
+            this.pictureBox2.TabStop = false;
             // 
             // DefaultForm
             // 
@@ -164,11 +192,13 @@ namespace Display
             this.Size = new System.Drawing.Size(1040, 673);
             this.groupBox1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panelThongBao.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.panelVanBan.ResumeLayout(false);
-            this.panelThongBao.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -185,5 +215,7 @@ namespace Display
         private System.Windows.Forms.Timer Timer_DelayTextRun;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }

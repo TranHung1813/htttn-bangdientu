@@ -57,8 +57,7 @@ namespace Display
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(863, 425);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 1;
+            this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // pictureBox2
@@ -69,14 +68,13 @@ namespace Display
             this.pictureBox2.Location = new System.Drawing.Point(0, 0);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(863, 425);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 2;
+            this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
             // Transition_Timer
             // 
-            this.Transition_Timer.Interval = 3000;
-            this.Transition_Timer.Tick += new System.EventHandler(this.Transition_Timer_Tick);
+            this.Transition_Timer.Interval = 5000;
+            this.Transition_Timer.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Page_Multi_Image
             // 
@@ -96,8 +94,8 @@ namespace Display
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Timer Transition_Timer;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
