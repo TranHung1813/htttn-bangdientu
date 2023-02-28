@@ -61,6 +61,11 @@ namespace Display
                     page_VideoScreen.StopVideo();
                     panel_Video.Visible = false;
                     break;
+
+                case PAGE_MULTI_IMAGE:
+                    page_Multi_Image.Close();
+                    panel_Multi_Image.Visible = false;
+                    break;
             }
 
             if (frm_TextOverlay != null)
@@ -112,6 +117,12 @@ namespace Display
                     //panel.Visible = true;
                     //guna2Transition1.ShowSync(panel);
                     break;
+
+                case PAGE_MULTI_IMAGE:
+                    panel_Multi_Image.Visible = false;
+                    page_Multi_Image.Close();
+                    break;
+
             }
             try
             {

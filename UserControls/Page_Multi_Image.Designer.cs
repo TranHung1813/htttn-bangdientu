@@ -33,7 +33,7 @@ namespace Display
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.Transition_Timer = new System.Windows.Forms.Timer(this.components);
+            this.Timer_Transition = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -71,10 +71,10 @@ namespace Display
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
-            // Transition_Timer
+            // Timer_Transition
             // 
-            this.Transition_Timer.Interval = 5000;
-            this.Transition_Timer.Tick += new System.EventHandler(this.timer1_Tick);
+            this.Timer_Transition.Interval = 5000;
+            this.Timer_Transition.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Page_Multi_Image
             // 
@@ -94,7 +94,7 @@ namespace Display
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Timer Transition_Timer;
+        private System.Windows.Forms.Timer Timer_Transition;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
     }

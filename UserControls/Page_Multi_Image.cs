@@ -24,6 +24,8 @@ namespace Display
         private List<Image> imageList = new List<Image>();
         //private ImageList imageList = new ImageList();
 
+        private bool _Enable_Transition = false;
+
         public Page_Multi_Image()
         {
             InitializeComponent();
@@ -39,9 +41,9 @@ namespace Display
         {
             if (Number_Image <= 1) return;
 
-            Transition_Timer.Stop();
-            Transition_Timer.Interval = 3000;
-            Transition_Timer.Start();
+            Timer_Transition.Stop();
+            Timer_Transition.Interval = 4000;
+            Timer_Transition.Start();
             pictureBox1.Image = null;
 
             Task<Image>[] result = new Task<Image>[Number_Image];
@@ -58,7 +60,11 @@ namespace Display
                         try
                         {
                             pictureBox1.Image = imageList[0];
+                            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
                             pictureBox2.Image = imageList[1];
+                            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+
+                            _Enable_Transition = true;
                         }
                         catch
                         {
@@ -95,19 +101,31 @@ namespace Display
         private int Image_Count = 0;
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (_Enable_Transition == false) return;
             if (Image_Count + 1 < imageList.Count)
             {
-                pictureBox1.Image = imageList[Image_Count];
-                pictureBox2.Image = imageList[++Image_Count];
+                m_ActivePicture.Image = imageList[Image_Count];
+                m_InactivePicture.Image = imageList[++Image_Count];
             }
             else
             {
-                pictureBox1.Image = imageList[Image_Count];
-                pictureBox2.Image = imageList[0];
+                m_ActivePicture.Image = imageList[Image_Count];
+                m_InactivePicture.Image = imageList[0];
                 Image_Count = 0;
             }
 
             transitionPictures();
+        }
+        public void Close()
+        {
+            try
+            {
+                Timer_Transition.Stop();
+            }
+            catch { }
+
+            pictureBox1.Image = null;
+            pictureBox2.Image = null;
         }
         public void transitionPictures()
         {
