@@ -1,87 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class TextEx : Label
+    public partial class PanelEx : Panel
     {
+        Thread trd_Handle_TextRun;
+        //Timer tmrTick;
+        int locationY, speed, height, maxPosition;
+        bool enableScrollPanel = false;
+
+        public PanelEx()
+        {
+            InitializeComponent();
+
+            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            trd_Handle_TextRun.IsBackground = true;
+            trd_Handle_TextRun.Start();
+        }
         public int SetSpeed
         {
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
-
-        Timer tmrTick;
-        int position, speed, height, maxPosition;
-        bool enableScrollText = false;        
-
-        public TextEx()
+        public const int RUNNING = 1;
+        public const int STOPPED = 2;
+        public int State { get; set; }
+        protected override void Dispose(bool disposing)
         {
-            InitializeComponent();
-
-            UseCompatibleTextRendering = true;
-
-            tmrTick = new Timer();
-            tmrTick.Tick += tick;
-            tmrTick.Interval = 20;
-            tmrTick.Start();
-
+            // Abort Thread
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch
+                { }
+            }
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
         }
 
-        public void Start()
+        public void Start(int Length_Text_Inside)
         {
-            position = 0;
-            enableScrollText = true;
+            locationY = this.Location.Y;
             height = this.Size.Height;
-            maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;
+            enableScrollPanel = true;
+            maxPosition = Length_Text_Inside;
 
             if (maxPosition < height)
             {
                 SetSpeed = 0;
+                Thread_Stop();
             }
-        }
-
-        protected override void OnTextChanged(EventArgs e)
-        {
-            maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font, this.Width).Height;
-
-            base.OnTextChanged(e);
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.TranslateTransform(0, (float)position);
-
-            base.OnPaint(e);
-        }
-
-        private void tick(object sender, EventArgs e)
-        {
-            if (!enableScrollText) return;
-
-            if (position < -maxPosition)
+            else
             {
-                this.Size = new Size(Width, height);
-                position = height;
-                //position = 0;
-                //tmrTick.Stop();
-
-                //DelayText = new Timer();
-                //DelayText.Tick += DelayText_Tick; ;
-                //DelayText.Interval = 8000;
-                //DelayText.Start();
+                Thread_Start();
+                State = RUNNING;
             }
+        }
+        public void Stop()
+        {
+            SetSpeed = 0;
+            Thread_Stop();
 
-            position -= speed;
-            Height += speed;
-            Invalidate();
+            this.Size = new Size(Width, height);
+            this.Location = new Point(this.Location.X, locationY);
+
+            State = STOPPED;
+        }
+        private void Thread_Start()
+        {
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch { }
+            }
+            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            trd_Handle_TextRun.IsBackground = true;
+            trd_Handle_TextRun.Start();
+        }
+        private void Thread_Stop()
+        {
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch { }
+            }
+        }
+
+        private void ThreadTask_Handle_TextRun()
+        {
+            while (true)
+            {
+                Thread.Sleep(50);
+                if (!enableScrollPanel) continue;
+
+                this.Invoke((MethodInvoker)delegate
+                {
+                    // Running on the UI thread
+                    if (this.Location.Y < -maxPosition)
+                    {
+                        this.Size = new Size(Width, height);
+                        this.Location = new Point(this.Location.X, height);
+                    }
+
+                    this.Location = new Point(this.Location.X, this.Location.Y - speed);
+                    Height += speed;
+                    //position -= speed;
+                    Invalidate();
+                });
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ namespace Display
         public int WM_SYSCOMMAND = 0x0112;
         public int SC_MONITORPOWER = 0xF170;
 
+        // bytech@2020
         //1. Thread cho Text Overlay chay doc lap (tạm ổn)
         //2. Debug voi man hinh lon (done)
         //3. Them Page hien multi Image (done)
@@ -50,6 +51,10 @@ namespace Display
         //14. Bug PanelEx không quay lại khi chạy hết (done)
         //15. Bug Page_Multi_Image chạy chưa Smooth (done)
         //16. Bug am thanh quay ve F1 khong tat (done)
+
+        //17. Xem lai Growing label
+        //18. Ve lai Text
+        //19. Code phan Porting voi VDK
         public frmMain()
         {
             InitializeComponent();

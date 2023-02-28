@@ -62,6 +62,23 @@ namespace Display
                     panel_Video.Visible = false;
                     break;
             }
+
+            if (frm_TextOverlay != null)
+            {
+                try
+                {
+                    frm_TextOverlay.Dispose();
+                }
+                catch { }
+            }
+            if (backGround != null)
+            {
+                try
+                {
+                    backGround.Dispose();
+                }
+                catch { }
+            }
         }
 
         private void ShowPanel(PanelContainer panel, UserControl uc)

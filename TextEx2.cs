@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,65 +11,65 @@ using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class TextEx2 : Label
+    public partial class PanelEx2 : Panel
     {
+        Thread trd_Handle_TextRun;
+        System.Windows.Forms.Timer tmrTick;
+        int repeat_Count = 0;
+        int speed, width, maxPosition;
+        bool enableScrollPanel = false;
+
+        public PanelEx2()
+        {
+            InitializeComponent();
+            this.DoubleBuffered = true;
+            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            trd_Handle_TextRun.IsBackground = true;
+            //trd_Handle_TextRun.Start();
+
+            tmrTick = new System.Windows.Forms.Timer();
+            tmrTick.Interval = 24;
+            tmrTick.Tick += TmrTick_Tick;
+        }
+
+        private void TmrTick_Tick(object sender, EventArgs e)
+        {
+            if (!enableScrollPanel) return;
+
+            // Running on the UI thread
+            if (this.Location.X < -maxPosition)
+            {
+                if (++repeat_Count >= Max_Repeat_Time)
+                {
+                    OnNotifyEndProcess_TextRun(repeat_Count);
+                    Stop();
+                }
+                this.Size = new Size(width, Height);
+                this.Location = new Point(width, this.Location.Y);
+            }
+
+            this.Location = new Point(this.Location.X - speed, this.Location.Y);
+            Width += speed;
+            //position -= speed;
+            Invalidate();
+        }
+
         public int SetSpeed
         {
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
-
         public int Max_Repeat_Time { get; set; }
-
-        System.Threading.Timer tmrTick;
-        int speed;
-        int position, _Parent_Width;
-        //int repeat_Count = 0;
-        //bool enableScrollText = false;
-
-        public TextEx2()
-        {
-            InitializeComponent();
-
-            //UseCompatibleTextRendering = true;
-            AutoEllipsis = true;
-            //Max_Repeat_Time = 1;
-
-            //tmrTick = new System.Threading.Timer(new TimerCallback(TickTimer),null, 100, 20);
-            //tmrTick.Tick += new EventHandler(tick); 
-            //tmrTick.Interval = 20;
-            //tmrTick.Start();
-        }
-
-        //private void TickTimer(object state)
-        //{
-        //    //Thread.Sleep(20);
-        //    if (!enableScrollText) return;
-
-        //    if (position < -Width)
-        //    {
-        //        //this.Size = new Size(width, Height);
-        //        position = _Parent_Width;
-        //        if(++repeat_Count >= Max_Repeat_Time)
-        //        {
-        //            OnNotifyEndProcess_TextRun(repeat_Count);
-        //            Stop();
-        //        }
-        //    }
-
-        //    position -= speed;
-        //    Invalidate();
-        //}
 
         protected override void Dispose(bool disposing)
         {
             // Abort Thread
-            if (tmrTick != null)
+            if (trd_Handle_TextRun != null)
             {
                 try
                 {
-                    tmrTick.Dispose();
-                    tmrTick = null;
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
                 }
                 catch
                 { }
@@ -85,83 +83,137 @@ namespace Display
             }
             base.Dispose(disposing);
         }
-
-        public void Start(int Parent_Width)
+        public void Start(int Length_Text_Inside)
         {
-            //enableScrollText = true;
-            //_Parent_Width = Parent_Width;
-            //repeat_Count = 0;
-            //maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font).Width;
+            width = this.Size.Width;
+            enableScrollPanel = true;
+            maxPosition = Length_Text_Inside;
 
-            //if (this.Width < Parent_Width)
-            //{
-            //    SetSpeed = 0;
-            //}
-            //else
-            //{
-            //    position = Parent_Width;
-            //}
+            if (maxPosition < width)
+            {
+                SetSpeed = 0;
+                //Thread_Stop();
+                Timer_Stop();
+            }
+            else
+            {
+                this.Location = new Point(width, this.Location.Y);
+                //Thread_Start();
+                Timer_Start();
+            }
         }
         public void Stop()
         {
-            // Abort Thread
-            //if (tmrTick != null)
-            //{
-            //    try
-            //    {
-            //        tmrTick.Dispose();
-            //        tmrTick = null;
-            //    }
-            //    catch
-            //    { }
-            //}
+            SetSpeed = 0;
+            //Thread_Stop();
+            Timer_Stop();
         }
-       
-        public Color OutlineForeColor { get; set; }
-        public float OutlineWidth { get; set; }
-        protected override void OnPaint(PaintEventArgs e)
+        private event EventHandler<NotifyEndProcess> _NotifyEndProcess_TextRun;
+        public event EventHandler<NotifyEndProcess> NotifyEndProcess_TextRun
         {
-            e.Graphics.TranslateTransform((float)position, 0);
-
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-            e.Graphics.FillEllipse(new SolidBrush(BackColor), ClientRectangle);
-            using (GraphicsPath gp = new GraphicsPath())
-            using (Pen outline = new Pen(OutlineForeColor, OutlineWidth)
-            { LineJoin = LineJoin.Round })
-            using (StringFormat sf = new StringFormat())
-            using (Brush foreBrush = new SolidBrush(ForeColor))
+            add
             {
-                gp.AddString(Text, Font.FontFamily, (int)Font.Style,
-                    Font.Size, ClientRectangle, sf);
-                e.Graphics.ScaleTransform(1.3f, 1.35f);
-
-                e.Graphics.DrawPath(outline, gp);
-                e.Graphics.FillPath(foreBrush, gp);
+                _NotifyEndProcess_TextRun += value;
+            }
+            remove
+            {
+                _NotifyEndProcess_TextRun -= value;
+            }
+        }
+        protected virtual void OnNotifyEndProcess_TextRun(int Repeat_Count)
+        {
+            if (_NotifyEndProcess_TextRun != null)
+            {
+                _NotifyEndProcess_TextRun(this, new NotifyEndProcess(Repeat_Count));
+            }
+        }
+        private void Thread_Start()
+        {
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch { }
+            }
+            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            trd_Handle_TextRun.IsBackground = true;
+            trd_Handle_TextRun.Start();
+        }
+        private void Thread_Stop()
+        {
+            if (trd_Handle_TextRun != null)
+            {
+                try
+                {
+                    trd_Handle_TextRun.Abort();
+                    trd_Handle_TextRun = null;
+                }
+                catch { }
             }
         }
 
-
-        //protected override void OnTextChanged(EventArgs e)
-        //{
-        //    maxPosition = (int)this.CreateGraphics().MeasureString(this.Text, this.Font).Width;
-
-        //    base.OnTextChanged(e);
-        //}
-
-        private void tick(object sender, EventArgs e)
+        private void Timer_Start()
         {
-            //if (!enableScrollText) return;
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+            tmrTick.Start();
+        }
+        private void Timer_Stop()
+        {
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+        }
 
-            //if (position < -Width)
-            //{
-            //    //this.Size = new Size(width, Height);
-            //    position = _Parent_Width;
-            //}
+        private void ThreadTask_Handle_TextRun()
+        {
+            while (true)
+            {
+                Thread.Sleep(300);
+                if (!enableScrollPanel) continue;
 
-            //position -= speed;
-            //Invalidate();
+                this.Invoke((MethodInvoker)delegate
+                {
+                    // Running on the UI thread
+                    if (this.Location.X < -maxPosition)
+                    {
+                        if (++repeat_Count >= Max_Repeat_Time)
+                        {
+                            OnNotifyEndProcess_TextRun(repeat_Count);
+                            Stop();
+                        }
+                        this.Size = new Size(width, Height);
+                        this.Location = new Point(width, this.Location.Y);
+                    }
+
+                    this.Location = new Point(this.Location.X - speed, this.Location.Y);
+                    Width += speed;
+                    //position -= speed;
+                    Invalidate();
+                });
+            }
+        }
+    }
+    public class NotifyEndProcess : EventArgs
+    {
+        public int Repeat_count = 0;
+        public NotifyEndProcess(int repeat_count)
+        {
+            Repeat_count = repeat_count;
         }
     }
 }

@@ -160,6 +160,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comport.cs" />
     <Compile Include="TextOverlay\Transparent_BackGround.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -184,18 +185,6 @@
     </Compile>
     <Compile Include="Options_MainForm\DefaultForm.Designer.cs">
       <DependentUpon>DefaultForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PanelEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PanelEx.Designer.cs">
-      <DependentUpon>PanelEx.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PanelEx2.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PanelEx2.Designer.cs">
-      <DependentUpon>PanelEx2.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

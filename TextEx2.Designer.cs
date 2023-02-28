@@ -1,7 +1,7 @@
 ﻿
 namespace Display
 {
-    partial class TextEx2
+    partial class PanelEx2
     {
         /// <summary>
         /// Required designer variable.
