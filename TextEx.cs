@@ -25,6 +25,8 @@ namespace Display
             trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
             trd_Handle_TextRun.IsBackground = true;
             trd_Handle_TextRun.Start();
+
+            Control.CheckForIllegalCrossThreadCalls = false;
         }
         public int SetSpeed
         {
@@ -132,7 +134,7 @@ namespace Display
                     this.Location = new Point(this.Location.X, this.Location.Y - speed);
                     Height += speed;
                     //position -= speed;
-                    Invalidate();
+                    //Invalidate();
                 });
             }
         }

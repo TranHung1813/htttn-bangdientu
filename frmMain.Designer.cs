@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.tick = new System.Windows.Forms.Timer(this.components);
             this.panelContainer = new System.Windows.Forms.Panel();
+            this.Timer_FindComPort = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // tick
@@ -67,6 +68,7 @@
         #endregion
         private System.Windows.Forms.Timer tick;
         private System.Windows.Forms.Panel panelContainer;
+        private System.Windows.Forms.Timer Timer_FindComPort;
     }
 }
 

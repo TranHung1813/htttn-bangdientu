@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.IO.Ports;
 
 namespace Display
 {
@@ -20,9 +21,16 @@ namespace Display
     {
         private Message mqttMessage;
 
+        private byte[] PingPacket = { 0x03, 0x01 };
+        private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
+        private byte[] ConnectedPacket = { 0x03, 0x01, 0x00 };
+
         private string _VideoUrl = "";
         private string _TxtThongBao = "";
         private string _TxtVanBan = "";
+
+        private static int MAX_BUFFER_SIZE = 1024;
+        ComPort Uart2Com = new ComPort(115200, MAX_BUFFER_SIZE, false);
 
         private CustomForm customForm = new CustomForm();
         private DefaultForm defaultForm = new DefaultForm();
@@ -65,10 +73,12 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
 
-            //RegisterInStartup(false);
-            //Add_UserControl(customForm);
-            //Add_UserControl(defaultForm);
-            //CurrentForm = DEFAULT_FORM;
+            Uart2Com.NotifySendPacket += Notify_SendPacket;
+            Uart2Com.NotifyRecvPacket += Notify_RecvPacket;
+            Uart2Com.StatusConnection += Notify_StatusConnection;
+
+            Uart2Com.Setup_InfoComport(115200, 8, StopBits.One, Parity.None);
+            Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 300, true);
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -107,7 +117,7 @@ namespace Display
                     break;
                 case Keys.F3:
                     // Chuyen sang tab xem Video
-                    if(CurrentForm == CUSTOM_FORM)
+                    if (CurrentForm == CUSTOM_FORM)
                         customForm.ShowVideo(_VideoUrl);
                     break;
 
@@ -152,7 +162,17 @@ namespace Display
                 case Keys.F8:
                     SendMessage(this.Handle.ToInt32(), WM_SYSCOMMAND, SC_MONITORPOWER, 2);
                     break;
+
+                case Keys.F12:
+                    byte[] ClosePacket = { 0x03, 0x02, 0x01 };
+                    Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
+                    break;
+                case Keys.F11:
+                    byte[] OpenPacket = { 0x03, 0x02, 0x00 };
+                    Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
+                    break;
             }
+
         }
  
 
@@ -226,6 +246,30 @@ namespace Display
             catch(Exception ex)
             {
                 Log.Error(ex, "ProcessNewMessage");
+            }
+        }
+
+        private void Notify_SendPacket(object sender, StatusSendPacket e)
+        { 
+            if (e.Status == ComPort.E_OK)
+            {
+                //MessageBox.Show("Send" + Encoding.Default.GetString(e.DataSend, 0, e.Length));
+            }
+        }
+
+        private void Notify_RecvPacket(object sender, RecvPacket e)
+        {
+            //MessageBox.Show("Send" + Encoding.Default.GetString(e.DataRecv, 0, e.Length));
+        }
+        private void Notify_StatusConnection(object sender, NotifyStatusConnection e)
+        {
+            if (e.Status == ComPort.E_OK)
+            {
+                Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ConnectedPacket, ConnectedPacket.Length);
+            }
+            else
+            {
+
             }
         }
 

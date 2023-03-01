@@ -30,6 +30,8 @@ namespace Display
             tmrTick = new System.Windows.Forms.Timer();
             tmrTick.Interval = 24;
             tmrTick.Tick += TmrTick_Tick;
+
+            Control.CheckForIllegalCrossThreadCalls = false;
         }
 
         private void TmrTick_Tick(object sender, EventArgs e)
@@ -51,7 +53,7 @@ namespace Display
             this.Location = new Point(this.Location.X - speed, this.Location.Y);
             Width += speed;
             //position -= speed;
-            Invalidate();
+            //Invalidate();
         }
 
         public int SetSpeed
@@ -203,7 +205,7 @@ namespace Display
                     this.Location = new Point(this.Location.X - speed, this.Location.Y);
                     Width += speed;
                     //position -= speed;
-                    Invalidate();
+                    //Invalidate();
                 });
             }
         }
