@@ -796,7 +796,7 @@ namespace Display
                 Thread.Sleep(1);
             }
         }
-        int CompareByteArray(byte[] src, int len_src, byte[] des, int len_des)
+        public int CompareByteArray(byte[] src, int len_src, byte[] des, int len_des)
         {
             int ret = E_NOT_OK;
             int CountPos = 0;

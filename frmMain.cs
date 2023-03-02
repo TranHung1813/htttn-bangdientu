@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO.Ports;
+using System.Management;
 
 namespace Display
 {
@@ -21,9 +22,19 @@ namespace Display
     {
         private Message mqttMessage;
 
-        private byte[] PingPacket = { 0x03, 0x01 };
+        private byte[] PingPacket = { 0x03, 0x00 };
         private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
-        private byte[] ConnectedPacket = { 0x03, 0x01, 0x00 };
+        //private byte[] ConnectedPacket = { 0x03, 0x01, 0x00 };
+        private byte[] OpenPacket = { 0x03, 0x02, 0x00 };
+        private byte[] ClosePacket = { 0x03, 0x02, 0x01 };
+
+        private const int _Baudrate = 115200;
+        private const int _Databit = 8;
+        private const StopBits _StopBit = StopBits.One;
+        private const Parity _parity = Parity.None;
+
+        private bool _isRelayOpened = false;
+        private bool _isModule_Connected = false;
 
         private string _VideoUrl = "";
         private string _TxtThongBao = "";
@@ -77,8 +88,9 @@ namespace Display
             Uart2Com.NotifyRecvPacket += Notify_RecvPacket;
             Uart2Com.StatusConnection += Notify_StatusConnection;
 
-            Uart2Com.Setup_InfoComport(115200, 8, StopBits.One, Parity.None);
-            Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 300, true);
+            Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
+            //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
+
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -164,15 +176,28 @@ namespace Display
                     break;
 
                 case Keys.F12:
-                    byte[] ClosePacket = { 0x03, 0x02, 0x01 };
-                    Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
+                    // Open Relay
+                    OpenRelay();
                     break;
+
                 case Keys.F11:
-                    byte[] OpenPacket = { 0x03, 0x02, 0x00 };
-                    Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
+                    // Close Relay
+                    Close_Relay();
                     break;
             }
 
+        }
+        private void Close_Relay()
+        {
+            // Close Relay
+            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
+            _isRelayOpened = false;
+        }
+        private void OpenRelay()
+        {
+            // Open Relay
+            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
+            _isRelayOpened = true;
         }
  
 
@@ -259,13 +284,30 @@ namespace Display
 
         private void Notify_RecvPacket(object sender, RecvPacket e)
         {
+            if(ComPort.E_OK == Uart2Com.CompareByteArray(e.DataRecv, e.Length, PongPacket, PongPacket.Length))
+            {
+                if(e.DataRecv[4] == 0x00)
+                {
+                    if(_isRelayOpened == false)
+                    {
+                        Close_Relay();
+                    }
+                }
+                else if(e.DataRecv[4] == 0x01)
+                {
+                    if (_isRelayOpened == true)
+                    {
+                        OpenRelay();
+                    }
+                }
+            }
             //MessageBox.Show("Send" + Encoding.Default.GetString(e.DataRecv, 0, e.Length));
         }
         private void Notify_StatusConnection(object sender, NotifyStatusConnection e)
         {
             if (e.Status == ComPort.E_OK)
             {
-                Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ConnectedPacket, ConnectedPacket.Length);
+                //Uart2Com.SendPacketPing(PingPacket, PingPacket.Length, true, 2000);
             }
             else
             {
@@ -278,6 +320,45 @@ namespace Display
             Utility.fitFormToScreen(this, 768, 1366);
             defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
             customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+        }
+
+        private void Timer_FindComPort_Tick(object sender, EventArgs e)
+        {
+            var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_SerialPort");
+            bool isDriver_Availabel = false;
+            string ComName = "";
+            foreach (ManagementObject result in searcher.Get())
+            {
+                // Look at result["Caption"].ToString() and result["DeviceID"].ToString()
+                if(result["Caption"].ToString().Contains("CP210x"))
+                {
+                    ComName = result["DeviceID"].ToString();
+                    isDriver_Availabel = true;
+                    break;
+                }
+            }
+            if(isDriver_Availabel == true)
+            {
+                if(_isModule_Connected == false)
+                {
+                    int ret = ComPort.E_NOT_OK;
+                    try
+                    {
+                        ret = Uart2Com.SetupComPort(ComName, _Baudrate, _Databit, _StopBit, _parity);
+                    }
+                    catch { }
+                    if (ret == ComPort.E_OK)
+                    {
+                        _isModule_Connected = true;
+                        Uart2Com.SendPacketPing(PingPacket, PingPacket.Length, true, 2000);
+                    }
+                }
+            }
+            else
+            {
+                _isModule_Connected = false;
+                Uart2Com.Close();
+            }
         }
     }
 

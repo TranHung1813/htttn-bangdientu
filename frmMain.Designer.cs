@@ -47,6 +47,12 @@
             this.panelContainer.Size = new System.Drawing.Size(1040, 700);
             this.panelContainer.TabIndex = 0;
             // 
+            // Timer_FindComPort
+            // 
+            this.Timer_FindComPort.Enabled = true;
+            this.Timer_FindComPort.Interval = 2000;
+            this.Timer_FindComPort.Tick += new System.EventHandler(this.Timer_FindComPort_Tick);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
