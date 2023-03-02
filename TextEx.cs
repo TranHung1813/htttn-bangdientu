@@ -14,7 +14,7 @@ namespace Display
     public partial class PanelEx : Panel
     {
         Thread trd_Handle_TextRun;
-        //Timer tmrTick;
+        System.Windows.Forms.Timer tmrTick;
         int locationY, speed, height, maxPosition;
         bool enableScrollPanel = false;
 
@@ -25,6 +25,10 @@ namespace Display
             trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
             trd_Handle_TextRun.IsBackground = true;
             trd_Handle_TextRun.Start();
+
+            //tmrTick = new System.Windows.Forms.Timer();
+            //tmrTick.Interval = 50;
+            //tmrTick.Tick += TmrTick_Tick;
 
             Control.CheckForIllegalCrossThreadCalls = false;
         }
@@ -70,9 +74,11 @@ namespace Display
             {
                 SetSpeed = 0;
                 Thread_Stop();
+                //Timer_Stop();
             }
             else
             {
+                //Timer_Start();
                 Thread_Start();
                 State = RUNNING;
             }
@@ -81,6 +87,7 @@ namespace Display
         {
             SetSpeed = 0;
             Thread_Stop();
+            //Timer_Stop();
 
             this.Size = new Size(Width, height);
             this.Location = new Point(this.Location.X, locationY);
@@ -115,6 +122,30 @@ namespace Display
             }
         }
 
+        private void Timer_Start()
+        {
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+            tmrTick.Start();
+        }
+        private void Timer_Stop()
+        {
+            if (tmrTick != null)
+            {
+                try
+                {
+                    tmrTick.Stop();
+                }
+                catch { }
+            }
+        }
+
         private void ThreadTask_Handle_TextRun()
         {
             while (true)
@@ -134,9 +165,27 @@ namespace Display
                     this.Location = new Point(this.Location.X, this.Location.Y - speed);
                     Height += speed;
                     //position -= speed;
-                    //Invalidate();
+                    Invalidate();
                 });
             }
+        }
+
+
+        private void TmrTick_Tick(object sender, EventArgs e)
+        {
+            if (!enableScrollPanel) return;
+
+            // Running on the UI thread
+            if (this.Location.Y < -maxPosition)
+            {
+                this.Size = new Size(Width, height);
+                this.Location = new Point(this.Location.X, height);
+            }
+
+            this.Location = new Point(this.Location.X, this.Location.Y - speed);
+            Height += speed;
+            //position -= speed;
+            Invalidate();
         }
     }
 }

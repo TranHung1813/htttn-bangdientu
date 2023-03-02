@@ -53,7 +53,7 @@ namespace Display
             this.Location = new Point(this.Location.X - speed, this.Location.Y);
             Width += speed;
             //position -= speed;
-            //Invalidate();
+            Invalidate();
         }
 
         public int SetSpeed
@@ -205,7 +205,7 @@ namespace Display
                     this.Location = new Point(this.Location.X - speed, this.Location.Y);
                     Width += speed;
                     //position -= speed;
-                    //Invalidate();
+                    Invalidate();
                 });
             }
         }

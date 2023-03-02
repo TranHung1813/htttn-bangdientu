@@ -104,7 +104,7 @@ namespace Display
             }
             try
             {
-                timerDelayTextRun.Stop();
+                //timerDelayTextRun.Stop();
             }
             catch { }
         }
@@ -113,6 +113,11 @@ namespace Display
         {
             panel_TextRun.SetSpeed = 1;
             int Text_Height = lb_Title.Height + lb_Content.Height;
+
+            if (panel_TextRun.State == PanelEx.RUNNING)
+            {
+                panel_TextRun.Stop();
+            }
             panel_TextRun.Start(Text_Height);
 
             timerDelayTextRun.Stop();
