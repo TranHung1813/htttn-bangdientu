@@ -15,6 +15,7 @@ namespace Display
     {
         Thread trd_Handle_TextRun;
         System.Windows.Forms.Timer tmrTick;
+        System.Windows.Forms.Timer tmrDelay_TextRun;
         int locationY, speed, height, maxPosition;
         bool enableScrollPanel = false;
 
@@ -22,9 +23,9 @@ namespace Display
         {
             InitializeComponent();
 
-            trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
-            trd_Handle_TextRun.IsBackground = true;
-            trd_Handle_TextRun.Start();
+            //trd_Handle_TextRun = new Thread(new ThreadStart(this.ThreadTask_Handle_TextRun));
+            //trd_Handle_TextRun.IsBackground = true;
+            //trd_Handle_TextRun.Start();
 
             //tmrTick = new System.Windows.Forms.Timer();
             //tmrTick.Interval = 50;
@@ -37,9 +38,9 @@ namespace Display
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
-        public const int RUNNING = 1;
-        public const int STOPPED = 2;
-        public int State { get; set; }
+        private const int RUNNING = 1;
+        private const int STOPPED = 2;
+        private int State = 0;
         protected override void Dispose(bool disposing)
         {
             // Abort Thread
@@ -63,8 +64,16 @@ namespace Display
             base.Dispose(disposing);
         }
 
-        public void Start(int Length_Text_Inside)
+        public void Start(int Length_Text_Inside, int Delay_Text_Run)
         {
+            if (State == RUNNING)
+            {
+                try
+                {
+                    Stop();
+                }
+                catch { }
+            }
             locationY = this.Location.Y;
             height = this.Size.Height;
             enableScrollPanel = true;
@@ -78,21 +87,48 @@ namespace Display
             }
             else
             {
-                //Timer_Start();
-                Thread_Start();
                 State = RUNNING;
+                if (Delay_Text_Run > 100)
+                {
+                    tmrDelay_TextRun = new System.Windows.Forms.Timer();
+                    tmrDelay_TextRun.Interval = Delay_Text_Run;
+                    tmrDelay_TextRun.Tick += TmrDelay_TextRun_Tick;
+
+                    tmrDelay_TextRun.Start();
+                }
+                else
+                {
+                    tmrDelay_TextRun = new System.Windows.Forms.Timer();
+                    tmrDelay_TextRun.Interval = 100;
+                    tmrDelay_TextRun.Tick += TmrDelay_TextRun_Tick;
+
+                    tmrDelay_TextRun.Start();
+                }
             }
         }
         public void Stop()
         {
-            SetSpeed = 0;
-            Thread_Stop();
-            //Timer_Stop();
+            if (State == RUNNING)
+            {
+                //SetSpeed = 0;
+                Thread_Stop();
+                //Timer_Stop();
 
-            this.Size = new Size(Width, height);
-            this.Location = new Point(this.Location.X, locationY);
+                this.Size = new Size(Width, height);
+                this.Location = new Point(this.Location.X, locationY);
 
-            State = STOPPED;
+                if (tmrDelay_TextRun != null)
+                {
+                    try
+                    {
+                        tmrDelay_TextRun.Stop();
+                        tmrDelay_TextRun = null;
+                    }
+                    catch { }
+                }
+
+                State = STOPPED;
+            }
         }
         private void Thread_Start()
         {
@@ -150,7 +186,7 @@ namespace Display
         {
             while (true)
             {
-                Thread.Sleep(50);
+                Thread.Sleep(40);
                 if (!enableScrollPanel) continue;
 
                 this.Invoke((MethodInvoker)delegate
@@ -186,6 +222,13 @@ namespace Display
             Height += speed;
             //position -= speed;
             Invalidate();
+        }
+        private void TmrDelay_TextRun_Tick(object sender, EventArgs e)
+        {
+            //Timer_Start();
+            Thread_Start();
+
+            tmrDelay_TextRun.Stop();
         }
     }
 }

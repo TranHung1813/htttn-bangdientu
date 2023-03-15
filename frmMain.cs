@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO.Ports;
 using System.Management;
+using System.Net.NetworkInformation;
 
 namespace Display
 {
@@ -22,7 +23,7 @@ namespace Display
     {
         private Message mqttMessage;
 
-        private byte[] PingPacket = { 0x03, 0x00 };
+        private byte[] PingPacket = { 0x03, 0x01 };
         private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
         //private byte[] ConnectedPacket = { 0x03, 0x01, 0x00 };
         private byte[] OpenPacket = { 0x03, 0x02, 0x00 };
@@ -33,7 +34,7 @@ namespace Display
         private const StopBits _StopBit = StopBits.One;
         private const Parity _parity = Parity.None;
 
-        private bool _isRelayOpened = false;
+        private bool _isRelayOpened = true;
         private bool _isModule_Connected = false;
 
         private string _VideoUrl = "";
@@ -53,12 +54,23 @@ namespace Display
         public int WM_SYSCOMMAND = 0x0112;
         public int SC_MONITORPOWER = 0xF170;
 
+        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        private const UInt32 SWP_NOSIZE = 0x0001;
+        private const UInt32 SWP_NOMOVE = 0x0002;
+        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
+
+        private bool _isLostConnect = false;
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
         // bytech@2020
         //1. Thread cho Text Overlay chay doc lap (tạm ổn)
         //2. Debug voi man hinh lon (done)
         //3. Them Page hien multi Image (done)
         //4. Test voi ban tin Server (can modifi lai ban tin giao tiep)
-        //5. Code phan dieu khien voi Relay
+        //5. Code phan dieu khien voi Relay(done)
         //6. Xu ly phan Load anh (Load cham?, load xong bi nháy đen 1 phát) (done)
         //7. Thiet ke lai giao dien Text Overlay (done)
         //8. Thiet ke lai giao dien Text: Phan chia Text thành 2 phần: Title, Content (done)
@@ -71,14 +83,18 @@ namespace Display
         //15. Bug Page_Multi_Image chạy chưa Smooth (done)
         //16. Bug am thanh quay ve F1 khong tat (done)
 
-        //17. Xem lai Growing label
-        //18. Ve lai Text
-        //19. Code phan Porting voi VDK
+        //17. Xem lai Growing label (done)
+        //18. Ve lai Text (done)
+        //19. Code phan Porting voi VDK (done)
         public frmMain()
         {
             InitializeComponent();
-
             InitParameters();
+
+            //Timer_AutoReconnect.Enabled = true;
+
+            //GUID_Handle();
+            //SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
 
             //Init key press event
             this.KeyPreview = true;
@@ -86,11 +102,71 @@ namespace Display
 
             Uart2Com.NotifySendPacket += Notify_SendPacket;
             Uart2Com.NotifyRecvPacket += Notify_RecvPacket;
-            Uart2Com.StatusConnection += Notify_StatusConnection;
+            //Uart2Com.StatusConnection += Notify_StatusConnection;
 
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
 
+        }
+
+        private void GUID_Handle()
+        {
+            //opening the subkey  
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\BDT_Settings\GUID");
+
+            //if it does exist, retrieve the stored values  
+            if (key != null)
+            {
+                string a = key.GetValue("GUID").ToString();
+                key.Close();
+            }
+            else
+            {
+                RegistryKey new_key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\BDT_Settings\GUID");
+
+
+                //storing the values  
+                byte[] buffer = Guid.NewGuid().ToByteArray();
+                int[] guid = new int[buffer.Length];
+
+                for (int Countbyte = 0; Countbyte < buffer.Length; Countbyte++)
+                {
+                    //guid[Countbyte] = buffer[Countbyte].GetByte();
+                }
+                var FormNumber = BitConverter.ToUInt32(buffer, 0);
+
+                new_key.SetValue("GUID", GetRandomPasswordUsingGUID(16));
+                new_key.SetValue("Date Generate", DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
+                new_key.SetValue("MAC Address", GetMacAddress().ToString());
+            }
+        }
+        public string GetRandomPasswordUsingGUID(int length)
+        {
+            // Get the GUID
+            string guidResult = System.Guid.NewGuid().ToString();
+
+            // Remove the hyphens
+            guidResult = guidResult.Replace("-", string.Empty);
+
+            // Make sure length is valid
+            if (length <= 0 || length > guidResult.Length)
+                throw new ArgumentException("Length must be between 1 and " + guidResult.Length);
+
+            // Return the first length bytes
+            return guidResult.Substring(0, length);
+        }
+        public static PhysicalAddress GetMacAddress()
+        {
+            foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                // Only consider Ethernet network interfaces
+                if (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet &&
+                    nic.OperationalStatus == OperationalStatus.Up)
+                {
+                    return nic.GetPhysicalAddress();
+                }
+            }
+            return null;
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -172,6 +248,7 @@ namespace Display
                     }
                     break;
                 case Keys.F8:
+                    // Tat man hinh
                     SendMessage(this.Handle.ToInt32(), WM_SYSCOMMAND, SC_MONITORPOWER, 2);
                     break;
 
@@ -183,6 +260,11 @@ namespace Display
                 case Keys.F11:
                     // Close Relay
                     Close_Relay();
+                    break;
+
+                case Keys.S:
+                    defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", _VideoUrl);
+                    //defaultForm.Test();
                     break;
             }
 
@@ -226,8 +308,6 @@ namespace Display
                         .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(@"Log\Error-.txt", rollingInterval: RollingInterval.Day))
                     .CreateLogger();
         }
-
-       
 
         private void tick_Tick(object sender, EventArgs e)
         {
@@ -301,7 +381,6 @@ namespace Display
                     }
                 }
             }
-            //MessageBox.Show("Send" + Encoding.Default.GetString(e.DataRecv, 0, e.Length));
         }
         private void Notify_StatusConnection(object sender, NotifyStatusConnection e)
         {
@@ -320,6 +399,8 @@ namespace Display
             Utility.fitFormToScreen(this, 768, 1366);
             defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
             customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+
+            Timer_MQTT.Start();
         }
 
         private void Timer_FindComPort_Tick(object sender, EventArgs e)
@@ -330,7 +411,7 @@ namespace Display
             foreach (ManagementObject result in searcher.Get())
             {
                 // Look at result["Caption"].ToString() and result["DeviceID"].ToString()
-                if(result["Caption"].ToString().Contains("CP210x"))
+                if(result["Caption"].ToString().Contains("USB Serial Device") | result["Caption"].ToString().Contains("CP210x"))
                 {
                     ComName = result["DeviceID"].ToString();
                     isDriver_Availabel = true;
@@ -350,7 +431,8 @@ namespace Display
                     if (ret == ComPort.E_OK)
                     {
                         _isModule_Connected = true;
-                        Uart2Com.SendPacketPing(PingPacket, PingPacket.Length, true, 2000);
+                        //Uart2Com.SendPacketPing(PingPacket, PingPacket.Length, true, 1500);
+                        SendPing(2000);
                     }
                 }
             }
@@ -359,6 +441,20 @@ namespace Display
                 _isModule_Connected = false;
                 Uart2Com.Close();
             }
+        }
+        private void SendPing(int Interval)
+        {
+            try
+            {
+                Timer_SendPing.Stop();
+            }
+            catch { }
+            Timer_SendPing.Interval = Interval;
+            Timer_SendPing.Start();
+        }
+        private void Timer_SendPing_Tick(object sender, EventArgs e)
+        {
+            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), PingPacket, PingPacket.Length);
         }
     }
 

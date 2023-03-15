@@ -42,9 +42,9 @@ namespace Display
             pictureBox1.Image = BM_Content;
             lb_Content.Visible = false;
 
-            timerDelayTextRun.Stop();
-            timerDelayTextRun.Interval = 10000;
-            timerDelayTextRun.Start();
+            panel_TextRun.SetSpeed = 1;
+            int Text_Height = lb_Title.Height + lb_Content.Height;
+            panel_TextRun.Start(Text_Height, 10000);
         }
         public Bitmap ConvertTextToImage(Control control)
         {
@@ -98,29 +98,12 @@ namespace Display
         }
         public void Close()
         {
-            if(panel_TextRun.State == PanelEx.RUNNING)
-            {
-                panel_TextRun.Stop();
-            }
+            panel_TextRun.Stop();
             try
             {
                 //timerDelayTextRun.Stop();
             }
             catch { }
-        }
-
-        private void timerDelayTextRun_Tick(object sender, EventArgs e)
-        {
-            panel_TextRun.SetSpeed = 1;
-            int Text_Height = lb_Title.Height + lb_Content.Height;
-
-            if (panel_TextRun.State == PanelEx.RUNNING)
-            {
-                panel_TextRun.Stop();
-            }
-            panel_TextRun.Start(Text_Height);
-
-            timerDelayTextRun.Stop();
         }
         public void PageText_FitToContainer(int Height, int Width)
         {

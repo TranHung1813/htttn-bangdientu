@@ -10,6 +10,7 @@ using Serilog;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Runtime.Remoting.Messaging;
+using System.Windows.Forms;
 
 namespace Display
 {
@@ -47,14 +48,6 @@ namespace Display
             this.subcribeTopic += $"{clientId}/#";
 
             new Task(async () => await InitMqtt()).Start();
-        }
-        private async Task Init_MQTT()
-        {
-            try
-            {
-                await InitMqtt();
-            }
-            catch { }
         }
 
         private async Task InitMqtt()
@@ -116,6 +109,5 @@ namespace Display
             }
 
         }
-
     }
 }

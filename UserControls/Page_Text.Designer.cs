@@ -29,8 +29,6 @@ namespace Display
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.timerDelayTextRun = new System.Windows.Forms.Timer(this.components);
             this.panelContainer = new System.Windows.Forms.Panel();
             this.panel_TextRun = new Display.PanelEx();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -40,11 +38,6 @@ namespace Display
             this.panel_TextRun.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // timerDelayTextRun
-            // 
-            this.timerDelayTextRun.Interval = 10000;
-            this.timerDelayTextRun.Tick += new System.EventHandler(this.timerDelayTextRun_Tick);
             // 
             // panelContainer
             // 
@@ -64,7 +57,6 @@ namespace Display
             this.panel_TextRun.Name = "panel_TextRun";
             this.panel_TextRun.SetSpeed = 0;
             this.panel_TextRun.Size = new System.Drawing.Size(900, 400);
-            this.panel_TextRun.State = 0;
             this.panel_TextRun.TabIndex = 3;
             // 
             // pictureBox1
@@ -122,7 +114,6 @@ namespace Display
         }
 
         #endregion
-        private System.Windows.Forms.Timer timerDelayTextRun;
         private System.Windows.Forms.Panel panelContainer;
         private GrowLabel lb_Title;
         private GrowLabel lb_Content;

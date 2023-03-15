@@ -67,11 +67,10 @@ namespace Display
             //_Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ";
 
             //txtOverlay.Text = _Text;
-            Font font = new Font("Arial", _Text_Size);
+            Font font = new Font("Arial", _Text_Size, FontStyle.Bold);
             pictureBox1.Width = (int)this.CreateGraphics().MeasureString(_Text, font).Width;
             pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(_Text, font).Height * 1.3);
-            pictureBox1.Image = ConvertTextToImage(_Text, font, Color.Black, Color.Honeydew,
-                                                    Color.Red, (float)3.5 , pictureBox1.Width, pictureBox1.Height);
+            pictureBox1.Image = ConvertTextToImage(_Text, font, Color.Transparent, Color.Honeydew,Color.Red, (float)3.5, pictureBox1.Width, pictureBox1.Height);
 
             panel_TxtOverlay.Visible = false;
             timer_DelayText.Interval = 1000;
@@ -115,6 +114,23 @@ namespace Display
                 graphics.Flush();
                 font.Dispose();
                 graphics.Dispose();
+            }
+            return bmp;
+        }
+
+        public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor, int width, int Height)
+        {
+            Bitmap bmp = new Bitmap(width, Height);
+            using (Graphics graphics = Graphics.FromImage(bmp))
+            {
+                Rectangle rectF1 = new Rectangle(0, 0, width, Height);
+                graphics.FillRectangle(new SolidBrush(bgcolor), 0, 0, bmp.Width, bmp.Height);
+                graphics.DrawString(txt, font, new SolidBrush(fcolor), rectF1);
+                graphics.Flush();
+                font.Dispose();
+                graphics.Dispose();
+
+
             }
             return bmp;
         }

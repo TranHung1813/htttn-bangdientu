@@ -61,10 +61,11 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("864848737373768")]
+        [global::System.Configuration.DefaultSettingValueAttribute("868686868686868")]
         public string ClientId {
             get {
-                return ((string)(this["ClientId"]));
+                //return ((string)(this["ClientId"]));
+                return "868686868686868";
             }
         }
     }
