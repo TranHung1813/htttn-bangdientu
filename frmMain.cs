@@ -16,12 +16,17 @@ using System.Runtime.InteropServices;
 using System.IO.Ports;
 using System.Management;
 using System.Net.NetworkInformation;
+using Rijndael256;
+using System.IO;
+using System.Reflection;
 
 namespace Display
 {
     public partial class frmMain : Form
     {
         private Message mqttMessage;
+        string password = "bytech@2020";  // Khóa để mã hóa
+        string GUID_Value = "";
 
         private byte[] PingPacket = { 0x03, 0x01 };
         private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
@@ -51,6 +56,8 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private int CurrentForm = 0;
 
+        private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ScreenResolution.");
+
         public int WM_SYSCOMMAND = 0x0112;
         public int SC_MONITORPOWER = 0xF170;
 
@@ -58,8 +65,6 @@ namespace Display
         private const UInt32 SWP_NOSIZE = 0x0001;
         private const UInt32 SWP_NOMOVE = 0x0002;
         private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
-
-        private bool _isLostConnect = false;
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -91,9 +96,6 @@ namespace Display
             InitializeComponent();
             InitParameters();
 
-            //Timer_AutoReconnect.Enabled = true;
-
-            //GUID_Handle();
             //SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
 
             //Init key press event
@@ -117,13 +119,36 @@ namespace Display
             //if it does exist, retrieve the stored values  
             if (key != null)
             {
-                string a = key.GetValue("GUID").ToString();
+                try
+                {
+                    GUID_Value = Rijndael.Decrypt(key.GetValue("GUID").ToString(), password, KeySize.Aes256);
+                    //string Date = Rijndael.Decrypt(key.GetValue("Date Generate").ToString(), password, KeySize.Aes256);
+                    //string MAC = Rijndael.Decrypt(key.GetValue("MAC Address").ToString(), password, KeySize.Aes256);
+
+                    if (GUID_Value.Length != 32 )
+                    {
+                        Generate_NewKey();
+                    }
+
+                    Clipboard.SetText(GUID_Value);
+                }
+                catch
+                {
+                    Generate_NewKey();
+                }
+                
                 key.Close();
             }
             else
             {
+                Generate_NewKey();
+            }
+        }
+        private void Generate_NewKey()
+        {
+            try
+            {
                 RegistryKey new_key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\BDT_Settings\GUID");
-
 
                 //storing the values  
                 byte[] buffer = Guid.NewGuid().ToByteArray();
@@ -135,38 +160,42 @@ namespace Display
                 }
                 var FormNumber = BitConverter.ToUInt32(buffer, 0);
 
-                new_key.SetValue("GUID", GetRandomPasswordUsingGUID(16));
-                new_key.SetValue("Date Generate", DateTime.UtcNow.Date.ToString("dd/MM/yyyy"));
-                new_key.SetValue("MAC Address", GetMacAddress().ToString());
+                GUID_Value = GetNewGUID();
+                new_key.SetValue("GUID", Rijndael.Encrypt(GUID_Value, password, KeySize.Aes256));
+                new_key.SetValue("Date Generate", Rijndael.Encrypt(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"), password, KeySize.Aes256));
+                new_key.SetValue("MAC Address", Rijndael.Encrypt(GetDefaultMacAddress().ToString(), password, KeySize.Aes256));
             }
+            catch { }
+
+            Clipboard.SetText(GUID_Value);
         }
-        public string GetRandomPasswordUsingGUID(int length)
+        public string GetNewGUID()
         {
             // Get the GUID
-            string guidResult = System.Guid.NewGuid().ToString();
+            string guidResult = System.Guid.NewGuid().ToString("N");
 
-            // Remove the hyphens
-            guidResult = guidResult.Replace("-", string.Empty);
-
-            // Make sure length is valid
-            if (length <= 0 || length > guidResult.Length)
-                throw new ArgumentException("Length must be between 1 and " + guidResult.Length);
-
-            // Return the first length bytes
-            return guidResult.Substring(0, length);
+            // Return  the GUID
+            return guidResult;
         }
-        public static PhysicalAddress GetMacAddress()
+        public string GetDefaultMacAddress()
         {
+            Dictionary<string, long> macAddresses = new Dictionary<string, long>();
             foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
             {
-                // Only consider Ethernet network interfaces
-                if (nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet &&
-                    nic.OperationalStatus == OperationalStatus.Up)
+                if (nic.OperationalStatus == OperationalStatus.Up)
+                    macAddresses[nic.GetPhysicalAddress().ToString()] = nic.GetIPStatistics().BytesSent + nic.GetIPStatistics().BytesReceived;
+            }
+            long maxValue = 0;
+            string mac = "";
+            foreach (KeyValuePair<string, long> pair in macAddresses)
+            {
+                if (pair.Value > maxValue)
                 {
-                    return nic.GetPhysicalAddress();
+                    mac = pair.Key;
+                    maxValue = pair.Value;
                 }
             }
-            return null;
+            return mac;
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
@@ -266,6 +295,18 @@ namespace Display
                     defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", _VideoUrl);
                     //defaultForm.Test();
                     break;
+
+                case Keys.F:
+                    Clipboard.SetText(GUID_Value);
+                    break;
+
+                case Keys.P:
+                    //Utility.fitFormToContainer(this, this.Height, this.Width, Screen.PrimaryScreen.Bounds.Size.Height, Screen.PrimaryScreen.Bounds.Size.Width);
+                    //Utility.fitFormToScreen(this, 768, 1366);
+                    this.CenterToScreen();
+                    defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+                    customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+                    break;
             }
 
         }
@@ -297,8 +338,13 @@ namespace Display
 
         private void InitParameters()
         {
+            GUID_Handle();
+            //if(GUID_Value == null || GUID_Value.Length != 32)
+            {
+                GUID_Value = Properties.Settings.Default.ClientId;
+            }
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
-                Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, Properties.Settings.Default.ClientId);
+                    Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
 
             Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
@@ -396,7 +442,9 @@ namespace Display
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            //Utility.fitFormToContainer(this, this.Height, this.Width, Screen.PrimaryScreen.Bounds.Size.Height, Screen.PrimaryScreen.Bounds.Size.Width);
             Utility.fitFormToScreen(this, 768, 1366);
+            this.CenterToScreen();
             defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
             customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
 

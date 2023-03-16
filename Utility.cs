@@ -17,8 +17,8 @@ namespace Display
             //scale the form to the current screen resolution
             int form_h = form.Height;
             int form_w = form.Width;
-            form.Height = Screen.PrimaryScreen.Bounds.Size.Height;
-            form.Width = Screen.PrimaryScreen.Bounds.Size.Width;
+            form.Height = (int)Screen.PrimaryScreen.Bounds.Size.Height;
+            form.Width = (int)Screen.PrimaryScreen.Bounds.Size.Width;
             //form.Height = (int)Math.Round((float)form.Height * ((float)Screen.PrimaryScreen.Bounds.Size.Height / (float)h));
             //form.Width = (int)Math.Round((float)form.Width * ((float)Screen.PrimaryScreen.Bounds.Size.Width / (float)w));
 
@@ -29,8 +29,8 @@ namespace Display
             {
                 fitControlsToContainer(item, form_h, form_w, form.Height, form.Width);
             }
-            form.StartPosition = FormStartPosition.CenterScreen;
-            ReallyCenterToScreen(form);
+            //form.StartPosition = FormStartPosition.CenterScreen;
+            //ReallyCenterToScreen(form);
 
         }
         public static void fitFormToContainer(Form form, int Form_Height, int Form_Width, int Container_Height, int Container_Width)
@@ -41,7 +41,7 @@ namespace Display
             form.Width = Container_Width;
 
             //here font is scaled like width
-            form.Font = new Font(form.Font.FontFamily, form.Font.Size * ((float)Container_Width / (float)Form_Width));
+            //form.Font = new Font(form.Font.FontFamily, form.Font.Size * ((float)Container_Width / (float)Form_Width));
 
             foreach (Control item in form.Controls)
             {

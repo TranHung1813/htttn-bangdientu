@@ -55,11 +55,6 @@ namespace Display
                 _mp.Stop();
             });
         }
-        public void Test ()
-        {
-            //txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 10);
-        }
-
         public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
         {
             txtThongBao.Text = ThongBao.Trim().ToUpper();
@@ -114,8 +109,6 @@ namespace Display
                 graphics.Flush();
                 font.Dispose();
                 graphics.Dispose();
-
-
             }
             return bmp;
         }
@@ -162,19 +155,6 @@ namespace Display
             }
             return result.TrimEnd(new[] { '\r', '\n' });
         }
-        public string JustifyLines(string text, Font font, int ControlWidth)
-        {
-            string result = string.Empty;
-            List<string> Paragraphs = new List<string>();
-            Paragraphs.AddRange(text.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList());
-
-            //Justify each paragraph and re-insert a linefeed
-            foreach (string Paragraph in Paragraphs)
-            {
-                result += Justify(Paragraph, font, ControlWidth) + "\r\n";
-            }
-            return result.TrimEnd(new[] { '\r', '\n' });
-        }
         private string Justify(string text, Font font, int width)
         {
             char SpaceChar = (char)0x200A;
@@ -218,6 +198,7 @@ namespace Display
 
             txtThongBao.MaximumSize = new Size(panelThongBao.Width, 0);
             txtVanBan.MaximumSize = new Size(panelVanBan.Width, 0);
+            //txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 10);
         }
     }
 }
