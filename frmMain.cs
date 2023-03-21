@@ -28,6 +28,8 @@ namespace Display
         string password = "bytech@2020";  // Khóa để mã hóa
         string GUID_Value = "";
 
+        private const int DEFAULT_LENGTH_GUID = 15;
+
         private byte[] PingPacket = { 0x03, 0x01 };
         private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
         //private byte[] ConnectedPacket = { 0x03, 0x01, 0x00 };
@@ -125,7 +127,7 @@ namespace Display
                     //string Date = Rijndael.Decrypt(key.GetValue("Date Generate").ToString(), password, KeySize.Aes256);
                     //string MAC = Rijndael.Decrypt(key.GetValue("MAC Address").ToString(), password, KeySize.Aes256);
 
-                    if (GUID_Value.Length != 32 )
+                    if (GUID_Value.Length != DEFAULT_LENGTH_GUID)
                     {
                         Generate_NewKey();
                     }
@@ -150,16 +152,6 @@ namespace Display
             {
                 RegistryKey new_key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\BDT_Settings\GUID");
 
-                //storing the values  
-                byte[] buffer = Guid.NewGuid().ToByteArray();
-                int[] guid = new int[buffer.Length];
-
-                for (int Countbyte = 0; Countbyte < buffer.Length; Countbyte++)
-                {
-                    //guid[Countbyte] = buffer[Countbyte].GetByte();
-                }
-                var FormNumber = BitConverter.ToUInt32(buffer, 0);
-
                 GUID_Value = GetNewGUID();
                 new_key.SetValue("GUID", Rijndael.Encrypt(GUID_Value, password, KeySize.Aes256));
                 new_key.SetValue("Date Generate", Rijndael.Encrypt(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"), password, KeySize.Aes256));
@@ -171,11 +163,21 @@ namespace Display
         }
         public string GetNewGUID()
         {
+            string guid_str = "";
             // Get the GUID
-            string guidResult = System.Guid.NewGuid().ToString("N");
-
+            byte[] guid_ByteArray = Guid.NewGuid().ToByteArray();
+            int[] guid_int = new int[guid_ByteArray.Length];
+            for(int CountByte = 0; CountByte < guid_ByteArray.Length; CountByte ++)
+            {
+                guid_int[CountByte] = guid_ByteArray[CountByte] % 9;
+            }
+            for (int CountInt = 0; CountInt < guid_int.Length - 1; CountInt++)
+            {
+                int value = (guid_int[CountInt] + guid_int[CountInt]) % 9;
+                guid_str += value.ToString();
+            }
             // Return  the GUID
-            return guidResult;
+            return guid_str;
         }
         public string GetDefaultMacAddress()
         {
@@ -292,7 +294,7 @@ namespace Display
                     break;
 
                 case Keys.S:
-                    defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", _VideoUrl);
+                    defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     //defaultForm.Test();
                     break;
 
@@ -301,11 +303,7 @@ namespace Display
                     break;
 
                 case Keys.P:
-                    //Utility.fitFormToContainer(this, this.Height, this.Width, Screen.PrimaryScreen.Bounds.Size.Height, Screen.PrimaryScreen.Bounds.Size.Width);
-                    //Utility.fitFormToScreen(this, 768, 1366);
-                    this.CenterToScreen();
-                    defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
-                    customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+                    //defaultForm.Test();
                     break;
             }
 
@@ -339,9 +337,10 @@ namespace Display
         private void InitParameters()
         {
             GUID_Handle();
-            //if(GUID_Value == null || GUID_Value.Length != 32)
+            //if (GUID_Value == null || GUID_Value.Length != DEFAULT_LENGTH_GUID)
             {
-                GUID_Value = Properties.Settings.Default.ClientId;
+                //GUID_Value = Properties.Settings.Default.ClientId;
+                GUID_Value = "180116373248482";
             }
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
                     Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
@@ -376,6 +375,7 @@ namespace Display
                 if(newMessage != null)
                 {
                     var topic = newMessage.Topic;
+                    string message = Encoding.UTF8.GetString(newMessage.Payload);
                     var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
 
                     _TxtThongBao = payload.BanTinThongBao;
@@ -459,14 +459,16 @@ namespace Display
             foreach (ManagementObject result in searcher.Get())
             {
                 // Look at result["Caption"].ToString() and result["DeviceID"].ToString()
-                if(result["Caption"].ToString().Contains("USB Serial Device") | result["Caption"].ToString().Contains("CP210x"))
-                {
-                    ComName = result["DeviceID"].ToString();
-                    isDriver_Availabel = true;
-                    break;
-                }
+                //if(result["Caption"].ToString().Contains("USB Serial Device") | result["Caption"].ToString().Contains("CP210x"))
+                //{
+                //    ComName = result["DeviceID"].ToString();
+                //    isDriver_Availabel = true;
+                //    break;
+                //}
             }
-            if(isDriver_Availabel == true)
+            ComName = "COM2";
+            isDriver_Availabel = true;
+            if (isDriver_Availabel == true)
             {
                 if(_isModule_Connected == false)
                 {

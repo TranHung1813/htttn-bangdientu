@@ -5,7 +5,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,6 +19,10 @@ namespace Display
     {
         private LibVLC _libVLC;
         private MediaPlayer _mp;
+        //private string _url = "";
+        private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private string _FileName = "";
+        Timer tick;
 
         public DefaultForm()
         {
@@ -31,18 +38,57 @@ namespace Display
             _libVLC = new LibVLC();
             _mp = new MediaPlayer(_libVLC);
             videoView1.MediaPlayer = _mp;
+            _mp.AspectRatio = "80:69";
+            _mp.EncounteredError += _mp_EncounteredError;
+
+            tick = new Timer();
+            tick.Interval = 500;
+            tick.Tick += Tick_Tick;
+        }
+
+        private void Tick_Tick(object sender, EventArgs e)
+        {
+            if (_mp.IsPlaying == false)
+            {
+                if (_isFileDownloadDone == true)
+                {
+                    long length = new System.IO.FileInfo(_FileName).Length;
+                    if (length > 1.5 * 1024 * 1024)
+                    {
+                        string[] @params = new string[] { "input-repeat=65535" };
+                        //string[] mediaOptions = { };
+                        try
+                        {
+                            _mp.Play(new Media(_libVLC, new Uri(_FileName), @params));
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                    //tick.Stop();
+                }
+            }
+        }
+
+        private void _mp_EncounteredError(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Error");
         }
 
         public void ShowVideo(string url)
         {
-            string[] @params = new string[] { "input-repeat=65535" };
-
+            string[] @params = new string[] { "input-repeat=1" };
+            //string[] mediaOptions = { };
             try
             {
                 _mp.Play(new Media(_libVLC, new Uri(url), @params));
             }
             catch
             { }
+            DownloadAsync(url);
+            tick.Stop();
+            tick.Start();
         }
 
         public void Close()
@@ -53,6 +99,7 @@ namespace Display
             Task.Run(() =>
             {
                 _mp.Stop();
+                _mp.Dispose();
             });
         }
         public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
@@ -60,7 +107,7 @@ namespace Display
             txtThongBao.Text = ThongBao.Trim().ToUpper();
             txtVanBan.Text = VanBan;
             //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
-            txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 10);
+            txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
             pictureBox1.Visible = false;
             pictureBox2.Visible = false;
 
@@ -88,6 +135,8 @@ namespace Display
             int Text_Height2 = txtVanBan.Height;
             panelVanBan.Start(Text_Height2, 10000);
 
+            //VideoURL = @"http://media-ice.musicradio.com/CapitalBirminghamMP3";
+            //VideoURL = @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8";
             ShowVideo(VideoURL);
         }
         public Bitmap ConvertTextToImage(Control control)
@@ -134,7 +183,7 @@ namespace Display
                         if (TextRenderer.MeasureText(tmpLine, font).Width > ControlWidth)
                         {
                             //Max lenght reached. Justify the line and step back
-                            result += Justify(line.TrimEnd(), font, ControlWidth) + "\r\n";
+                            result += Justify(line.TrimEnd(), font, ControlWidth) + "\n";
                             line = string.Empty;
                             --x;
                         }
@@ -146,14 +195,14 @@ namespace Display
                     }
                     //Adds the remainder if any
                     if (line.Length > 0)
-                        result += line + "\r\n";
+                        result += line + "\n";
                 }
                 else
                 {
-                    result += Paragraph + "\r\n";
+                    result += Paragraph + "\n";
                 }
             }
-            return result.TrimEnd(new[] { '\r', '\n' });
+            return result.TrimEnd(new[] { '\n' });
         }
         private string Justify(string text, Font font, int width)
         {
@@ -192,6 +241,30 @@ namespace Display
                 return AdjustedWords.TrimEnd();
             }))();
         }
+        private bool _isFileDownloadDone = false;
+        private void DownloadAsync (string Url)
+        {
+            _isFileDownloadDone = false;
+
+            string fileExtension = "";
+            Uri uri = new Uri(Url);
+            try
+            {
+                fileExtension = Path.GetExtension(uri.LocalPath);
+            }
+            catch { }
+            _FileName = Path.Combine(PathFile, "SaveVideo" + fileExtension);
+
+            WebClient webClient = new WebClient();
+            webClient.DownloadFileAsync(uri, _FileName);
+            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+        }
+
+        private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            _isFileDownloadDone = true;
+        }
+
         public void DefaultForm_FitToContainer(int Height, int Width)
         {
             Utility.FitUserControlToContainer(this, Height, Width);
@@ -199,6 +272,9 @@ namespace Display
             txtThongBao.MaximumSize = new Size(panelThongBao.Width, 0);
             txtVanBan.MaximumSize = new Size(panelVanBan.Width, 0);
             //txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 10);
+
+            label2.Width = 1;
+            label1.Height = 1;
         }
     }
 }

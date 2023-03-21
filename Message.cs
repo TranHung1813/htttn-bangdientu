@@ -52,19 +52,29 @@ namespace Display
 
         private async Task InitMqtt()
         {
-            optionsBuilder = new MqttClientOptionsBuilder()
-                    .WithClientId("display-" + DateTime.Now.Ticks)
-                    .WithTcpServer(serverAddress, serverPort)
-                    .WithCredentials(userName, password)
-                    .WithCleanSession()
-                    .Build();
+            try
+            {
+                optionsBuilder = new MqttClientOptionsBuilder()
+                        .WithClientId("display-" + DateTime.Now.Ticks)
+                        .WithTcpServer(serverAddress, serverPort)
+                        .WithCredentials(userName, password)
+                        .WithCleanSession()
+                        .Build();
 
-            mqttClient = new MqttFactory().CreateMqttClient();
-            await mqttClient.ConnectAsync(optionsBuilder, CancellationToken.None);
-            await mqttClient.SubscribeAsync(subcribeTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                mqttClient = new MqttFactory().CreateMqttClient();
+                await mqttClient.ConnectAsync(optionsBuilder, CancellationToken.None);
+                await mqttClient.SubscribeAsync(subcribeTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
 
-            mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
-            mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
+                mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
+                mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
+            }
+            catch
+            {
+                await Task.Delay(5000);
+
+                await InitMqtt();
+
+            }
         }
 
         private async Task MqttDisconnectedEvent(MqttClientDisconnectedEventArgs e)

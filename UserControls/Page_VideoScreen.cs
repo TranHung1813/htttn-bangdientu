@@ -35,6 +35,7 @@ namespace Display
 
             _libVLC = new LibVLC();
             _mp = new MediaPlayer(_libVLC);
+            _mp.AspectRatio = "4:3";
             videoView1.MediaPlayer = _mp;
         }
 
