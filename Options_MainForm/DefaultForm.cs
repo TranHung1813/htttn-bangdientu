@@ -19,7 +19,7 @@ namespace Display
     {
         private LibVLC _libVLC;
         private MediaPlayer _mp;
-        //private string _url = "";
+        private string _VideoUrl = "";
         private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private string _FileName = "";
         Timer tick;
@@ -52,7 +52,7 @@ namespace Display
             {
                 if (_isFileDownloadDone == true)
                 {
-                    long length = new System.IO.FileInfo(_FileName).Length;
+                    long length = new FileInfo(_FileName).Length;
                     if (length > 1.5 * 1024 * 1024)
                     {
                         string[] @params = new string[] { "input-repeat=65535" };
@@ -68,6 +68,16 @@ namespace Display
                     }
                     //tick.Stop();
                 }
+                else
+                {
+                    string[] @params = new string[] { "input-repeat=0" };
+                    try
+                    {
+                        _mp.Play(new Media(_libVLC, new Uri(_VideoUrl), @params));
+                    }
+                    catch
+                    { }
+                }
             }
         }
 
@@ -78,15 +88,16 @@ namespace Display
 
         public void ShowVideo(string url)
         {
-            string[] @params = new string[] { "input-repeat=1" };
+            _VideoUrl = url;
+            string[] @params = new string[] { "input-repeat=0" };
             //string[] mediaOptions = { };
             try
             {
                 _mp.Play(new Media(_libVLC, new Uri(url), @params));
+                DownloadAsync(url);
             }
             catch
             { }
-            DownloadAsync(url);
             tick.Stop();
             tick.Start();
         }

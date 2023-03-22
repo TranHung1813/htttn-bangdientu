@@ -303,10 +303,28 @@ namespace Display
                     break;
 
                 case Keys.P:
-                    //defaultForm.Test();
+                    ScheduleHandle abc = new ScheduleHandle();
+                    abc.NotifyTime2Play += Abc_NotifyTime2Play;
+
+                    Schedule msg = new Schedule();
+                    msg.isActive = true;
+                    msg.timeList = new List<int> { 30, 90, 130 };
+                    msg.idleTime = 1;
+                    msg.playList = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
+                    abc.Schedule(msg);
+
+                    Schedule msg2 = new Schedule();
+                    msg2.isActive = true;
+                    msg2.timeList = new List<int> { 60, 120 };
+                    msg2.idleTime = 2;
+                    msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                    abc.Schedule(msg2);
                     break;
             }
-
+        }
+        private void Abc_NotifyTime2Play(object sender, NotifyTime2Play e)
+        {
+            defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
         }
         private void Close_Relay()
         {
@@ -376,7 +394,7 @@ namespace Display
                 {
                     var topic = newMessage.Topic;
                     string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    var payload = JsonConvert.DeserializeObject<DisplayMessage>(Encoding.UTF8.GetString(newMessage.Payload));
+                    var payload = JsonConvert.DeserializeObject<DisplayMessage>(message);
 
                     _TxtThongBao = payload.BanTinThongBao;
                     //ShowText(_TxtThongBao);
@@ -458,16 +476,15 @@ namespace Display
             string ComName = "";
             foreach (ManagementObject result in searcher.Get())
             {
-                // Look at result["Caption"].ToString() and result["DeviceID"].ToString()
-                //if(result["Caption"].ToString().Contains("USB Serial Device") | result["Caption"].ToString().Contains("CP210x"))
-                //{
-                //    ComName = result["DeviceID"].ToString();
-                //    isDriver_Availabel = true;
-                //    break;
-                //}
+                //Look at result["Caption"].ToString() and result["DeviceID"].ToString()
+                if (result["Caption"].ToString().Contains("USB Serial Device") | result["Caption"].ToString().Contains("CP210x"))
+                {
+                    ComName = result["DeviceID"].ToString();
+                    isDriver_Availabel = true;
+                    break;
+                }
             }
-            ComName = "COM2";
-            isDriver_Availabel = true;
+
             if (isDriver_Availabel == true)
             {
                 if(_isModule_Connected == false)
@@ -514,4 +531,36 @@ namespace Display
         public string BanTinVanBan { get; set; }
         public string VideoUrl { get; set; }
     }
+
+    public class Schedule
+    {
+        public string id;        //Schedule ID, định danh các schedule khác nhau
+
+        public long createdTime;        //Thời điểm tạo lịch (UTC second)
+
+        public int duration;       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
+
+        public int loopNum;        //Số lần phát
+
+        public int idleTime;       //Thời gian nghỉ giữa 2 lần phát (s)
+
+        public bool isDaily;    //Phát lặp lại hàng ngày
+
+        public bool isBroadcast;    //Phát quảng bá cho cả room cùng nghe
+
+        public long fromTime;          //Có hiệu lực từ thời điểm (UTC second)
+
+        public long toTime;            //Có hiệu lực đến thời điểm (UTC second)
+
+        public bool isActive;       //Còn hiệu lực hay không
+
+        public List<int> timeList; //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
+
+        public List<int> dayList;  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
+
+        public List<string> playList;  //Danh sách nội dung
+
+        public string bucket;          //Remote folder on MinIO server
+    }
+
 }

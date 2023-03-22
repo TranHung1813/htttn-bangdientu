@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comport.cs" />
+    <Compile Include="ScheduleHandle.cs" />
     <Compile Include="TextOverlay\Transparent_BackGround.cs">
       <SubType>Form</SubType>
     </Compile>
