@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,13 +19,16 @@ namespace Display
         private string _VideoUrl = "";
         private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private string _FileName = "";
-        System.Windows.Forms.Timer tick;
+        Timer tick;
+        System.Timers.Timer Duration_Tmr;
 
         private int _IdleTime = 0;
         private int _LoopNum = int.MaxValue;
         private int _Duration = int.MaxValue;
         private int CountTimeLoop = 0;
         private int IdleTimeCount = 0;
+
+        private bool _EnableLoop = false;
 
         public DefaultForm()
         {
@@ -45,13 +47,16 @@ namespace Display
             _mp.AspectRatio = "80:69";
             _mp.EncounteredError += _mp_EncounteredError;
 
-            tick = new System.Windows.Forms.Timer();
+            tick = new Timer();
             tick.Interval = 500;
             tick.Tick += Tick_Tick;
+
+            Duration_Tmr = new System.Timers.Timer();
         }
 
         private void Tick_Tick(object sender, EventArgs e)
         {
+            if (_EnableLoop != true) return;
             if (_mp.IsPlaying == false)
             {
                 //Số lần Loop kết thúc
@@ -126,27 +131,25 @@ namespace Display
             IdleTimeCount = _IdleTime;
             _LoopNum = loopNum;
             _Duration = Duration * 1000; // Convert to ms
+            _EnableLoop = false;
 
             PlayVideo(url);
         }
 
         private void PlayVideo(string url)
         {
-            string[] @params = new string[] { "input-repeat=0" };
+            string[] @params = new string[] { "input-repeat=0" };//, "run-time=5" };
             //string[] mediaOptions = { };
             try
             {
                 _mp.Play(new Media(_libVLC, new Uri(url), @params));
                 _mp.Playing += _mp_Playing;
-                _mp.FileCaching = 10000;
-                DownloadAsync(url);
             }
             catch
             { }
+            Duration_Tmr.Stop();
             tick.Stop();
             tick.Start();
-
-            Thread.Sleep(200);
         }
 
         private void _mp_Playing(object sender, EventArgs e)
@@ -154,11 +157,33 @@ namespace Display
             long VideoLength = _mp.Length;
             if (VideoLength <= 0)
             {
+                // Video Stream co length = 0;
+                if (_LoopNum == 0 && _Duration > 0)
+                {
+                    // Xu ly Duration cho Video Stream
+                    Duration_Tmr.Interval = _Duration + 1000;
+                    Duration_Tmr.Elapsed += (o, ev) =>
+                    {
+                        // Stop Media
+                        Task.Run(() =>
+                        {
+                            _mp.Stop();
+                        });
+                        // Stop this Timer
+                        System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                        this_timer.Stop();
+                    };
+                    Duration_Tmr.Start();
+                }
                 _LoopNum = int.MaxValue;
+                _EnableLoop = false;
             }
             else
             {
+                // Link Video khong Stream
+                DownloadAsync(_VideoUrl);
                 _LoopNum = (_LoopNum == 0) ? Duration_Caculate((int)VideoLength, _IdleTime, _Duration) : _LoopNum;
+                _EnableLoop = true;
             }
 
             try

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Display
@@ -36,7 +37,7 @@ namespace Display
             new_messsage.timer.Interval = new_messsage.TimeList[0] * 1000;
             new_messsage.timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(new_messsage.msg.idleTime, new_messsage.msg.playList);
+                OnNotify_Time2Play(new_messsage.msg.idleTime, new_messsage.msg.loopNum, new_messsage.msg.duration, new_messsage.msg.playList);
                 Timer this_timer = (Timer)sender;
                 if (new_messsage.CountTime < new_messsage.TimeList.Length)
                 {
@@ -57,6 +58,7 @@ namespace Display
         {
             if (TimeList.Length <= 0) return null;
 
+            TimeList = TimeList.Distinct().ToArray();
             Array.Sort(TimeList);
             int[] NewTimeList = new int[TimeList.Length];
 
@@ -81,11 +83,11 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(int Test, List<string> PlayList)
+        protected virtual void OnNotify_Time2Play(int IdleTime, int LoopNum, int Duration, List<string> PlayList)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(Test, PlayList));
+                _NotifyTime2Play(this, new NotifyTime2Play(IdleTime, LoopNum, Duration, PlayList));
             }
         }
     }
@@ -99,11 +101,15 @@ namespace Display
     }
     public class NotifyTime2Play : EventArgs
     {
-        public int test;
+        public int IdleTime;
+        public int LoopNum;
+        public int Duration;
         public List<string> playList;
-        public NotifyTime2Play(int Test, List<string> PlayList)
+        public NotifyTime2Play(int idleTime, int loopNum, int duration, List<string> PlayList)
         {
-            test = Test;
+            IdleTime = idleTime;
+            LoopNum = loopNum;
+            Duration = duration;
             playList = PlayList;
         }
     }

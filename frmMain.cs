@@ -87,6 +87,12 @@ namespace Display
         //17. Xem lai Growing label (done)
         //18. Ve lai Text (done)
         //19. Code phan Porting voi VDK (done)
+
+        //20. Xu ly loi khi 2 moc thoi gian trung nhau (done)
+        //21. Thử với url video lối => xem có bị lỗi k (done, k loi)
+        //22. Duration với video stream (done)
+        //23. Schedule theo ngay trong tuan
+        //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h)
         public frmMain()
         {
             InitializeComponent();
@@ -304,16 +310,20 @@ namespace Display
 
                     Schedule msg = new Schedule();
                     msg.isActive = true;
-                    msg.timeList = new List<int> { 30, 90, 130 };
+                    msg.timeList = new List<int> { 30, 200, 300 };
                     msg.idleTime = 1;
+                    msg.loopNum = 0;
+                    msg.duration = 60;
                     msg.playList = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
                     abc.Schedule(msg);
 
                     Schedule msg2 = new Schedule();
                     msg2.isActive = true;
-                    msg2.timeList = new List<int> { 60, 120 };
+                    msg2.timeList = new List<int> { 120, 120, 250 };
                     msg2.idleTime = 2;
-                    msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                    msg2.loopNum = 2;
+                    msg2.duration = 500;
+                    msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
                     abc.Schedule(msg2);
                     break;
             }
@@ -321,7 +331,7 @@ namespace Display
         private void Abc_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
             defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
-            defaultForm.ShowVideo(e.playList[2]);
+            defaultForm.ShowVideo(e.playList[2], e.IdleTime, e.LoopNum, e.Duration);
         }
         private void Close_Relay()
         {
@@ -406,7 +416,7 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
-                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 10, loopNum: 0, Duration: 120);
+                    defaultForm.ShowVideo(_VideoUrl.Substring(0, 5), IdleTime: 0, loopNum: 0, Duration: 60);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }
