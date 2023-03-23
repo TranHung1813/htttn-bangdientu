@@ -11,6 +11,10 @@ namespace Display
         //Thread ScheduleHandle_trd;
         public ScheduleHandle()
         {
+            List<int> abc = new List<int> { 30000, 30600, 30600, 29000, 31200 };
+            int[] test1 = null;
+            int[] test2 = null;
+            TimeList_Handle(abc, ref test1, ref test2);
             //Schedule(null);
             //ScheduleHandle_trd = new Thread(new ThreadStart(this.ScheduleHandle_Thread));
             //ScheduleHandle_trd.IsBackground = true;
@@ -30,7 +34,7 @@ namespace Display
             new_messsage.msg = message;
 
             //int[] test = { 10, 15, 30 };
-            new_messsage.TimeList = TimeList_Handle(message.timeList.ToArray());
+            TimeList_Handle(message.timeList, ref new_messsage.TimeList, ref new_messsage.WeeklyTimeList);
 
             // Timer Init
             new_messsage.timer = new Timer();
@@ -54,21 +58,45 @@ namespace Display
             _schedule_msg_List.Add(new_messsage);
         }
 
-        private int[] TimeList_Handle(int[] TimeList)
+        private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
         {
-            if (TimeList.Length <= 0) return null;
+            if (TimeList.Count <= 0) return;
 
-            TimeList = TimeList.Distinct().ToArray();
-            Array.Sort(TimeList);
-            int[] NewTimeList = new int[TimeList.Length];
+            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+            int TotalSecond_1Week = 7 * 24 * 3600;
+
+            TimeList = TimeList.Distinct().ToList();
+            TimeList.Sort();
+
+            // Every week Handle
+
+            WeeklyTimeList = new int[TimeList.Count];
+
+            WeeklyTimeList[0] = TotalSecond_1Week + TimeList[0] - TimeList[TimeList.Count - 1];
+            for (int CountValue = 1; CountValue < TimeList.Count; CountValue++)
+            {
+                WeeklyTimeList[CountValue] = TimeList[CountValue] - TimeList[CountValue - 1];
+            }
+
+            // This week Time List Handle
+            TimeList = TimeList.Select(x => x - CurrentSecond).ToList();
+
+            if (TimeList[TimeList.Count - 1] < 0)
+            {
+                TimeList = TimeList.Select(x => x + TotalSecond_1Week).ToList();
+            }
+            else
+            {
+                TimeList.RemoveAll(x => x < 0);
+            }
+
+            NewTimeList = new int[TimeList.Count];
 
             NewTimeList[0] = TimeList[0];
-            for (int CountValue = 1; CountValue < TimeList.Length; CountValue++)
+            for (int CountValue = 1; CountValue < TimeList.Count; CountValue++)
             {
                 NewTimeList[CountValue] = TimeList[CountValue] - TimeList[CountValue - 1];
             }
-
-            return NewTimeList;
         }
 
         private event EventHandler<NotifyTime2Play> _NotifyTime2Play;
@@ -95,6 +123,7 @@ namespace Display
     {
         public Schedule msg;
         public int[] TimeList;
+        public int[] WeeklyTimeList;
         public Timer timer;
         int? countTime;
         public int CountTime { get { return countTime ?? 1; } set { countTime = value; } }

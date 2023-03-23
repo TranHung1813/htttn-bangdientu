@@ -93,6 +93,9 @@ namespace Display
         //22. Duration với video stream (done)
         //23. Schedule theo ngay trong tuan
         //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h)
+        //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường
+        //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...)
+        //27. Xóa bản tin theo ID
         public frmMain()
         {
             InitializeComponent();
