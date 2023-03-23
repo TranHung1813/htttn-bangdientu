@@ -1,24 +1,18 @@
 ﻿using Microsoft.Win32;
-using MQTTnet.Client;
 using Newtonsoft.Json;
+using Rijndael256;
 using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.IO.Ports;
 using System.Management;
 using System.Net.NetworkInformation;
-using Rijndael256;
-using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
 namespace Display
 {
@@ -138,7 +132,7 @@ namespace Display
                 {
                     Generate_NewKey();
                 }
-                
+
                 key.Close();
             }
             else
@@ -167,7 +161,7 @@ namespace Display
             // Get the GUID
             byte[] guid_ByteArray = Guid.NewGuid().ToByteArray();
             int[] guid_int = new int[guid_ByteArray.Length];
-            for(int CountByte = 0; CountByte < guid_ByteArray.Length; CountByte ++)
+            for (int CountByte = 0; CountByte < guid_ByteArray.Length; CountByte++)
             {
                 guid_int[CountByte] = guid_ByteArray[CountByte] % 9;
             }
@@ -221,6 +215,7 @@ namespace Display
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
                         defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
+                        defaultForm.ShowVideo(_VideoUrl);
                     }
                     break;
 
@@ -295,6 +290,7 @@ namespace Display
 
                 case Keys.S:
                     defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 10, loopNum: 0);
                     //defaultForm.Test();
                     break;
 
@@ -325,6 +321,7 @@ namespace Display
         private void Abc_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
             defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
+            defaultForm.ShowVideo(e.playList[2]);
         }
         private void Close_Relay()
         {
@@ -338,7 +335,7 @@ namespace Display
             Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
             _isRelayOpened = true;
         }
- 
+
 
         [DllImport("user32.dll")]
         private static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
@@ -390,7 +387,7 @@ namespace Display
             try
             {
                 var newMessage = mqttMessage.GetMessage;
-                if(newMessage != null)
+                if (newMessage != null)
                 {
                     var topic = newMessage.Topic;
                     string message = Encoding.UTF8.GetString(newMessage.Payload);
@@ -409,17 +406,18 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
+                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 10, loopNum: 0, Duration: 120);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex, "ProcessNewMessage");
             }
         }
 
         private void Notify_SendPacket(object sender, StatusSendPacket e)
-        { 
+        {
             if (e.Status == ComPort.E_OK)
             {
                 //MessageBox.Show("Send" + Encoding.Default.GetString(e.DataSend, 0, e.Length));
@@ -428,16 +426,16 @@ namespace Display
 
         private void Notify_RecvPacket(object sender, RecvPacket e)
         {
-            if(ComPort.E_OK == Uart2Com.CompareByteArray(e.DataRecv, e.Length, PongPacket, PongPacket.Length))
+            if (ComPort.E_OK == Uart2Com.CompareByteArray(e.DataRecv, e.Length, PongPacket, PongPacket.Length))
             {
-                if(e.DataRecv[4] == 0x00)
+                if (e.DataRecv[4] == 0x00)
                 {
-                    if(_isRelayOpened == false)
+                    if (_isRelayOpened == false)
                     {
                         Close_Relay();
                     }
                 }
-                else if(e.DataRecv[4] == 0x01)
+                else if (e.DataRecv[4] == 0x01)
                 {
                     if (_isRelayOpened == true)
                     {
@@ -487,7 +485,7 @@ namespace Display
 
             if (isDriver_Availabel == true)
             {
-                if(_isModule_Connected == false)
+                if (_isModule_Connected == false)
                 {
                     int ret = ComPort.E_NOT_OK;
                     try

@@ -2,14 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,7 +20,13 @@ namespace Display
         private string _VideoUrl = "";
         private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private string _FileName = "";
-        Timer tick;
+        System.Windows.Forms.Timer tick;
+
+        private int _IdleTime = 0;
+        private int _LoopNum = int.MaxValue;
+        private int _Duration = int.MaxValue;
+        private int CountTimeLoop = 0;
+        private int IdleTimeCount = 0;
 
         public DefaultForm()
         {
@@ -41,7 +45,7 @@ namespace Display
             _mp.AspectRatio = "80:69";
             _mp.EncounteredError += _mp_EncounteredError;
 
-            tick = new Timer();
+            tick = new System.Windows.Forms.Timer();
             tick.Interval = 500;
             tick.Tick += Tick_Tick;
         }
@@ -50,13 +54,40 @@ namespace Display
         {
             if (_mp.IsPlaying == false)
             {
+                //Số lần Loop kết thúc
+                if (CountTimeLoop >= _LoopNum)
+                {
+                    Task.Run(() =>
+                    {
+                        _mp.Stop();
+                    });
+                    tick.Stop();
+                    return;
+                }
+                // Xu ly Idle Time
+                if (IdleTimeCount > 0)
+                {
+                    if(_mp.State != VLCState.Stopped)
+                    {
+                        Task.Run(() =>
+                        {
+                            _mp.Stop();
+                        });
+                    }
+                    IdleTimeCount -= tick.Interval;
+                    return;
+                }
+                else
+                {
+                    IdleTimeCount = _IdleTime;
+                }
+                // Chay video
                 if (_isFileDownloadDone == true)
                 {
                     long length = new FileInfo(_FileName).Length;
                     if (length > 1.5 * 1024 * 1024)
                     {
-                        string[] @params = new string[] { "input-repeat=65535" };
-                        //string[] mediaOptions = { };
+                        string[] @params = new string[] { "input-repeat=0" };
                         try
                         {
                             _mp.Play(new Media(_libVLC, new Uri(_FileName), @params));
@@ -78,6 +109,7 @@ namespace Display
                     catch
                     { }
                 }
+                CountTimeLoop++;
             }
         }
 
@@ -86,22 +118,60 @@ namespace Display
             //MessageBox.Show("Error");
         }
 
-        public void ShowVideo(string url)
+        public void ShowVideo(string url, int IdleTime = 0, int loopNum = int.MaxValue, int Duration = int.MaxValue)
         {
             _VideoUrl = url;
+            _IdleTime = IdleTime * 1000; // Convert to ms
+            CountTimeLoop = 1;
+            IdleTimeCount = _IdleTime;
+            _LoopNum = loopNum;
+            _Duration = Duration * 1000; // Convert to ms
+
+            PlayVideo(url);
+        }
+
+        private void PlayVideo(string url)
+        {
             string[] @params = new string[] { "input-repeat=0" };
             //string[] mediaOptions = { };
             try
             {
                 _mp.Play(new Media(_libVLC, new Uri(url), @params));
+                _mp.Playing += _mp_Playing;
+                _mp.FileCaching = 10000;
                 DownloadAsync(url);
             }
             catch
             { }
             tick.Stop();
             tick.Start();
+
+            Thread.Sleep(200);
         }
 
+        private void _mp_Playing(object sender, EventArgs e)
+        {
+            long VideoLength = _mp.Length;
+            if (VideoLength <= 0)
+            {
+                _LoopNum = int.MaxValue;
+            }
+            else
+            {
+                _LoopNum = (_LoopNum == 0) ? Duration_Caculate((int)VideoLength, _IdleTime, _Duration) : _LoopNum;
+            }
+
+            try
+            {
+                _mp.Playing -= _mp_Playing;
+            }
+            catch { }
+        }
+
+        private int Duration_Caculate(int VideoLength, int IdleTime, int Duration)
+        {
+            return Duration / (VideoLength + IdleTime) + 1;
+        }
         public void Close()
         {
             panelThongBao.Stop();
@@ -112,6 +182,13 @@ namespace Display
                 _mp.Stop();
                 _mp.Dispose();
             });
+
+            tick.Stop();
+            try
+            {
+                _mp.Playing -= _mp_Playing;
+            }
+            catch { }
         }
         public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
         {
@@ -148,7 +225,7 @@ namespace Display
 
             //VideoURL = @"http://media-ice.musicradio.com/CapitalBirminghamMP3";
             //VideoURL = @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8";
-            ShowVideo(VideoURL);
+            //ShowVideo(VideoURL);
         }
         public Bitmap ConvertTextToImage(Control control)
         {
@@ -232,7 +309,8 @@ namespace Display
             float AdjustSpace = (width - (WordsWidth + (AverageSpace * NumberOfWords * SpaceCharWidth)));
 
             //Add spaces to all words
-            return ((Func<string>)(() => {
+            return ((Func<string>)(() =>
+            {
                 string Spaces = "";
                 string AdjustedWords = "";
 
@@ -253,7 +331,7 @@ namespace Display
             }))();
         }
         private bool _isFileDownloadDone = false;
-        private void DownloadAsync (string Url)
+        private void DownloadAsync(string Url)
         {
             _isFileDownloadDone = false;
 
