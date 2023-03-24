@@ -31,23 +31,23 @@ namespace Display
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultForm));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.videoView1 = new LibVLCSharp.WinForms.VideoView();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panelThongBao = new Display.PanelEx();
             this.txtThongBao = new Display.GrowLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.panelVanBan = new Display.PanelEx();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.txtVanBan = new System.Windows.Forms.Label();
+            this.videoView1 = new LibVLCSharp.WinForms.VideoView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
             this.panelThongBao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel2.SuspendLayout();
             this.panelVanBan.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -58,42 +58,6 @@ namespace Display
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1030, 121);
             this.panel1.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.MistyRose;
-            this.panel2.Controls.Add(this.panelVanBan);
-            this.panel2.Location = new System.Drawing.Point(5, 139);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(488, 529);
-            this.panel2.TabIndex = 2;
-            // 
-            // videoView1
-            // 
-            this.videoView1.BackColor = System.Drawing.Color.Black;
-            this.videoView1.Location = new System.Drawing.Point(505, 139);
-            this.videoView1.MediaPlayer = null;
-            this.videoView1.Name = "videoView1";
-            this.videoView1.Size = new System.Drawing.Size(531, 529);
-            this.videoView1.TabIndex = 6;
-            this.videoView1.Text = "videoView1";
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.White;
-            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label1.Location = new System.Drawing.Point(-1, 132);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1042, 1);
-            this.label1.TabIndex = 7;
-            // 
-            // label2
-            // 
-            this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label2.Location = new System.Drawing.Point(499, 132);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(1, 540);
-            this.label2.TabIndex = 8;
             // 
             // panelThongBao
             // 
@@ -113,7 +77,7 @@ namespace Display
             this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
             this.txtThongBao.Location = new System.Drawing.Point(0, 3);
             this.txtThongBao.Name = "txtThongBao";
-            this.txtThongBao.Size = new System.Drawing.Size(995, 215);
+            this.txtThongBao.Size = new System.Drawing.Size(1030, 215);
             this.txtThongBao.TabIndex = 4;
             this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
             this.txtThongBao.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -129,6 +93,15 @@ namespace Display
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.MistyRose;
+            this.panel2.Controls.Add(this.panelVanBan);
+            this.panel2.Location = new System.Drawing.Point(5, 139);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(488, 529);
+            this.panel2.TabIndex = 2;
             // 
             // panelVanBan
             // 
@@ -166,6 +139,33 @@ namespace Display
             this.txtVanBan.TabIndex = 4;
             this.txtVanBan.Text = resources.GetString("txtVanBan.Text");
             // 
+            // videoView1
+            // 
+            this.videoView1.BackColor = System.Drawing.Color.Black;
+            this.videoView1.Location = new System.Drawing.Point(505, 139);
+            this.videoView1.MediaPlayer = null;
+            this.videoView1.Name = "videoView1";
+            this.videoView1.Size = new System.Drawing.Size(531, 529);
+            this.videoView1.TabIndex = 6;
+            this.videoView1.Text = "videoView1";
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.White;
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Location = new System.Drawing.Point(-1, 132);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(1042, 1);
+            this.label1.TabIndex = 7;
+            // 
+            // label2
+            // 
+            this.label2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label2.Location = new System.Drawing.Point(499, 132);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(1, 540);
+            this.label2.TabIndex = 8;
+            // 
             // DefaultForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -178,13 +178,13 @@ namespace Display
             this.Name = "DefaultForm";
             this.Size = new System.Drawing.Size(1040, 673);
             this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.panelThongBao.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel2.ResumeLayout(false);
             this.panelVanBan.ResumeLayout(false);
             this.panelVanBan.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.ResumeLayout(false);
 
         }

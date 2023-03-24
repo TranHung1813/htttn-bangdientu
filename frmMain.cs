@@ -5,6 +5,7 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Management;
@@ -96,13 +97,13 @@ namespace Display
         //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường
         //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...)
         //27. Xóa bản tin theo ID
+        //28. Text run không mượt trên máy tính Mini
         public frmMain()
         {
             InitializeComponent();
             InitParameters();
 
             //SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-
             //Init key press event
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
@@ -313,16 +314,20 @@ namespace Display
 
                     Schedule msg = new Schedule();
                     msg.isActive = true;
-                    msg.timeList = new List<int> { 30, 200, 300 };
+                    msg.isDaily = true;
+                    msg.dayList = new List<int> { 4, 5, 3, 2 };
+                    msg.timeList = new List<int> { 36720, 36840, 36900 };
                     msg.idleTime = 1;
                     msg.loopNum = 0;
-                    msg.duration = 60;
+                    msg.duration = 50;
                     msg.playList = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
                     abc.Schedule(msg);
 
                     Schedule msg2 = new Schedule();
                     msg2.isActive = true;
-                    msg2.timeList = new List<int> { 120, 120, 250 };
+                    msg2.isDaily = false;
+                    msg2.dayList = new List<int> { 4, 5, 3, 2 };
+                    msg2.timeList = new List<int> { 36780, 35940, 36870 };
                     msg2.idleTime = 2;
                     msg2.loopNum = 2;
                     msg2.duration = 500;
@@ -365,10 +370,10 @@ namespace Display
         private void InitParameters()
         {
             GUID_Handle();
-            //if (GUID_Value == null || GUID_Value.Length != DEFAULT_LENGTH_GUID)
+            if (GUID_Value == null || GUID_Value.Length != DEFAULT_LENGTH_GUID)
             {
-                //GUID_Value = Properties.Settings.Default.ClientId;
-                GUID_Value = "180116373248482";
+                GUID_Value = Properties.Settings.Default.ClientId;
+                //GUID_Value = "180116373248482";
             }
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
                     Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
@@ -419,7 +424,7 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
-                    defaultForm.ShowVideo(_VideoUrl.Substring(0, 5), IdleTime: 0, loopNum: 0, Duration: 60);
+                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 0, loopNum: 0, Duration: 60);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }
