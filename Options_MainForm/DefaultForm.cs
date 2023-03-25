@@ -1,4 +1,5 @@
 ﻿using LibVLCSharp.Shared;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -145,8 +146,10 @@ namespace Display
                 _mp.Play(new Media(_libVLC, new Uri(url), @params));
                 _mp.Playing += _mp_Playing;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "PlayMedia_Fail");
+            }
             Duration_Tmr.Stop();
             tick.Stop();
             tick.Start();

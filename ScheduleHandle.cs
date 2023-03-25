@@ -11,8 +11,6 @@ namespace Display
         //Thread ScheduleHandle_trd;
         public ScheduleHandle()
         {
-            //int[] arr = { 123, 243, 0, 0, 123, 0, 0, 0, 123 };
-            //arr = arr.Where(x => x != 0).ToArray();
             //ScheduleHandle_trd = new Thread(new ThreadStart(this.ScheduleHandle_Thread));
             //ScheduleHandle_trd.IsBackground = true;
             //ScheduleHandle_trd.Start();
@@ -158,6 +156,19 @@ namespace Display
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
 
+        public void DeleteMessage_by_Id(string messageId)
+        {
+            foreach(var schedule_msg in _schedule_msg_List)
+            {
+                if(schedule_msg.msg.id == messageId)
+                {
+                    schedule_msg.timer.Stop();
+                    schedule_msg.timer.Dispose();
+                }
+            }
+            _schedule_msg_List.RemoveAll(r => r.msg.id == messageId);
+        }
+
         private event EventHandler<NotifyTime2Play> _NotifyTime2Play;
         public event EventHandler<NotifyTime2Play> NotifyTime2Play
         {
@@ -185,7 +196,7 @@ namespace Display
         public int[] WeeklyTimeList;
         public Timer timer;
         int? countTime;
-        public int CountTime { get { return countTime ?? 1; } set { countTime = value; } }
+        public int CountTime { get { return countTime ?? 0; } set { countTime = value; } }
     }
     public class NotifyTime2Play : EventArgs
     {

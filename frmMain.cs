@@ -5,7 +5,6 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Management;
@@ -92,10 +91,10 @@ namespace Display
         //20. Xu ly loi khi 2 moc thoi gian trung nhau (done)
         //21. Thử với url video lối => xem có bị lỗi k (done, k loi)
         //22. Duration với video stream (done)
-        //23. Schedule theo ngay trong tuan
-        //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h)
+        //23. Schedule theo ngay trong tuan (done)
+        //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h) (done)
         //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường
-        //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...)
+        //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...) (done)
         //27. Xóa bản tin theo ID
         //28. Text run không mượt trên máy tính Mini
         public frmMain()
@@ -134,13 +133,15 @@ namespace Display
                     if (GUID_Value.Length != DEFAULT_LENGTH_GUID)
                     {
                         Generate_NewKey();
+                        Log.Error(GUID_Value, "GUIDLength_not_Fit");
                     }
 
-                    Clipboard.SetText(GUID_Value);
+                    Copy2ClipBoard(GUID_Value);
                 }
                 catch
                 {
                     Generate_NewKey();
+                    Log.Error(GUID_Value, "Read_GUID_Fail");
                 }
 
                 key.Close();
@@ -148,6 +149,20 @@ namespace Display
             else
             {
                 Generate_NewKey();
+                Log.Error(GUID_Value, "GUID_not_Exist");
+            }
+        }
+        private void Copy2ClipBoard(string value)
+        {
+            try
+            {
+                Clipboard.Clear();
+                Clipboard.SetDataObject(value, false, 5, 200);
+                //Clipboard.SetText(value);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "CopyGUID_to_ClipBoard");
             }
         }
         private void Generate_NewKey()
@@ -160,10 +175,13 @@ namespace Display
                 new_key.SetValue("GUID", Rijndael.Encrypt(GUID_Value, password, KeySize.Aes256));
                 new_key.SetValue("Date Generate", Rijndael.Encrypt(DateTime.UtcNow.Date.ToString("dd/MM/yyyy"), password, KeySize.Aes256));
                 new_key.SetValue("MAC Address", Rijndael.Encrypt(GetDefaultMacAddress().ToString(), password, KeySize.Aes256));
-            }
-            catch { }
 
-            Clipboard.SetText(GUID_Value);
+                Copy2ClipBoard(GUID_Value);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Generate_NewKey");
+            }
         }
         public string GetNewGUID()
         {
@@ -305,7 +323,7 @@ namespace Display
                     break;
 
                 case Keys.F:
-                    Clipboard.SetText(GUID_Value);
+                    Copy2ClipBoard(GUID_Value);
                     break;
 
                 case Keys.P:
@@ -313,10 +331,11 @@ namespace Display
                     abc.NotifyTime2Play += Abc_NotifyTime2Play;
 
                     Schedule msg = new Schedule();
+                    msg.id = "001";
                     msg.isActive = true;
                     msg.isDaily = true;
-                    msg.dayList = new List<int> { 4, 5, 3, 2 };
-                    msg.timeList = new List<int> { 36720, 36840, 36900 };
+                    msg.dayList = new List<int> { 4, 5, 3, 2, 6 };
+                    msg.timeList = new List<int> { 11760, 11880, 11940 };
                     msg.idleTime = 1;
                     msg.loopNum = 0;
                     msg.duration = 50;
@@ -324,20 +343,29 @@ namespace Display
                     abc.Schedule(msg);
 
                     Schedule msg2 = new Schedule();
+                    msg2.id = "002";
                     msg2.isActive = true;
                     msg2.isDaily = false;
                     msg2.dayList = new List<int> { 4, 5, 3, 2 };
-                    msg2.timeList = new List<int> { 36780, 35940, 36870 };
+                    msg2.timeList = new List<int> { 11820, 35940, 11910 };
                     msg2.idleTime = 2;
-                    msg2.loopNum = 2;
+                    msg2.loopNum = 5;
                     msg2.duration = 500;
                     msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
                     abc.Schedule(msg2);
+
+                    abc.DeleteMessage_by_Id("002");
                     break;
             }
         }
         private void Abc_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
+            if (CurrentForm != DEFAULT_FORM)
+            {
+                Add_UserControl(defaultForm);
+                CurrentForm = DEFAULT_FORM;
+            }
+
             defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
             defaultForm.ShowVideo(e.playList[2], e.IdleTime, e.LoopNum, e.Duration);
         }
@@ -369,6 +397,7 @@ namespace Display
 
         private void InitParameters()
         {
+            LogInit();
             GUID_Handle();
             if (GUID_Value == null || GUID_Value.Length != DEFAULT_LENGTH_GUID)
             {
@@ -377,7 +406,10 @@ namespace Display
             }
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
                     Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
+        }
 
+        private void LogInit()
+        {
             Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                         .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(@"Log\Info-.txt", rollingInterval: RollingInterval.Day))
@@ -424,7 +456,7 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
-                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 0, loopNum: 0, Duration: 60);
+                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 0, loopNum: 0, Duration: 120);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }
@@ -510,7 +542,10 @@ namespace Display
                     {
                         ret = Uart2Com.SetupComPort(ComName, _Baudrate, _Databit, _StopBit, _parity);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Uart2Com.SetupComPort");
+                    }
                     if (ret == ComPort.E_OK)
                     {
                         _isModule_Connected = true;
@@ -531,7 +566,10 @@ namespace Display
             {
                 Timer_SendPing.Stop();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Timer_SendPing.Stop");
+            }
             Timer_SendPing.Interval = Interval;
             Timer_SendPing.Start();
         }
