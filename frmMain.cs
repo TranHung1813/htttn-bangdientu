@@ -332,10 +332,12 @@ namespace Display
 
                     Schedule msg = new Schedule();
                     msg.id = "001";
+                    msg.fromTime = 1679892014;
+                    msg.toTime = 1680491799;
                     msg.isActive = true;
                     msg.isDaily = true;
-                    msg.dayList = new List<int> { 4, 5, 3, 2, 6 };
-                    msg.timeList = new List<int> { 11760, 11880, 11940 };
+                    msg.dayList = new List<int> { 4, 5, 3, 1, 6 };
+                    msg.timeList = new List<int> { 42060, 42180, 42240 };
                     msg.idleTime = 1;
                     msg.loopNum = 0;
                     msg.duration = 50;
@@ -344,17 +346,22 @@ namespace Display
 
                     Schedule msg2 = new Schedule();
                     msg2.id = "002";
+                    msg2.fromTime = 1679892014;
+                    msg2.toTime = 1680491799;
                     msg2.isActive = true;
                     msg2.isDaily = false;
-                    msg2.dayList = new List<int> { 4, 5, 3, 2 };
-                    msg2.timeList = new List<int> { 11820, 35940, 11910 };
+                    msg2.dayList = new List<int> { 4, 5, 3, 1 };
+                    msg2.timeList = new List<int> { 42120, 35940, 42210 };
                     msg2.idleTime = 2;
                     msg2.loopNum = 5;
                     msg2.duration = 500;
                     msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
                     abc.Schedule(msg2);
 
-                    abc.DeleteMessage_by_Id("002");
+                    Schedule msg3 = new Schedule();
+                    msg3.id = "002";
+                    msg3.isActive = false;
+                    abc.Schedule(msg3);
                     break;
             }
         }
@@ -456,7 +463,7 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
-                    defaultForm.ShowVideo(_VideoUrl, IdleTime: 0, loopNum: 0, Duration: 120);
+                    defaultForm.ShowVideo(_VideoUrl);
                     //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                 }
             }

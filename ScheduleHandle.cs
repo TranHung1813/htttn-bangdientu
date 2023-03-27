@@ -18,53 +18,49 @@ namespace Display
 
         public void Schedule(Schedule message)
         {
-            MessageHandle(message);
-        }
-
-        private void MessageHandle(Schedule message)
-        {
-            if (message.isActive != true) return;
-
-            // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
-            List<int> TimeList_perWeek = new List<int>();
-            if(message.isDaily == true)
+            if (message.isActive != true)
             {
-                for(int CountDay = 0; CountDay < message.dayList.Count; CountDay++)
-                {
-                    TimeList_perWeek.AddRange(message.timeList.Select(x => x + 24 * 3600 * (message.dayList[CountDay] - 1)).ToList());
-                }
-            }
-            else
-            {
-                TimeList_perWeek.AddRange(message.timeList);
+                DeleteMessage_by_Id(message.id);
+                return;
             }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
 
-            // Xử lý các mốc thời gian để cho ra khoảng thời gian cài đặt cho Timer
-            if (message.isDaily == true)
+            ValidTime_Handle(new_messsage);
+        }
+
+        private void MessageHandle(ScheduleMsg_Type message)
+        {
+            // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
+            List<int> TimeList_perWeek = new List<int>();
+            if(message.msg.isDaily == true)
             {
-                TimeList_Handle(TimeList_perWeek, ref new_messsage.TimeList, ref new_messsage.WeeklyTimeList);
+                for(int CountDay = 0; CountDay < message.msg.dayList.Count; CountDay++)
+                {
+                    TimeList_perWeek.AddRange(message.msg.timeList.Select(x => x + 24 * 3600 * (message.msg.dayList[CountDay] - 1)).ToList());
+                }
+                TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList);
             }
             else
             {
-                TimeList_Handle(TimeList_perWeek, ref new_messsage.TimeList);
+                TimeList_perWeek.AddRange(message.msg.timeList);
+                TimeList_Handle(TimeList_perWeek, ref message.TimeList);
             }
 
             // Init Timer
-            if (new_messsage.TimeList.Length <= 0) return;
-            new_messsage.timer = new Timer();
-            new_messsage.timer.Interval = new_messsage.TimeList[0] * 1000;
-            new_messsage.timer.Tick += delegate (object sender, EventArgs e)
+            if (message.TimeList.Length <= 0) return;
+            message.Schedule_Timer = new Timer();
+            message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
+            message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(new_messsage.msg.idleTime, new_messsage.msg.loopNum, new_messsage.msg.duration, new_messsage.msg.playList);
+                OnNotify_Time2Play(message.msg.idleTime, message.msg.loopNum, message.msg.duration, message.msg.playList);
                 Timer this_timer = (Timer)sender;
-                if (++new_messsage.CountTime >= new_messsage.TimeList.Length)
+                if (++message.CountTime >= message.TimeList.Length)
                 {
-                    if (new_messsage.msg.isDaily == true)
+                    if (message.msg.isDaily == true)
                     {
-                        new_messsage.CountTime = 0;
-                        new_messsage.TimeList = new_messsage.WeeklyTimeList;
+                        message.CountTime = 0;
+                        message.TimeList = message.WeeklyTimeList;
                     }
                     else
                     {
@@ -73,11 +69,11 @@ namespace Display
                     }
                 }
                 // Set Interval to run to next Time in TimeList
-                this_timer.Interval = new_messsage.TimeList[new_messsage.CountTime] * 1000;
+                this_timer.Interval = message.TimeList[message.CountTime] * 1000;
             };
-            new_messsage.timer.Start();
+            message.Schedule_Timer.Start();
             // Add message to Schedule List
-            _schedule_msg_List.Add(new_messsage);
+            _schedule_msg_List.Add(message);
         }
 
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
@@ -156,14 +152,65 @@ namespace Display
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
 
+        private void ValidTime_Handle(ScheduleMsg_Type message)
+        {
+            long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if (message.msg.fromTime <= CurrentTime && CurrentTime < message.msg.toTime)
+            {
+                // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
+
+                message.ValidHandle_Timer = new Timer();
+                message.ValidHandle_Timer.Interval = (int)(message.msg.toTime - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                {
+                    DeleteMessage_by_Id(message.msg.id);
+
+                    Timer this_timer = (Timer)sender;
+                    this_timer.Stop();
+                };
+                message.ValidHandle_Timer.Start();
+
+                MessageHandle(message);
+            }
+            else if (message.msg.fromTime > CurrentTime)
+            {
+                // Nếu bản tin chưa Valid => tạo Timer chạy đến fromTime, xử lý bản tin => đổi Interval để cạy đến toTime để xóa bản tin
+                message.ValidHandle_Timer = new Timer();
+                message.ValidHandle_Timer.Interval = (int)(message.msg.fromTime - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                {
+                    long Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                    if (Time >= message.msg.toTime)
+                    {
+                        DeleteMessage_by_Id(message.msg.id);
+
+                        Timer this_timer = (Timer)sender;
+                        this_timer.Stop();
+                    }
+                    else if (Time >= message.msg.fromTime && Time < message.msg.toTime)
+                    {
+                        message.ValidHandle_Timer.Interval = (int)(message.msg.toTime - Time) * 1000 + 1000;
+                        MessageHandle(message);
+                    }
+                };
+                message.ValidHandle_Timer.Start();
+            }
+        }
+
         public void DeleteMessage_by_Id(string messageId)
         {
             foreach(var schedule_msg in _schedule_msg_List)
             {
                 if(schedule_msg.msg.id == messageId)
                 {
-                    schedule_msg.timer.Stop();
-                    schedule_msg.timer.Dispose();
+                    try
+                    {
+                        schedule_msg.Schedule_Timer.Stop();
+                        schedule_msg.Schedule_Timer.Dispose();
+                        schedule_msg.ValidHandle_Timer.Stop();
+                        schedule_msg.ValidHandle_Timer.Dispose();
+                    }
+                    catch { }
                 }
             }
             _schedule_msg_List.RemoveAll(r => r.msg.id == messageId);
@@ -194,7 +241,8 @@ namespace Display
         public Schedule msg;
         public int[] TimeList;
         public int[] WeeklyTimeList;
-        public Timer timer;
+        public Timer Schedule_Timer;
+        public Timer ValidHandle_Timer;
         int? countTime;
         public int CountTime { get { return countTime ?? 0; } set { countTime = value; } }
     }
