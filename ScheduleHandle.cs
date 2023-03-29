@@ -35,15 +35,15 @@ namespace Display
             List<int> TimeList_perWeek = new List<int>();
             if(message.msg.isDaily == true)
             {
-                for(int CountDay = 0; CountDay < message.msg.dayList.Count; CountDay++)
+                for(int CountDay = 0; CountDay < message.msg.days.Count; CountDay++)
                 {
-                    TimeList_perWeek.AddRange(message.msg.timeList.Select(x => x + 24 * 3600 * (message.msg.dayList[CountDay] - 1)).ToList());
+                    TimeList_perWeek.AddRange(message.msg.times.Select(x => x + 24 * 3600 * (message.msg.days[CountDay] - 1)).ToList());
                 }
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList);
             }
             else
             {
-                TimeList_perWeek.AddRange(message.msg.timeList);
+                TimeList_perWeek.AddRange(message.msg.times);
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList);
             }
 
@@ -53,7 +53,7 @@ namespace Display
             message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(message.msg.idleTime, message.msg.loopNum, message.msg.duration, message.msg.playList);
+                OnNotify_Time2Play(message.msg.idleTime, message.msg.loops, message.msg.duration, message.msg.songs);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
                 {
@@ -155,12 +155,12 @@ namespace Display
         private void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (message.msg.fromTime <= CurrentTime && CurrentTime < message.msg.toTime)
+            if (message.msg.from <= CurrentTime && CurrentTime < message.msg.to)
             {
                 // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
 
                 message.ValidHandle_Timer = new Timer();
-                message.ValidHandle_Timer.Interval = (int)(message.msg.toTime - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Interval = (int)(message.msg.to - CurrentTime) * 1000 + 1000;
                 message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                 {
                     DeleteMessage_by_Id(message.msg.id);
@@ -172,24 +172,24 @@ namespace Display
 
                 MessageHandle(message);
             }
-            else if (message.msg.fromTime > CurrentTime)
+            else if (message.msg.from > CurrentTime)
             {
                 // Nếu bản tin chưa Valid => tạo Timer chạy đến fromTime, xử lý bản tin => đổi Interval để cạy đến toTime để xóa bản tin
                 message.ValidHandle_Timer = new Timer();
-                message.ValidHandle_Timer.Interval = (int)(message.msg.fromTime - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Interval = (int)(message.msg.from - CurrentTime) * 1000 + 1000;
                 message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                 {
                     long Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                    if (Time >= message.msg.toTime)
+                    if (Time >= message.msg.to)
                     {
                         DeleteMessage_by_Id(message.msg.id);
 
                         Timer this_timer = (Timer)sender;
                         this_timer.Stop();
                     }
-                    else if (Time >= message.msg.fromTime && Time < message.msg.toTime)
+                    else if (Time >= message.msg.from && Time < message.msg.to)
                     {
-                        message.ValidHandle_Timer.Interval = (int)(message.msg.toTime - Time) * 1000 + 1000;
+                        message.ValidHandle_Timer.Interval = (int)(message.msg.to - Time) * 1000 + 1000;
                         MessageHandle(message);
                     }
                 };

@@ -114,6 +114,8 @@ namespace Display
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
 
+            Log.Information("App Start!");
+
         }
 
         private void GUID_Handle()
@@ -132,24 +134,25 @@ namespace Display
 
                     if (GUID_Value.Length != DEFAULT_LENGTH_GUID)
                     {
+                        Log.Error("GUIDLength_not_Fit: {A}", GUID_Value);
                         Generate_NewKey();
-                        Log.Error(GUID_Value, "GUIDLength_not_Fit");
                     }
 
                     Copy2ClipBoard(GUID_Value);
                 }
                 catch
                 {
+                    Log.Error("Read_GUID_Fail");
                     Generate_NewKey();
-                    Log.Error(GUID_Value, "Read_GUID_Fail");
                 }
 
+                Log.Information("Decode Key: {A}", GUID_Value);
                 key.Close();
             }
             else
             {
+                Log.Error("Key_not_Exist");
                 Generate_NewKey();
-                Log.Error(GUID_Value, "GUID_not_Exist");
             }
         }
         private void Copy2ClipBoard(string value)
@@ -177,6 +180,8 @@ namespace Display
                 new_key.SetValue("MAC Address", Rijndael.Encrypt(GetDefaultMacAddress().ToString(), password, KeySize.Aes256));
 
                 Copy2ClipBoard(GUID_Value);
+
+                Log.Information("Generate NewKey: {A}", GUID_Value);
             }
             catch (Exception ex)
             {
@@ -328,34 +333,33 @@ namespace Display
 
                 case Keys.P:
                     ScheduleHandle abc = new ScheduleHandle();
-                    abc.NotifyTime2Play += Abc_NotifyTime2Play;
+                    abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
 
                     Schedule msg = new Schedule();
                     msg.id = "001";
-                    msg.fromTime = 1679892014;
-                    msg.toTime = 1680491799;
+                    msg.from = 1679892014;
+                    msg.to = 1680491799;
                     msg.isActive = true;
                     msg.isDaily = true;
-                    msg.dayList = new List<int> { 4, 5, 3, 1, 6 };
-                    msg.timeList = new List<int> { 42060, 42180, 42240 };
+                    msg.days = new List<int> { 4, 5, 3, 1, 6 };
+                    msg.times = new List<int> { 42060, 42180, 42240 };
                     msg.idleTime = 1;
-                    msg.loopNum = 0;
+                    msg.loops = 0;
                     msg.duration = 50;
-                    msg.playList = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
+                    msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
                     abc.Schedule(msg);
 
                     Schedule msg2 = new Schedule();
                     msg2.id = "002";
-                    msg2.fromTime = 1679892014;
-                    msg2.toTime = 1680491799;
+                    msg2.from = 1679892014;
+                    msg2.to = 1680491799;
                     msg2.isActive = true;
                     msg2.isDaily = false;
-                    msg2.dayList = new List<int> { 4, 5, 3, 1 };
-                    msg2.timeList = new List<int> { 42120, 35940, 42210 };
+                    msg2.times = new List<int> { 42120, 35940, 42210 };
                     msg2.idleTime = 2;
-                    msg2.loopNum = 5;
+                    msg2.loops = 5;
                     msg2.duration = 500;
-                    msg2.playList = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                    msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
                     abc.Schedule(msg2);
 
                     Schedule msg3 = new Schedule();
@@ -365,7 +369,7 @@ namespace Display
                     break;
             }
         }
-        private void Abc_NotifyTime2Play(object sender, NotifyTime2Play e)
+        private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
             if (CurrentForm != DEFAULT_FORM)
             {
@@ -375,16 +379,20 @@ namespace Display
 
             defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
             defaultForm.ShowVideo(e.playList[2], e.IdleTime, e.LoopNum, e.Duration);
+
+            Log.Information("NotifyTime2Play: {A}, {B}, {C}", e.playList[0], e.playList[1], e.playList[2]);
         }
         private void Close_Relay()
         {
             // Close Relay
+            Log.Information("Close_Relay");
             Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
             _isRelayOpened = false;
         }
         private void OpenRelay()
         {
             // Open Relay
+            Log.Information("Open_Relay");
             Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
             _isRelayOpened = true;
         }
@@ -430,8 +438,6 @@ namespace Display
         {
             ProcessNewMessage();
             SendHeartBeatTick();
-
-            //MessageBox.Show(panelContainer.Width.ToString() + panelContainer.Height.ToString()+ "," + this.Width.ToString() + this.Height.ToString());
         }
 
         private void SendHeartBeatTick()
@@ -448,23 +454,40 @@ namespace Display
                 {
                     var topic = newMessage.Topic;
                     string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    var payload = JsonConvert.DeserializeObject<DisplayMessage>(message);
+                    //Log.Information("ProcessNewMessage: {A}", message);
+                    Log.Information("Get_NewMessage");
+                    dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                    _TxtThongBao = payload.BanTinThongBao;
-                    //ShowText(_TxtThongBao);
-                    _TxtVanBan = payload.BanTinVanBan;
-                    _VideoUrl = payload.VideoUrl;
-
-                    //customForm.ShowVideo(_VideoUrl);
-                    // Chuyển sang Form Default
-                    if (CurrentForm != DEFAULT_FORM)
+                    if(payload.BanTinThongBao != null)
                     {
-                        Add_UserControl(defaultForm);
-                        CurrentForm = DEFAULT_FORM;
+                        _TxtThongBao = payload.BanTinThongBao;
+                        //ShowText(_TxtThongBao);
+                        _TxtVanBan = payload.BanTinVanBan;
+                        _VideoUrl = payload.VideoUrl;
+
+                        //customForm.ShowVideo(_VideoUrl);
+                        // Chuyển sang Form Default
+                        if (CurrentForm != DEFAULT_FORM)
+                        {
+                            Add_UserControl(defaultForm);
+                            CurrentForm = DEFAULT_FORM;
+                        }
+                        defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
+                        defaultForm.ShowVideo(_VideoUrl);
+                        //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     }
-                    defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
-                    defaultForm.ShowVideo(_VideoUrl);
-                    //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
+                    else if(payload.message != null)
+                    {
+                        if(payload.message.schedule != null)
+                        {
+                            string s = JsonConvert.SerializeObject(payload.message.schedule);
+                            Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
+
+                            ScheduleHandle scheduleHandle = new ScheduleHandle();
+                            scheduleHandle.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+                            scheduleHandle.Schedule(newSchedule_msg);
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -555,6 +578,7 @@ namespace Display
                     }
                     if (ret == ComPort.E_OK)
                     {
+                        Log.Information("Module Relay Connected: {A}", ComName);
                         _isModule_Connected = true;
                         //Uart2Com.SendPacketPing(PingPacket, PingPacket.Length, true, 1500);
                         SendPing(2000);
@@ -601,7 +625,7 @@ namespace Display
 
         public int duration;       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
 
-        public int loopNum;        //Số lần phát
+        public int loops;        //Số lần phát
 
         public int idleTime;       //Thời gian nghỉ giữa 2 lần phát (s)
 
@@ -609,19 +633,35 @@ namespace Display
 
         public bool isBroadcast;    //Phát quảng bá cho cả room cùng nghe
 
-        public long fromTime;          //Có hiệu lực từ thời điểm (UTC second)
+        public long from;          //Có hiệu lực từ thời điểm (UTC second)
 
-        public long toTime;            //Có hiệu lực đến thời điểm (UTC second)
+        public long to;            //Có hiệu lực đến thời điểm (UTC second)
 
         public bool isActive;       //Còn hiệu lực hay không
 
-        public List<int> timeList; //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
+        public List<int> times; //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
 
-        public List<int> dayList;  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
+        public List<int> days;  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
 
-        public List<string> playList;  //Danh sách nội dung
+        public List<string> songs;  //Danh sách nội dung
 
-        public string bucket;          //Remote folder on MinIO server
+        public string path;          //Remote folder on MinIO server
     }
 
+    public class Schedule_TxMessage
+    {
+        public int id;          /* Id bản tin - xem danh sách defined */
+
+        public long time;       /* Thời gian bản tin in millisecond UTC */
+
+        public string sender;      /* Imei/ID của đối tượng gửi tin */
+
+        public ScheduleMessage message;    /* Bản tin chi tiết */
+    }
+
+    public class ScheduleMessage
+    {
+        public bool isLeaderOnly;
+        public Schedule schedule;
+    }
 }

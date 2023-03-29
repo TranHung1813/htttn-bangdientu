@@ -98,9 +98,9 @@ namespace Display
                         {
                             _mp.Play(new Media(_libVLC, new Uri(_FileName), @params));
                         }
-                        catch
+                        catch (Exception ex)
                         {
-
+                            Log.Error(ex, "PlayMedia_Fail: {A}", _FileName);
                         }
                     }
                     //tick.Stop();
@@ -112,8 +112,10 @@ namespace Display
                     {
                         _mp.Play(new Media(_libVLC, new Uri(_VideoUrl), @params));
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "PlayMedia_Fail: {A}", _VideoUrl);
+                    }
                 }
                 CountTimeLoop++;
             }
@@ -148,7 +150,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "PlayMedia_Fail");
+                Log.Error(ex, "PlayMedia_Fail: {A}", url);
             }
             Duration_Tmr.Stop();
             tick.Stop();
@@ -369,7 +371,10 @@ namespace Display
             {
                 fileExtension = Path.GetExtension(uri.LocalPath);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+            }
             _FileName = Path.Combine(PathFile, "SaveVideo" + fileExtension);
 
             WebClient webClient = new WebClient();
@@ -380,6 +385,7 @@ namespace Display
         private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             _isFileDownloadDone = true;
+            Log.Information("DownloadFileCompleted: {A}", _VideoUrl);
         }
 
         public void DefaultForm_FitToContainer(int Height, int Width)
