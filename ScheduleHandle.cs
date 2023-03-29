@@ -53,7 +53,8 @@ namespace Display
             message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(message.msg.idleTime, message.msg.loops, message.msg.duration, message.msg.songs);
+                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent,
+                                   message.msg.idleTime, message.msg.loops, message.msg.duration);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
                 {
@@ -228,11 +229,12 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(int IdleTime, int LoopNum, int Duration, List<string> PlayList)
+        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, string MediaUrl,
+                                                                        int IdleTime, int LoopNum, int Duration)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(IdleTime, LoopNum, Duration, PlayList));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, IdleTime, LoopNum, Duration));
             }
         }
     }
@@ -248,16 +250,21 @@ namespace Display
     }
     public class NotifyTime2Play : EventArgs
     {
+        public DisplayScheduleType ScheduleType;
+        public string Text;
+        public string MediaUrl;
         public int IdleTime;
         public int LoopNum;
         public int Duration;
-        public List<string> playList;
-        public NotifyTime2Play(int idleTime, int loopNum, int duration, List<string> PlayList)
+        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, int idleTime, int loopNum, int duration)
         {
+            ScheduleType = scheduleType;
+            Text = text;
+            MediaUrl = mediaUrl;
+
             IdleTime = idleTime;
             LoopNum = loopNum;
             Duration = duration;
-            playList = PlayList;
         }
     }
 }

@@ -247,7 +247,8 @@ namespace Display
                         customForm.Close();
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
-                        defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
+                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
+                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
                         defaultForm.ShowVideo(_VideoUrl);
                     }
                     break;
@@ -322,8 +323,14 @@ namespace Display
                     break;
 
                 case Keys.S:
-                    defaultForm.Set_Infomation("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
-                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 10, loopNum: 0);
+                    if (CurrentForm != DEFAULT_FORM)
+                    {
+                        Add_UserControl(defaultForm);
+                        CurrentForm = DEFAULT_FORM;
+                    }
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).");
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 500, loopNum: 0);
                     //defaultForm.Test();
                     break;
 
@@ -374,13 +381,19 @@ namespace Display
             if (CurrentForm != DEFAULT_FORM)
             {
                 Add_UserControl(defaultForm);
+                defaultForm.Set_Default();
                 CurrentForm = DEFAULT_FORM;
             }
-
-            defaultForm.Set_Infomation(e.playList[0], e.playList[1], e.playList[2]);
-            defaultForm.ShowVideo(e.playList[2], e.IdleTime, e.LoopNum, e.Duration);
-
-            Log.Information("NotifyTime2Play: {A}, {B}, {C}", e.playList[0], e.playList[1], e.playList[2]);
+            if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+            {
+                defaultForm.Set_Infomation(e.ScheduleType, e.Text);
+                Log.Information("NotifyTime2Play: {A}, {B}", e.ScheduleType, e.Text);
+            }
+            else if (e.ScheduleType == DisplayScheduleType.BanTinMedia)
+            {
+                defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration);
+                Log.Information("NotifyTime2Play: Video, {A}", e.MediaUrl);
+            }
         }
         private void Close_Relay()
         {
@@ -458,7 +471,7 @@ namespace Display
                     Log.Information("Get_NewMessage");
                     dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                    if(payload.BanTinThongBao != null)
+                    if (payload.BanTinThongBao != null)
                     {
                         _TxtThongBao = payload.BanTinThongBao;
                         //ShowText(_TxtThongBao);
@@ -472,13 +485,14 @@ namespace Display
                             Add_UserControl(defaultForm);
                             CurrentForm = DEFAULT_FORM;
                         }
-                        defaultForm.Set_Infomation(_TxtThongBao, _TxtVanBan, _VideoUrl);
+                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
+                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
                         defaultForm.ShowVideo(_VideoUrl);
                         //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     }
-                    else if(payload.message != null)
+                    else if (payload.message != null)
                     {
-                        if(payload.message.schedule != null)
+                        if (payload.message.schedule != null)
                         {
                             string s = JsonConvert.SerializeObject(payload.message.schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
@@ -619,33 +633,26 @@ namespace Display
 
     public class Schedule
     {
-        public string id;        //Schedule ID, định danh các schedule khác nhau
+        public string id { get; set; }     //Schedule ID, định danh các schedule khác nhau
+        public long createdTime { get; set; }        //Thời điểm tạo lịch (UTC second)
+        public int duration { get; set; }       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
+        public int loops { get; set; }        //Số lần phát
+        public int idleTime { get; set; }       //Thời gian nghỉ giữa 2 lần phát (s)
+        public bool isDaily { get; set; }    //Phát lặp lại hàng ngày
+        public bool isBroadcast { get; set; }    //Phát quảng bá cho cả room cùng nghe
+        public long from { get; set; }          //Có hiệu lực từ thời điểm (UTC second)
+        public long to { get; set; }            //Có hiệu lực đến thời điểm (UTC second)
+        public bool isActive { get; set; }       //Còn hiệu lực hay không
+        public List<int> times { get; set; } //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
+        public List<int> days { get; set; }  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
+        public List<string> songs { get; set; }  //Danh sách nội dung
+        public string path { get; set; }          //Remote folder on MinIO server
 
-        public long createdTime;        //Thời điểm tạo lịch (UTC second)
-
-        public int duration;       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
-
-        public int loops;        //Số lần phát
-
-        public int idleTime;       //Thời gian nghỉ giữa 2 lần phát (s)
-
-        public bool isDaily;    //Phát lặp lại hàng ngày
-
-        public bool isBroadcast;    //Phát quảng bá cho cả room cùng nghe
-
-        public long from;          //Có hiệu lực từ thời điểm (UTC second)
-
-        public long to;            //Có hiệu lực đến thời điểm (UTC second)
-
-        public bool isActive;       //Còn hiệu lực hay không
-
-        public List<int> times; //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
-
-        public List<int> days;  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
-
-        public List<string> songs;  //Danh sách nội dung
-
-        public string path;          //Remote folder on MinIO server
+        public DisplayScheduleType ScheduleType { get; set; } // Loại bản tin
+        public string TextContent { get; set; }
+        public string MediaContent { get; set; }
+        public bool FullScreen { get; set; }
+        public string ColorValue { get; set; }
     }
 
     public class Schedule_TxMessage
@@ -663,5 +670,13 @@ namespace Display
     {
         public bool isLeaderOnly;
         public Schedule schedule;
+    }
+    public enum DisplayScheduleType
+    {
+        BanTinThongBao = 1,
+
+        BanTinVanBan = 2,
+
+        BanTinMedia = 3,
     }
 }

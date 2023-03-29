@@ -160,6 +160,7 @@ namespace Display
         private void _mp_Playing(object sender, EventArgs e)
         {
             long VideoLength = _mp.Length;
+            Log.Information("PlayMedia_Succeeded: {A}, length: {B}", _VideoUrl, VideoLength);
             if (VideoLength <= 0)
             {
                 // Video Stream co length = 0;
@@ -220,12 +221,32 @@ namespace Display
             }
             catch { }
         }
-        public void Set_Infomation(string ThongBao, string VanBan, string VideoURL)
+        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content)
         {
-            txtThongBao.Text = ThongBao.Trim().ToUpper();
-            txtVanBan.Text = VanBan;
-            //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
-            txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
+            if(Content == null)
+            {
+                Log.Error("Set_Infomation: Content = null");
+                Content = "";
+            }
+            if (ScheduleType == DisplayScheduleType.BanTinThongBao)
+            {
+                txtThongBao.Text = Content.Trim().ToUpper();
+                //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
+
+                panelThongBao.SetSpeed = 1;
+                int Text_Height1 = txtThongBao.Height;
+                panelThongBao.Start(Text_Height1, 10000);
+            }
+            else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
+            {
+                txtVanBan.Text = Content;
+                txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
+
+                panelVanBan.SetSpeed = 1;
+                int Text_Height2 = txtVanBan.Height;
+                panelVanBan.Start(Text_Height2, 10000);
+            }
+
             pictureBox1.Visible = false;
             pictureBox2.Visible = false;
 
@@ -244,19 +265,16 @@ namespace Display
             //pictureBox2.Image = ConvertTextToImage(txtVanBan.Text, font2, panel2.BackColor, txtVanBan.ForeColor, pictureBox2.Width, pictureBox2.Height);
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
-
-            panelThongBao.SetSpeed = 1;
-            int Text_Height1 = txtThongBao.Height;
-            panelThongBao.Start(Text_Height1, 10000);
-
-            panelVanBan.SetSpeed = 1;
-            int Text_Height2 = txtVanBan.Height;
-            panelVanBan.Start(Text_Height2, 10000);
-
-            //VideoURL = @"http://media-ice.musicradio.com/CapitalBirminghamMP3";
-            //VideoURL = @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8";
-            //ShowVideo(VideoURL);
         }
+        public void Set_Default()
+        {
+            txtThongBao.Text = "";
+            txtVanBan.Text = "";
+
+            pictureBox1.Visible = false;
+            pictureBox2.Visible = false;
+        }
+
         public Bitmap ConvertTextToImage(Control control)
         {
             var bitmap = new Bitmap(control.Width, control.Height);
