@@ -100,7 +100,7 @@ namespace Display
 
         //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form)
         //30. Xử lý biến Toàn màn hình
-        //31.
+        //31. Xóa dữ liệu Show trên màn hình khi: hết Duration (done), hết ValidTime
         public frmMain()
         {
             InitializeComponent();
@@ -251,9 +251,6 @@ namespace Display
                         customForm.Close();
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
-                        defaultForm.ShowVideo(_VideoUrl);
                     }
                     break;
 
@@ -270,7 +267,7 @@ namespace Display
                 case Keys.F3:
                     // Chuyen sang tab xem Video
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowVideo(_VideoUrl);
+                        customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 25 * 1000, loopNum: 0);
                     break;
 
                 case Keys.F4:
@@ -282,7 +279,7 @@ namespace Display
                 case Keys.F5:
                     // Chuyen sang tab Image
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowImage("");
+                        customForm.ShowImage("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg", 20 * 1000);
                     break;
 
                 case Keys.F6:
@@ -333,9 +330,10 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", Duration: 120 * 1000);
-                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 120 * 1000, loopNum: 0);
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", Duration: 25 * 1000);
+                    //defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 25 * 1000, loopNum: 0);
                     //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
+                    defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900", 25 * 1000);
                     //defaultForm.Test();
                     break;
 
@@ -383,21 +381,50 @@ namespace Display
         }
         private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
-            if (CurrentForm != DEFAULT_FORM)
+            if (e.FullScreen == false)
             {
-                Add_UserControl(defaultForm);
-                defaultForm.Set_Default();
-                CurrentForm = DEFAULT_FORM;
+                // Chuyển sang Form Default
+                if (CurrentForm != DEFAULT_FORM)
+                {
+                    Add_UserControl(defaultForm);
+                    defaultForm.Set_Default();
+                    CurrentForm = DEFAULT_FORM;
+                }
+                if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+                {
+                    Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    defaultForm.Set_Infomation(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
+                }
+                else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
+                {
+                    Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                }
+                else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
+                {
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
+                    defaultForm.ShowImage(e.MediaUrl, e.Duration * 1000);
+                }
             }
-            if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+            else
             {
-                defaultForm.Set_Infomation(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
-                Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
-            }
-            else if (e.ScheduleType == DisplayScheduleType.BanTinMedia)
-            {
-                defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
-                Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                // Chuyển sang Form Custom
+                if (CurrentForm != CUSTOM_FORM)
+                {
+                    defaultForm.Close();
+                    Add_UserControl(customForm);
+                    CurrentForm = CUSTOM_FORM;
+                }
+                if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
+                {
+                    Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                }
+                else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
+                {
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowImage(e.MediaUrl, e.Duration * 1000);
+                }
             }
         }
         private void Close_Relay()
@@ -682,6 +709,8 @@ namespace Display
 
         BanTinVanBan = 2,
 
-        BanTinMedia = 3,
+        BanTinVideo = 3,
+
+        BanTinHinhAnh = 4,
     }
 }

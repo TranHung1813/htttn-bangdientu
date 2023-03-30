@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -21,10 +22,12 @@ namespace Display
         private string _VideoUrl = "";
         private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private string _FileName = "";
+        private string _ImageName = "";
         Timer tick;
         System.Timers.Timer Duration_Media_Tmr;
         System.Timers.Timer Duration_ThongBao_Tmr;
         System.Timers.Timer Duration_VanBan_Tmr;
+        System.Timers.Timer Duration_HinhAnh_Tmr;
 
         private int _IdleTime = 0;
         private int _LoopNum = MAXVALUE;
@@ -60,6 +63,7 @@ namespace Display
             Duration_Media_Tmr = new System.Timers.Timer();
             Duration_ThongBao_Tmr = new System.Timers.Timer();
             Duration_VanBan_Tmr = new System.Timers.Timer();
+            Duration_HinhAnh_Tmr = new System.Timers.Timer();
         }
 
         private void Tick_Tick(object sender, EventArgs e)
@@ -72,7 +76,9 @@ namespace Display
                 {
                     Task.Run(() =>
                     {
+                        videoView1.Visible = false;
                         _mp.Stop();
+                        videoView1.Visible = true;
                     });
                     tick.Stop();
                     return;
@@ -84,7 +90,9 @@ namespace Display
                     {
                         Task.Run(() =>
                         {
+                            videoView1.Visible = false;
                             _mp.Stop();
+                            videoView1.Visible = true;
                         });
                     }
                     IdleTimeCount -= tick.Interval;
@@ -95,7 +103,7 @@ namespace Display
                     IdleTimeCount = _IdleTime;
                 }
                 // Chay video
-                if (_isFileDownloadDone == true)
+                if (_isVideo_DownloadDone == true)
                 {
                     long length = new FileInfo(_FileName).Length;
                     if (length > 1.5 * 1024 * 1024)
@@ -135,32 +143,60 @@ namespace Display
 
         public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
         {
+            Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
-            _IdleTime = IdleTime; // Convert to ms
+            _IdleTime = IdleTime; //  ms
             CountTimeLoop = 1;
             IdleTimeCount = _IdleTime;
             _LoopNum = loopNum;
-            _Duration = Duration; // Convert to ms
+            _Duration = Duration; //  ms
             _EnableLoop = false;
 
             PlayVideo(url);
+
+            // Duration Handle
+            if (_LoopNum == 0 && _Duration > 0)
+            {
+                Duration_Handle(Duration_Media_Tmr, ref Duration_Media_Tmr, Duration, () =>
+                {
+                    // Stop Media
+                    Task.Run(() =>
+                    {
+                        videoView1.Visible = false;
+                        _mp.Stop();
+                        videoView1.Visible = true;
+                    });
+                    _EnableLoop = false;
+                    Log.Information("Video Stop!");
+                });
+                _LoopNum = MAXVALUE;
+            }
         }
 
-        private void PlayVideo(string url)
+        private async void PlayVideo(string url)
         {
             string[] @params = new string[] { "input-repeat=0" };//, "run-time=5" };
             //string[] mediaOptions = { };
-            try
+
+            // Stop Media
+            Task PlayVideo = Task.Run(() =>
             {
-                _mp.Play(new Media(_libVLC, new Uri(url), @params));
-                _mp.Playing += _mp_Playing;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "PlayMedia_Fail: {A}", url);
-            }
-            Duration_Media_Tmr.Stop();
-            Duration_Media_Tmr.Dispose();
+                try
+                {
+                    videoView1.Visible = false;
+                    _mp.Stop();
+                    videoView1.Visible = true;
+                    _mp.Play(new Media(_libVLC, new Uri(url), @params));
+                    _mp.Playing += _mp_Playing;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
+                }
+            });
+
+            await PlayVideo;
+
             tick.Stop();
             tick.Start();
         }
@@ -177,29 +213,8 @@ namespace Display
             else
             {
                 // Link Video khong Stream co length > 0
-                DownloadAsync(_VideoUrl);
+                DownloadAsync_Video(_VideoUrl);
                 _EnableLoop = true;
-            }
-
-            if (_LoopNum == 0 && _Duration > 0)
-            {
-                // Xu ly Duration cho Video
-                Duration_Media_Tmr = new System.Timers.Timer();
-                Duration_Media_Tmr.Interval = _Duration + 1000;
-                Duration_Media_Tmr.Elapsed += (o, ev) =>
-                {
-                    // Stop Media
-                    Task.Run(() =>
-                    {
-                        _mp.Stop();
-                    });
-                    // Stop this Timer
-                    _EnableLoop = false;
-                    Duration_Media_Tmr.Stop();
-                    Log.Information("Video Stop!");
-                };
-                Duration_Media_Tmr.Start();
-                _LoopNum = MAXVALUE;
             }
 
             try
@@ -215,13 +230,29 @@ namespace Display
         }
         public void Close()
         {
-            panelThongBao.Stop();
-            panelVanBan.Stop();
+            try
+            {
+                panelThongBao.Stop();
+                panelVanBan.Stop();
 
+                Duration_Media_Tmr.Stop();
+                Duration_Media_Tmr.Dispose();
+                Duration_ThongBao_Tmr.Stop();
+                Duration_ThongBao_Tmr.Dispose();
+                Duration_VanBan_Tmr.Stop();
+                Duration_VanBan_Tmr.Dispose();
+                Duration_HinhAnh_Tmr.Stop();
+                Duration_HinhAnh_Tmr.Dispose();
+
+                _EnableLoop = false;
+                _isVideo_DownloadDone = false;
+            }
+            catch { }
             Task.Run(() =>
             {
+                videoView1.Visible = false;
                 _mp.Stop();
-                _mp.Dispose();
+                videoView1.Visible = true;
             });
 
             tick.Stop();
@@ -233,6 +264,7 @@ namespace Display
         }
         public void Set_Infomation(DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
         {
+            Log.Information("Set_Infomation: {A}, Content: {B}", ScheduleType, Content.Substring(0, Content.Length / 5));
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
             {
                 try
@@ -252,7 +284,7 @@ namespace Display
                 panelThongBao.Start(Text_Height1, 10000);
 
                 // Duration Handle
-                TextDuration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
+                Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
                 {
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
@@ -279,7 +311,7 @@ namespace Display
                 panelVanBan.Start(Text_Height2, 10000);
 
                 // Duration Handle
-                TextDuration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
+                Duration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
                 {
                     panelVanBan.Stop();
                     txtVanBan.Text = "";
@@ -306,7 +338,34 @@ namespace Display
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
         }
-        private void TextDuration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        public async void ShowImage(string Url, int Duration)
+        {
+            Log.Information("ShowImage: {A}", Url);
+
+            Task task = Task.Run(() =>
+            {
+                videoView1.Visible = false;
+                _mp.Stop();
+                videoView1.Visible = true;
+            });
+            await task;
+            DownloadAsync_Image(Url);
+
+            // Duration Handle
+            Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
+            {
+                // Stop Media
+                Task.Run(() =>
+                {
+                    videoView1.Visible = false;
+                    _mp.Stop();
+                    videoView1.Visible = true;
+                });
+                Log.Information("Image Stop!");
+            });
+
+        }
+        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {
             try
             {
@@ -440,10 +499,10 @@ namespace Display
                 return AdjustedWords.TrimEnd();
             }))();
         }
-        private bool _isFileDownloadDone = false;
-        private void DownloadAsync(string Url)
+        private bool _isVideo_DownloadDone = false;
+        private void DownloadAsync_Video(string Url)
         {
-            _isFileDownloadDone = false;
+            _isVideo_DownloadDone = false;
 
             string fileExtension = "";
             Uri uri = new Uri(Url);
@@ -453,19 +512,42 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex, "Video_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo" + fileExtension);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _FileName);
-            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+            webClient.DownloadFileCompleted += (sender , e)=>
+            {
+                _isVideo_DownloadDone = true;
+                Log.Information("DownloadVideoCompleted: {A}", Url);
+                webClient.Dispose();
+            };
         }
 
-        private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        private void DownloadAsync_Image(string Url)
         {
-            _isFileDownloadDone = true;
-            Log.Information("DownloadFileCompleted: {A}", _VideoUrl);
+            string fileExtension = "";
+            Uri uri = new Uri(Url);
+            try
+            {
+                fileExtension = Path.GetExtension(uri.LocalPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Image_GetExtension: {Url}", Url);
+            }
+            _ImageName = Path.Combine(PathFile, "SaveImage" + fileExtension);
+
+            WebClient webClient = new WebClient();
+            webClient.DownloadFileAsync(uri, _ImageName);
+            webClient.DownloadFileCompleted += (sender, e) =>
+            {
+                Log.Information("DownloadImageCompleted: {A}", Url);
+                _mp.Play(new Media(_libVLC, new Uri(_ImageName)));
+                webClient.Dispose();
+            };
         }
 
         public void DefaultForm_FitToContainer(int Height, int Width)

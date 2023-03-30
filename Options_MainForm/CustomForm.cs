@@ -47,6 +47,7 @@ namespace Display
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
+                    page_Image.Close();
                     panel_Image.Visible = false;
 
                     break;
@@ -98,6 +99,7 @@ namespace Display
             {
                 case PAGE_IMAGE:
                     //guna2Transition1.HideSync(panel_Image);
+                    page_Image.Close();
                     panel_Image.Visible = false;
 
                     break;
@@ -141,11 +143,10 @@ namespace Display
 
 
         //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
-        public void ShowVideo(string Url)
+        public void ShowVideo(string Url, int IdleTime = 0, int loopNum = Page_VideoScreen.MAXVALUE, int Duration = Page_VideoScreen.MAXVALUE)
         {
             ShowPanel(panel_Video, page_VideoScreen);
-            //page_VideoScreen.ShowVideo(Url);
-            page_VideoScreen.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
+            page_VideoScreen.ShowVideo(Url, IdleTime, loopNum, Duration);
             TabPageID = PAGE_VIDEO;
         }
         public void ShowText(string Title, string Content)
@@ -165,9 +166,9 @@ namespace Display
             ShowPanel(panel_Text, page_Text);
             TabPageID = PAGE_TEXT;
         }
-        public void ShowImage(string ImageURL)
+        public void ShowImage(string ImageURL, int Duration)
         {
-            page_Image.ShowImage(ImageURL);
+            page_Image.ShowImage(ImageURL, Duration);
             ShowPanel(panel_Image, page_Image);
             TabPageID = PAGE_IMAGE;
         }

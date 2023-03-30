@@ -61,7 +61,7 @@ namespace Display
             message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent,
+                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent, message.msg.FullScreen,
                                    message.msg.idleTime, message.msg.loops, message.msg.duration, message.msg.ColorValue);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
@@ -81,7 +81,12 @@ namespace Display
                 this_timer.Interval = message.TimeList[message.CountTime] * 1000;
             };
             message.Schedule_Timer.Start();
-            // Add message to Schedule List
+            // Add message to Schedule List (replace if message ID is already existed)
+            int index = _schedule_msg_List.FindIndex(s => s.msg.id == message.msg.id);
+            if (index != -1)
+            {
+                DeleteMessage_by_Id(message.msg.id);
+            }
             _schedule_msg_List.Add(message);
         }
 
@@ -237,12 +242,12 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, string MediaUrl,
+        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, string MediaUrl, bool FullScreen,
                                                                         int IdleTime, int LoopNum, int Duration, string ColorValue)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, IdleTime, LoopNum, Duration, ColorValue));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue));
             }
         }
     }
@@ -265,7 +270,8 @@ namespace Display
         public int LoopNum;
         public int Duration;
         public string ColorValue;
-        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, int idleTime, int loopNum, int duration, string colorValue)
+        public bool FullScreen;
+        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue)
         {
             ScheduleType = scheduleType;
             Text = text;
@@ -275,6 +281,7 @@ namespace Display
             LoopNum = loopNum;
             Duration = duration;
             ColorValue = colorValue;
+            FullScreen = fullScreen;
         }
     }
 }

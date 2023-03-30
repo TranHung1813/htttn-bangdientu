@@ -68,9 +68,9 @@ namespace Display
                 mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
                 mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
             }
-            catch (Exception ex)
+            catch
             {
-                Log.Error(ex, "InitMqtt");
+                Log.Error("InitMqtt_Fail");
                 await Task.Delay(5000);
 
                 await InitMqtt();
