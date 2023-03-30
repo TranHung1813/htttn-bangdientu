@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -26,7 +27,14 @@ namespace Display
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
 
-            ValidTime_Handle(new_messsage);
+            try
+            {
+                ValidTime_Handle(new_messsage);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "ValidTime_Handle");
+            }
         }
 
         private void MessageHandle(ScheduleMsg_Type message)
@@ -54,7 +62,7 @@ namespace Display
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
                 OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent,
-                                   message.msg.idleTime, message.msg.loops, message.msg.duration);
+                                   message.msg.idleTime, message.msg.loops, message.msg.duration, message.msg.ColorValue);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
                 {
@@ -230,11 +238,11 @@ namespace Display
             }
         }
         protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, string MediaUrl,
-                                                                        int IdleTime, int LoopNum, int Duration)
+                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, IdleTime, LoopNum, Duration));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, IdleTime, LoopNum, Duration, ColorValue));
             }
         }
     }
@@ -256,7 +264,8 @@ namespace Display
         public int IdleTime;
         public int LoopNum;
         public int Duration;
-        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, int idleTime, int loopNum, int duration)
+        public string ColorValue;
+        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, int idleTime, int loopNum, int duration, string colorValue)
         {
             ScheduleType = scheduleType;
             Text = text;
@@ -265,6 +274,7 @@ namespace Display
             IdleTime = idleTime;
             LoopNum = loopNum;
             Duration = duration;
+            ColorValue = colorValue;
         }
     }
 }

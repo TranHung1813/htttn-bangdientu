@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace Display
 {
     public partial class DefaultForm : UserControl
@@ -21,13 +22,17 @@ namespace Display
         private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private string _FileName = "";
         Timer tick;
-        System.Timers.Timer Duration_Tmr;
+        System.Timers.Timer Duration_Media_Tmr;
+        System.Timers.Timer Duration_ThongBao_Tmr;
+        System.Timers.Timer Duration_VanBan_Tmr;
 
         private int _IdleTime = 0;
-        private int _LoopNum = int.MaxValue;
-        private int _Duration = int.MaxValue;
+        private int _LoopNum = MAXVALUE;
+        private int _Duration = MAXVALUE;
         private int CountTimeLoop = 0;
         private int IdleTimeCount = 0;
+
+        private const int MAXVALUE = 1000 * 1000 * 1000;
 
         private bool _EnableLoop = false;
 
@@ -52,7 +57,9 @@ namespace Display
             tick.Interval = 500;
             tick.Tick += Tick_Tick;
 
-            Duration_Tmr = new System.Timers.Timer();
+            Duration_Media_Tmr = new System.Timers.Timer();
+            Duration_ThongBao_Tmr = new System.Timers.Timer();
+            Duration_VanBan_Tmr = new System.Timers.Timer();
         }
 
         private void Tick_Tick(object sender, EventArgs e)
@@ -73,7 +80,7 @@ namespace Display
                 // Xu ly Idle Time
                 if (IdleTimeCount > 0)
                 {
-                    if(_mp.State != VLCState.Stopped)
+                    if (_mp.State != VLCState.Stopped)
                     {
                         Task.Run(() =>
                         {
@@ -123,17 +130,17 @@ namespace Display
 
         private void _mp_EncounteredError(object sender, EventArgs e)
         {
-            //MessageBox.Show("Error");
+            Log.Error("_mp_EncounteredError : {A}", e.ToString());
         }
 
-        public void ShowVideo(string url, int IdleTime = 0, int loopNum = int.MaxValue, int Duration = int.MaxValue)
+        public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
         {
             _VideoUrl = url;
-            _IdleTime = IdleTime * 1000; // Convert to ms
+            _IdleTime = IdleTime; // Convert to ms
             CountTimeLoop = 1;
             IdleTimeCount = _IdleTime;
             _LoopNum = loopNum;
-            _Duration = Duration * 1000; // Convert to ms
+            _Duration = Duration; // Convert to ms
             _EnableLoop = false;
 
             PlayVideo(url);
@@ -152,7 +159,8 @@ namespace Display
             {
                 Log.Error(ex, "PlayMedia_Fail: {A}", url);
             }
-            Duration_Tmr.Stop();
+            Duration_Media_Tmr.Stop();
+            Duration_Media_Tmr.Dispose();
             tick.Stop();
             tick.Start();
         }
@@ -164,32 +172,34 @@ namespace Display
             if (VideoLength <= 0)
             {
                 // Video Stream co length = 0;
-                if (_LoopNum == 0 && _Duration > 0)
-                {
-                    // Xu ly Duration cho Video Stream
-                    Duration_Tmr.Interval = _Duration + 1000;
-                    Duration_Tmr.Elapsed += (o, ev) =>
-                    {
-                        // Stop Media
-                        Task.Run(() =>
-                        {
-                            _mp.Stop();
-                        });
-                        // Stop this Timer
-                        System.Timers.Timer this_timer = (System.Timers.Timer)o;
-                        this_timer.Stop();
-                    };
-                    Duration_Tmr.Start();
-                }
-                _LoopNum = int.MaxValue;
                 _EnableLoop = false;
             }
             else
             {
-                // Link Video khong Stream
+                // Link Video khong Stream co length > 0
                 DownloadAsync(_VideoUrl);
-                _LoopNum = (_LoopNum == 0) ? Duration_Caculate((int)VideoLength, _IdleTime, _Duration) : _LoopNum;
                 _EnableLoop = true;
+            }
+
+            if (_LoopNum == 0 && _Duration > 0)
+            {
+                // Xu ly Duration cho Video
+                Duration_Media_Tmr = new System.Timers.Timer();
+                Duration_Media_Tmr.Interval = _Duration + 1000;
+                Duration_Media_Tmr.Elapsed += (o, ev) =>
+                {
+                    // Stop Media
+                    Task.Run(() =>
+                    {
+                        _mp.Stop();
+                    });
+                    // Stop this Timer
+                    _EnableLoop = false;
+                    Duration_Media_Tmr.Stop();
+                    Log.Information("Video Stop!");
+                };
+                Duration_Media_Tmr.Start();
+                _LoopNum = MAXVALUE;
             }
 
             try
@@ -221,30 +231,60 @@ namespace Display
             }
             catch { }
         }
-        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content)
+        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
         {
-            if(Content == null)
-            {
-                Log.Error("Set_Infomation: Content = null");
-                Content = "";
-            }
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
             {
-                txtThongBao.Text = Content.Trim().ToUpper();
-                //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
+                try
+                {
+                    txtThongBao.Text = Content.Trim().ToUpper();
+                    if (ColorValue != "") txtThongBao.ForeColor = ColorTranslator.FromHtml(ColorValue);
+                    //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Set_Infomation_BanTinThongBao");
+                }
 
+                // Text Run
                 panelThongBao.SetSpeed = 1;
                 int Text_Height1 = txtThongBao.Height;
                 panelThongBao.Start(Text_Height1, 10000);
+
+                // Duration Handle
+                TextDuration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
+                {
+                    panelThongBao.Stop();
+                    txtThongBao.Text = "";
+                    Log.Information("{A} Stop!", ScheduleType);
+                });
+
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
-                txtVanBan.Text = Content;
-                txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
+                try
+                {
+                    txtVanBan.Text = Content;
+                    txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
+                    if (ColorValue != "") txtVanBan.ForeColor = ColorTranslator.FromHtml(ColorValue);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Set_Infomation_BanTinThongBao");
+                }
 
+                // Text Run
                 panelVanBan.SetSpeed = 1;
                 int Text_Height2 = txtVanBan.Height;
                 panelVanBan.Start(Text_Height2, 10000);
+
+                // Duration Handle
+                TextDuration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
+                {
+                    panelVanBan.Stop();
+                    txtVanBan.Text = "";
+                    Log.Information("{A} Stop!", ScheduleType);
+                });
             }
 
             pictureBox1.Visible = false;
@@ -265,6 +305,28 @@ namespace Display
             //pictureBox2.Image = ConvertTextToImage(txtVanBan.Text, font2, panel2.BackColor, txtVanBan.ForeColor, pictureBox2.Width, pictureBox2.Height);
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
+        }
+        private void TextDuration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        {
+            try
+            {
+                tmr.Stop();
+                tmr.Dispose();
+            }
+            catch { }
+            tmr = new System.Timers.Timer();
+            // Xu ly Duration cho text content
+            tmr.Interval = Duration + 1000;
+            tmr.Elapsed += (o, ev) =>
+            {
+                action();
+                // Stop this Timer
+                tmr.Stop();
+                tmr.Dispose();
+            };
+            tmr.Start();
+
+            return_tmr = tmr;
         }
         public void Set_Default()
         {

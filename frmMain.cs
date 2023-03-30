@@ -97,6 +97,10 @@ namespace Display
         //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...) (done)
         //27. Xóa bản tin theo ID
         //28. Text run không mượt trên máy tính Mini
+
+        //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form)
+        //30. Xử lý biến Toàn màn hình
+        //31.
         public frmMain()
         {
             InitializeComponent();
@@ -131,6 +135,7 @@ namespace Display
                     GUID_Value = Rijndael.Decrypt(key.GetValue("GUID").ToString(), password, KeySize.Aes256);
                     //string Date = Rijndael.Decrypt(key.GetValue("Date Generate").ToString(), password, KeySize.Aes256);
                     //string MAC = Rijndael.Decrypt(key.GetValue("MAC Address").ToString(), password, KeySize.Aes256);
+                    Log.Information("Decode Key: {A}", GUID_Value);
 
                     if (GUID_Value.Length != DEFAULT_LENGTH_GUID)
                     {
@@ -146,7 +151,6 @@ namespace Display
                     Generate_NewKey();
                 }
 
-                Log.Information("Decode Key: {A}", GUID_Value);
                 key.Close();
             }
             else
@@ -329,8 +333,9 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).");
-                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 500, loopNum: 0);
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", Duration: 120 * 1000);
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 120 * 1000, loopNum: 0);
+                    //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
                     //defaultForm.Test();
                     break;
 
@@ -352,7 +357,7 @@ namespace Display
                     msg.times = new List<int> { 42060, 42180, 42240 };
                     msg.idleTime = 1;
                     msg.loops = 0;
-                    msg.duration = 50;
+                    msg.duration = 50 * 1000;
                     msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
                     abc.Schedule(msg);
 
@@ -365,7 +370,7 @@ namespace Display
                     msg2.times = new List<int> { 42120, 35940, 42210 };
                     msg2.idleTime = 2;
                     msg2.loops = 5;
-                    msg2.duration = 500;
+                    msg2.duration = 500 * 1000;
                     msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
                     abc.Schedule(msg2);
 
@@ -386,13 +391,13 @@ namespace Display
             }
             if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
-                defaultForm.Set_Infomation(e.ScheduleType, e.Text);
-                Log.Information("NotifyTime2Play: {A}, {B}", e.ScheduleType, e.Text);
+                defaultForm.Set_Infomation(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
+                Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
             }
             else if (e.ScheduleType == DisplayScheduleType.BanTinMedia)
             {
-                defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration);
-                Log.Information("NotifyTime2Play: Video, {A}", e.MediaUrl);
+                defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
             }
         }
         private void Close_Relay()
