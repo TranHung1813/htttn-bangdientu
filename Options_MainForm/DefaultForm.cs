@@ -49,6 +49,12 @@ namespace Display
             InitializeComponent();
 
             Init_VLC_Library();
+
+            txtThongBao.Text = "";
+            txtVanBan.Text = "";
+
+            pictureBox1.Visible = false;
+            pictureBox2.Visible = false;
         }
 
         private void Init_VLC_Library()
@@ -58,7 +64,7 @@ namespace Display
             _libVLC = new LibVLC();
             _mp = new MediaPlayer(_libVLC);
             videoView1.MediaPlayer = _mp;
-            _mp.AspectRatio = "80:69";
+            _mp.AspectRatio = "320:277";
             _mp.EncounteredError += _mp_EncounteredError;
 
             tick = new Timer();
@@ -146,7 +152,7 @@ namespace Display
             Log.Error("_mp_EncounteredError : {A}", e.ToString());
         }
 
-        public void ShowVideo(string MessageID, string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
+        public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
         {
             Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
@@ -273,7 +279,7 @@ namespace Display
             }
             catch { }
         }
-        public void Set_Infomation(string MessageID, DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
+        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
         {
             Log.Information("Set_Infomation: {A}, Content: {B}", ScheduleType, Content.Substring(0, Content.Length / 5));
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
@@ -353,7 +359,7 @@ namespace Display
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
         }
-        public async void ShowImage(string MessageID, string Url, int Duration)
+        public async void ShowImage(string Url, int Duration = MAXVALUE)
         {
             Log.Information("ShowImage: {A}", Url);
 
@@ -404,14 +410,6 @@ namespace Display
             tmr.Start();
 
             return_tmr = tmr;
-        }
-        public void Set_Default()
-        {
-            txtThongBao.Text = "";
-            txtVanBan.Text = "";
-
-            pictureBox1.Visible = false;
-            pictureBox2.Visible = false;
         }
 
         public Bitmap ConvertTextToImage(Control control)

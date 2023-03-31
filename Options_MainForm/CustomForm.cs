@@ -149,21 +149,13 @@ namespace Display
             page_VideoScreen.ShowVideo(Url, IdleTime, loopNum, Duration);
             TabPageID = PAGE_VIDEO;
         }
-        public void ShowText(string Title, string Content)
+        public void ShowText(DisplayScheduleType ScheduleType, string Text)
         {
             panel_Text.Visible = false;
-            if (page_Text != null)
-            {
-                try
-                {
-                    page_Text.Dispose();
-                }
-                catch { }
-            }
-            page_Text = new Page_Text();
+
             page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
-            page_Text.ShowText(Title, Content);
             ShowPanel(panel_Text, page_Text);
+            page_Text.ShowText(ScheduleType, Text);
             TabPageID = PAGE_TEXT;
         }
         public void ShowImage(string ImageURL, int Duration)
@@ -232,6 +224,10 @@ namespace Display
             page_Multi_Image.Show_Multi_Image(ImageURLs, Number_Image);
             ShowPanel(panel_Multi_Image, page_Multi_Image);
             TabPageID = PAGE_MULTI_IMAGE;
+        }
+        public void Test()
+        {
+            page_Text.Test();
         }
 
         //-----------------------------------------------------------------------------------------------------//

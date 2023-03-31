@@ -69,14 +69,14 @@ namespace Display
             this.pictureBox1.Size = new System.Drawing.Size(100, 50);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // lb_Content
             // 
             this.lb_Content.BackColor = System.Drawing.Color.Transparent;
-            this.lb_Content.Dock = System.Windows.Forms.DockStyle.Top;
             this.lb_Content.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.lb_Content.ForeColor = System.Drawing.Color.Navy;
-            this.lb_Content.Location = new System.Drawing.Point(0, 93);
+            this.lb_Content.Location = new System.Drawing.Point(3, 93);
             this.lb_Content.Name = "lb_Content";
             this.lb_Content.Size = new System.Drawing.Size(900, 78);
             this.lb_Content.TabIndex = 2;
@@ -98,6 +98,8 @@ namespace Display
     " trung đông người trên địa bàn thị trấn Bến Lức\" Để chủ động kiểm soát, ngăn chặ" +
     "n dịch bệnh Covid-19 gây ra.";
             this.lb_Title.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lb_Title.SizeChanged += new System.EventHandler(this.lb_Title_SizeChanged);
+            this.lb_Title.TextChanged += new System.EventHandler(this.lb_Title_TextChanged);
             // 
             // Page_Text
             // 

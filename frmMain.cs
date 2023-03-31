@@ -123,8 +123,6 @@ namespace Display
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
 
             Log.Information("App Start!");
-
-
         }
 
         private void GUID_Handle()
@@ -266,7 +264,7 @@ namespace Display
                         defaultForm.Close();
                         Add_UserControl(customForm);
                         CurrentForm = CUSTOM_FORM;
-                        customForm.ShowText(_TxtThongBao, _TxtVanBan);
+                        //customForm.ShowText(_TxtThongBao, _TxtVanBan);
                     }
                     break;
                 case Keys.F3:
@@ -278,7 +276,12 @@ namespace Display
                 case Keys.F4:
                     // Chuyen sang tab Text
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowText(_TxtThongBao, _TxtVanBan);
+                    {
+                        string txt = "RadioTech là một ứng dụng trên smartphone dùng để giám sát, điều khiển, cài đặt nội dung phát thanh của hệ thống truyền thanh ứng dụng công nghệ thông tin do Công ty Cổ phần BY TECH Việt Nam nghiên cứu và phát triển. \nĐể biết thêm thông tin chi tiết xin vui lòng liên hệ:\n Mr Biền - 0987 888 411\nHoặc các đơn vị phân phối sản phẩm Bytech trên toàn quốc\n";
+                        customForm.ShowText(DisplayScheduleType.BanTinThongBao, "Hướng dẫn sử dụng phần mềm RadioTech");
+                        customForm.ShowText(DisplayScheduleType.BanTinVanBan, txt);
+                        //customForm.ShowText(_TxtThongBao, _TxtVanBan);
+                    }
                     break;
 
                 case Keys.F5:
@@ -335,15 +338,16 @@ namespace Display
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", Duration: 25 * 1000);
-                    //defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 25 * 1000, loopNum: 0);
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).");
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
-                    defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900", 25 * 1000);
+                    //defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900");
                     //defaultForm.Test();
                     break;
 
                 case Keys.F:
                     Copy2ClipBoard(GUID_Value);
+                    //customForm.Test();
                     break;
 
                 case Keys.P:
@@ -382,6 +386,10 @@ namespace Display
                     msg3.isActive = false;
                     abc.Schedule(msg3);
                     break;
+                case Keys.C:
+                    //Test Crash
+                    Uri uri = new Uri(null);
+                    break;
             }
         }
         private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
@@ -392,7 +400,6 @@ namespace Display
                 if (CurrentForm != DEFAULT_FORM)
                 {
                     Add_UserControl(defaultForm);
-                    defaultForm.Set_Default();
                     CurrentForm = DEFAULT_FORM;
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
@@ -429,6 +436,11 @@ namespace Display
                 {
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
                     customForm.ShowImage(e.MediaUrl, e.Duration * 1000);
+                }
+                else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+                {
+                    Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowText(e.ScheduleType, e.Text);
                 }
             }
         }
