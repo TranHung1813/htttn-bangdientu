@@ -24,6 +24,13 @@ namespace Display
                 DeleteMessage_by_Id(message.id);
                 return;
             }
+
+            //replace if message ID is already existed
+            int index = _schedule_msg_List.FindIndex(s => s.msg.id == message.id);
+            if (index != -1)
+            {
+                DeleteMessage_by_Id(message.id);
+            }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
 
@@ -82,11 +89,6 @@ namespace Display
             };
             message.Schedule_Timer.Start();
             // Add message to Schedule List (replace if message ID is already existed)
-            int index = _schedule_msg_List.FindIndex(s => s.msg.id == message.msg.id);
-            if (index != -1)
-            {
-                DeleteMessage_by_Id(message.msg.id);
-            }
             _schedule_msg_List.Add(message);
         }
 

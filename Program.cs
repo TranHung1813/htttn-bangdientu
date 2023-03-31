@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace Display
                 {
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
+                    Application.ThreadException += Application_ThreadException;
                     Application.Run(new frmMain());
                 }
                 else
@@ -45,6 +47,11 @@ namespace Display
                     }
                 }
             }
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            Log.Error(e.Exception.Message, "Application_ThreadException");
         }
     }
 }

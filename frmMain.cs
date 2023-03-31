@@ -52,6 +52,8 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private int CurrentForm = 0;
 
+        ScheduleHandle scheduleHandle = new ScheduleHandle();
+
         private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ScreenResolution.");
 
         public int WM_SYSCOMMAND = 0x0112;
@@ -115,10 +117,13 @@ namespace Display
             Uart2Com.NotifyRecvPacket += Notify_RecvPacket;
             //Uart2Com.StatusConnection += Notify_StatusConnection;
 
+            scheduleHandle.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
 
             Log.Information("App Start!");
+
 
         }
 
@@ -514,6 +519,7 @@ namespace Display
                         // Chuyển sang Form Default
                         if (CurrentForm != DEFAULT_FORM)
                         {
+                            customForm.Close();
                             Add_UserControl(defaultForm);
                             CurrentForm = DEFAULT_FORM;
                         }
@@ -529,8 +535,6 @@ namespace Display
                             string s = JsonConvert.SerializeObject(payload.message.schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
 
-                            ScheduleHandle scheduleHandle = new ScheduleHandle();
-                            scheduleHandle.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
                             scheduleHandle.Schedule(newSchedule_msg);
                         }
                     }
