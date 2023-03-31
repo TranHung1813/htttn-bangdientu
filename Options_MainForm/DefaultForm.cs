@@ -29,6 +29,11 @@ namespace Display
         System.Timers.Timer Duration_VanBan_Tmr;
         System.Timers.Timer Duration_HinhAnh_Tmr;
 
+        private bool _is_ImageAvailable = false;
+        private bool _is_VideoAvailable = false;
+        private bool _is_ThongBaoAvailable = false;
+        private bool _is_VanBanAvailable = false;
+
         private int _IdleTime = 0;
         private int _LoopNum = MAXVALUE;
         private int _Duration = MAXVALUE;
@@ -141,7 +146,7 @@ namespace Display
             Log.Error("_mp_EncounteredError : {A}", e.ToString());
         }
 
-        public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
+        public void ShowVideo(string MessageID, string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
         {
             Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
@@ -151,6 +156,7 @@ namespace Display
             _LoopNum = loopNum;
             _Duration = Duration; //  ms
             _EnableLoop = false;
+            _is_VideoAvailable = true;
 
             PlayVideo(url);
 
@@ -165,6 +171,7 @@ namespace Display
                         videoView1.Visible = false;
                         _mp.Stop();
                         videoView1.Visible = true;
+                        _is_VideoAvailable = false;
                     });
                     _EnableLoop = false;
                     Log.Information("Video Stop!");
@@ -255,6 +262,10 @@ namespace Display
                 videoView1.Visible = true;
             });
 
+            _is_VideoAvailable = false;
+            _is_ThongBaoAvailable = false;
+            _is_VanBanAvailable = false;
+            _is_ImageAvailable = false;
             tick.Stop();
             try
             {
@@ -262,7 +273,7 @@ namespace Display
             }
             catch { }
         }
-        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
+        public void Set_Infomation(string MessageID, DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
         {
             Log.Information("Set_Infomation: {A}, Content: {B}", ScheduleType, Content.Substring(0, Content.Length / 5));
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
@@ -289,8 +300,9 @@ namespace Display
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
                     Log.Information("{A} Stop!", ScheduleType);
+                    _is_ThongBaoAvailable = false;
                 });
-
+                _is_ThongBaoAvailable = true;
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
@@ -316,7 +328,10 @@ namespace Display
                     panelVanBan.Stop();
                     txtVanBan.Text = "";
                     Log.Information("{A} Stop!", ScheduleType);
+                    _is_VanBanAvailable = false;
                 });
+
+                _is_VanBanAvailable = true;
             }
 
             pictureBox1.Visible = false;
@@ -338,7 +353,7 @@ namespace Display
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
         }
-        public async void ShowImage(string Url, int Duration)
+        public async void ShowImage(string MessageID, string Url, int Duration)
         {
             Log.Information("ShowImage: {A}", Url);
 
@@ -360,9 +375,12 @@ namespace Display
                     videoView1.Visible = false;
                     _mp.Stop();
                     videoView1.Visible = true;
+                    _is_ImageAvailable = false;
                 });
                 Log.Information("Image Stop!");
             });
+
+            _is_ImageAvailable = true;
 
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
@@ -560,6 +578,19 @@ namespace Display
 
             label2.Width = 1;
             label1.Height = 1;
+        }
+
+        private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
+        {
+            if (_is_VideoAvailable == false && _is_ThongBaoAvailable == false && _is_VanBanAvailable == false && 
+                                                                                 _is_ImageAvailable == false)
+            {
+                this.Visible = false;
+            }
+            else
+            {
+                this.Visible = true;
+            }
         }
     }
 }
