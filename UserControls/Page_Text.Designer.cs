@@ -29,11 +29,13 @@ namespace Display
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelContainer = new System.Windows.Forms.Panel();
             this.panel_TextRun = new Display.PanelEx();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lb_Content = new Display.GrowLabel();
             this.lb_Title = new Display.GrowLabel();
+            this.Timer_AutoHideScreen = new System.Windows.Forms.Timer(this.components);
             this.panelContainer.SuspendLayout();
             this.panel_TextRun.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -101,6 +103,12 @@ namespace Display
             this.lb_Title.SizeChanged += new System.EventHandler(this.lb_Title_SizeChanged);
             this.lb_Title.TextChanged += new System.EventHandler(this.lb_Title_TextChanged);
             // 
+            // Timer_AutoHideScreen
+            // 
+            this.Timer_AutoHideScreen.Enabled = true;
+            this.Timer_AutoHideScreen.Interval = 3000;
+            this.Timer_AutoHideScreen.Tick += new System.EventHandler(this.Timer_AutoHideScreen_Tick);
+            // 
             // Page_Text
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -121,5 +129,6 @@ namespace Display
         private GrowLabel lb_Content;
         private PanelEx panel_TextRun;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Timer Timer_AutoHideScreen;
     }
 }

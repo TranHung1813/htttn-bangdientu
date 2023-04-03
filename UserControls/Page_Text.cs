@@ -11,15 +11,25 @@ namespace Display
     {
         private string _txt = "- Theo điểm a khoản 1 Điều 12 Nghị định 117/2020/NĐ-CP ngày 28/9/2020 của Chính phủ Quy định xử phạt hành chính trong lĩnh vực y tế:\r\n\r\n" +
                               "- Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.";
+        private const int MAXVALUE = 1000 * 1000 * 1000;
+
+        System.Timers.Timer Duration_ThongBao_Tmr;
+        System.Timers.Timer Duration_VanBan_Tmr;
+
+        private bool _is_ThongBaoAvailable = false;
+        private bool _is_VanBanAvailable = false;
         public Page_Text()
         {
             InitializeComponent();
             lb_Title.Text = "";
             lb_Content.Text = "";
             pictureBox1.Visible = false;
+
+            Duration_ThongBao_Tmr = new System.Timers.Timer();
+            Duration_VanBan_Tmr = new System.Timers.Timer();
         }
 
-        public void ShowText(DisplayScheduleType ScheduleType, string Text)
+        public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "", int Duration = MAXVALUE)
         {
             Log.Information("ShowText: {A}, Noi dung: {B}", ScheduleType, Text);
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
@@ -28,6 +38,7 @@ namespace Display
                 try
                 {
                     lb_Title.Text = Text.Trim().ToUpper() + "\n";
+                    if (ColorValue != "") lb_Title.ForeColor = ColorTranslator.FromHtml(ColorValue);
                 }
                 catch (Exception ex)
                 {
@@ -37,6 +48,18 @@ namespace Display
                 panel_TextRun.SetSpeed = 1;
                 int Text_Height = lb_Title.Height + lb_Content.Height;
                 panel_TextRun.Start(Text_Height, 10000);
+
+                // Duration Handle
+                Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
+                {
+                    lb_Title.Text = "";
+                    Log.Information("{A} Stop!", ScheduleType);
+
+                    int Text_Height1 = lb_Title.Height + lb_Content.Height;
+                    panel_TextRun.Start(Text_Height, 10000);
+                    _is_ThongBaoAvailable = false;
+                });
+                _is_ThongBaoAvailable = true;
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
@@ -44,6 +67,7 @@ namespace Display
                 {
                     lb_Content.Text = Text;
                     lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 6);
+                    if (ColorValue != "") lb_Content.ForeColor = ColorTranslator.FromHtml(ColorValue);
                 }
                 catch (Exception ex)
                 {
@@ -68,6 +92,20 @@ namespace Display
                 panel_TextRun.SetSpeed = 1;
                 int Text_Height = lb_Title.Height + lb_Content.Height;
                 panel_TextRun.Start(Text_Height, 10000);
+
+                // Duration Handle
+                Duration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
+                {
+                    lb_Content.Text = "";
+                    Log.Information("{A} Stop!", ScheduleType);
+
+                    panel_TextRun.SetSpeed = 1;
+                    int Text_Height2 = lb_Title.Height + lb_Content.Height;
+                    panel_TextRun.Start(Text_Height, 10000);
+
+                    _is_VanBanAvailable = false;
+                });
+                _is_VanBanAvailable = true;
             }
 
         }
@@ -120,6 +158,28 @@ namespace Display
             }
 
             return bitmap;
+        }
+        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        {
+            try
+            {
+                tmr.Stop();
+                tmr.Dispose();
+            }
+            catch { }
+            tmr = new System.Timers.Timer();
+            // Xu ly Duration cho text content
+            tmr.Interval = Duration + 1000;
+            tmr.Elapsed += (o, ev) =>
+            {
+                action();
+                // Stop this Timer
+                tmr.Stop();
+                tmr.Dispose();
+            };
+            tmr.Start();
+
+            return_tmr = tmr;
         }
         public string JustifyParagraph(string text, Font font, int ControlWidth)
         {
@@ -208,8 +268,15 @@ namespace Display
             try
             {
                 //timerDelayTextRun.Stop();
+                Duration_ThongBao_Tmr.Stop();
+                Duration_ThongBao_Tmr.Dispose();
+                Duration_VanBan_Tmr.Stop();
+                Duration_ThongBao_Tmr.Dispose();
             }
             catch { }
+
+            _is_ThongBaoAvailable = false;
+            _is_VanBanAvailable = false;
         }
         public void PageText_FitToContainer(int Height, int Width)
         {
@@ -228,6 +295,18 @@ namespace Display
         public void Test()
         {
             MessageBox.Show(lb_Title.Height.ToString() + "," + lb_Content.Height.ToString());
+        }
+
+        private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
+        {
+            if (_is_ThongBaoAvailable == false && _is_VanBanAvailable == false)
+            {
+                this.Visible = false;
+            }
+            else
+            {
+                this.Visible = true;
+            }
         }
     }
     public class GrowLabel : Label

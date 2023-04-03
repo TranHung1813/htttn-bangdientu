@@ -33,6 +33,8 @@ namespace Display
         private PanelContainer panel_Image;
         private PanelContainer panel_Multi_Image;
 
+        private const int MAXVALUE = 1000 * 1000 * 1000;
+
         public CustomForm()
         {
             InitializeComponent();
@@ -106,7 +108,7 @@ namespace Display
 
                 case PAGE_TEXT:
                     //guna2Transition1.HideSync(panel_Text);
-                    page_Text.Close();
+                    if(panel != panel_Text) page_Text.Close();
                     panel_Text.Visible = false;
 
                     break;
@@ -149,13 +151,13 @@ namespace Display
             page_VideoScreen.ShowVideo(Url, IdleTime, loopNum, Duration);
             TabPageID = PAGE_VIDEO;
         }
-        public void ShowText(DisplayScheduleType ScheduleType, string Text)
+        public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "", int Duration = MAXVALUE)
         {
             panel_Text.Visible = false;
 
             page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
             ShowPanel(panel_Text, page_Text);
-            page_Text.ShowText(ScheduleType, Text);
+            page_Text.ShowText(ScheduleType, Text, ColorValue, Duration);
             TabPageID = PAGE_TEXT;
         }
         public void ShowImage(string ImageURL, int Duration)

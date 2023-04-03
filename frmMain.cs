@@ -100,9 +100,10 @@ namespace Display
         //27. Xóa bản tin theo ID
         //28. Text run không mượt trên máy tính Mini
 
-        //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form)
-        //30. Xử lý biến Toàn màn hình
+        //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form) (done)
+        //30. Xử lý biến Toàn màn hình (done)
         //31. Xóa dữ liệu Show trên màn hình khi: hết Duration (done), hết ValidTime
+        //32. Tự động restart máy lúc 2-3h sáng
         public frmMain()
         {
             InitializeComponent();
@@ -440,7 +441,7 @@ namespace Display
                 else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowText(e.ScheduleType, e.Text);
+                    customForm.ShowText(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
                 }
             }
         }
@@ -537,7 +538,7 @@ namespace Display
                         }
                         defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
                         defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
-                        defaultForm.ShowVideo(_VideoUrl);
+                        //defaultForm.ShowVideo(_VideoUrl);
                         //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     }
                     else if (payload.message != null)
