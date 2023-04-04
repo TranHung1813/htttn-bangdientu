@@ -44,6 +44,8 @@ namespace Display
         private string password;
         private int serverPort;
 
+        static List<Group> GroupsList = new List<Group>();
+
         public Message(string serverAddress, int serverPort, string userName, string password, string clientId)
         {
             this.serverAddress = serverAddress;
@@ -73,6 +75,22 @@ namespace Display
                 await mqttClient.SubscribeAsync(subcribeTopic_Default, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
                 await mqttClient.SubscribeAsync(subcribeTopic_Groups, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
 
+                if(GroupsList.Count > 0)
+                {
+                    try
+                    {
+                        foreach (var group in GroupsList)
+                        {
+                            string GroupTopic = subcribeTopic_Msg + group.Id;
+                            await mqttClient.SubscribeAsync(GroupTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Subcribe2Groups");
+                    }
+                }
+
                 mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
                 mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
             }
@@ -84,6 +102,10 @@ namespace Display
                 await InitMqtt();
 
             }
+        }
+        public static void Load_Groups_Info(List<Group> list)
+        {
+            GroupsList = list;
         }
 
         public async void Subcribe2Groups(List<Group> groups)

@@ -19,17 +19,17 @@ namespace Display
 
         public void Schedule(Schedule message)
         {
-            if (message.isActive != true)
+            if (message.IsActive != true)
             {
-                DeleteMessage_by_Id(message.id);
+                DeleteMessage_by_Id(message.Id);
                 return;
             }
 
             //replace if message ID is already existed
-            int index = _schedule_msg_List.FindIndex(s => s.msg.id == message.id);
+            int index = _schedule_msg_List.FindIndex(s => s.msg.Id == message.Id);
             if (index != -1)
             {
-                DeleteMessage_by_Id(message.id);
+                DeleteMessage_by_Id(message.Id);
             }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
@@ -48,17 +48,17 @@ namespace Display
         {
             // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
             List<int> TimeList_perWeek = new List<int>();
-            if(message.msg.isDaily == true)
+            if(message.msg.IsDaily == true)
             {
-                for(int CountDay = 0; CountDay < message.msg.days.Count; CountDay++)
+                for(int CountDay = 0; CountDay < message.msg.Days.Count; CountDay++)
                 {
-                    TimeList_perWeek.AddRange(message.msg.times.Select(x => x + 24 * 3600 * (message.msg.days[CountDay] - 1)).ToList());
+                    TimeList_perWeek.AddRange(message.msg.Times.Select(x => x + 24 * 3600 * (message.msg.Days[CountDay] - 1)).ToList());
                 }
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList);
             }
             else
             {
-                TimeList_perWeek.AddRange(message.msg.times);
+                TimeList_perWeek.AddRange(message.msg.Times);
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList);
             }
 
@@ -69,11 +69,11 @@ namespace Display
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
                 OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent, message.msg.FullScreen,
-                                   message.msg.idleTime, message.msg.loops, message.msg.duration, message.msg.ColorValue);
+                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
                 {
-                    if (message.msg.isDaily == true)
+                    if (message.msg.IsDaily == true)
                     {
                         message.CountTime = 0;
                         message.TimeList = message.WeeklyTimeList;
@@ -171,15 +171,15 @@ namespace Display
         private void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (message.msg.from <= CurrentTime && CurrentTime < message.msg.to)
+            if (message.msg.From <= CurrentTime && CurrentTime < message.msg.To)
             {
                 // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
 
                 message.ValidHandle_Timer = new Timer();
-                message.ValidHandle_Timer.Interval = (int)(message.msg.to - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
                 message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                 {
-                    DeleteMessage_by_Id(message.msg.id);
+                    DeleteMessage_by_Id(message.msg.Id);
 
                     Timer this_timer = (Timer)sender;
                     this_timer.Stop();
@@ -188,24 +188,24 @@ namespace Display
 
                 MessageHandle(message);
             }
-            else if (message.msg.from > CurrentTime)
+            else if (message.msg.From > CurrentTime)
             {
                 // Nếu bản tin chưa Valid => tạo Timer chạy đến fromTime, xử lý bản tin => đổi Interval để cạy đến toTime để xóa bản tin
                 message.ValidHandle_Timer = new Timer();
-                message.ValidHandle_Timer.Interval = (int)(message.msg.from - CurrentTime) * 1000 + 1000;
+                message.ValidHandle_Timer.Interval = (int)(message.msg.From - CurrentTime) * 1000 + 1000;
                 message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                 {
                     long Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                    if (Time >= message.msg.to)
+                    if (Time >= message.msg.To)
                     {
-                        DeleteMessage_by_Id(message.msg.id);
+                        DeleteMessage_by_Id(message.msg.Id);
 
                         Timer this_timer = (Timer)sender;
                         this_timer.Stop();
                     }
-                    else if (Time >= message.msg.from && Time < message.msg.to)
+                    else if (Time >= message.msg.From && Time < message.msg.To)
                     {
-                        message.ValidHandle_Timer.Interval = (int)(message.msg.to - Time) * 1000 + 1000;
+                        message.ValidHandle_Timer.Interval = (int)(message.msg.To - Time) * 1000 + 1000;
                         MessageHandle(message);
                     }
                 };
@@ -217,7 +217,7 @@ namespace Display
         {
             foreach(var schedule_msg in _schedule_msg_List)
             {
-                if(schedule_msg.msg.id == messageId)
+                if(schedule_msg.msg.Id == messageId)
                 {
                     try
                     {
@@ -229,7 +229,7 @@ namespace Display
                     catch { }
                 }
             }
-            _schedule_msg_List.RemoveAll(r => r.msg.id == messageId);
+            _schedule_msg_List.RemoveAll(r => r.msg.Id == messageId);
         }
 
         private event EventHandler<NotifyTime2Play> _NotifyTime2Play;

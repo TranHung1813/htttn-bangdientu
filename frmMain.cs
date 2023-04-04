@@ -485,18 +485,45 @@ namespace Display
                 GUID_Value = Properties.Settings.Default.ClientId;
                 //GUID_Value = "180116373248482";
             }
+            Load_Groups_Info();
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
                     Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
         }
 
+        private void Load_Groups_Info()
+        {
+            //Get Groups info
+            List<Group> GroupsList = new List<Group>();
+
+            List<DataUser_Groups_Info> GroupsInfo = SqLiteDataAccess.Load_Groups_Info();
+            if(GroupsInfo != null)
+            {
+                foreach(var groupInfo in GroupsInfo)
+                {
+                    Group gr = new Group();
+                    gr.Id = groupInfo.GroupId;
+                    gr.MasterType = groupInfo.MasterType;
+                    gr.Name = groupInfo.Name;
+                    gr.Priority = groupInfo.Priority;
+                    GroupsList.Add(gr);
+                }
+            }
+            else
+            {
+                // Null Handle
+            }
+            Message.Load_Groups_Info(GroupsList);
+        }
+
         private void LogInit()
         {
+            string LocalPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(@"Log\Info-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(@"Log\Debug-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(@"Log\Warning-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(@"Log\Error-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(LocalPath + @"\Log\Info-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(LocalPath + @"\Log\Debug-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(LocalPath + @"\Log\Warning-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(LocalPath + @"\Log\Error-.txt", rollingInterval: RollingInterval.Day))
                     .CreateLogger();
         }
 
@@ -599,6 +626,19 @@ namespace Display
                             string s = JsonConvert.SerializeObject(payload.Message);
                             DeviceConfigMessage newGroups_msg = JsonConvert.DeserializeObject<DeviceConfigMessage>(s);
                             mqttMessage.Subcribe2Groups(newGroups_msg.Groups);
+
+                            DataUser_Groups_Info info_Save = new DataUser_Groups_Info();
+                            info_Save.Id = 0;
+                            foreach (var group in newGroups_msg.Groups)
+                            {
+                                info_Save.Id += 1;
+                                info_Save.GroupId = group.Id;
+                                info_Save.Priority = group.Priority;
+                                info_Save.Name = group.Name;
+                                info_Save.MasterType = group.MasterType;
+
+                                SqLiteDataAccess.SaveInfo_Groups(info_Save);
+                            }
                         }
                     }
                     else
@@ -831,6 +871,7 @@ namespace Display
         public string Id;
         public int MasterType; /* 0: Nhóm, 1: Thiết bị master, 2: User */
         public int Priority;
+        public string Name;
     }
 
 
