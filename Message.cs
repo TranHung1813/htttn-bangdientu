@@ -25,8 +25,11 @@ namespace Display
 
                 return null;
             }
-        }        
-
+        }
+        public async void SendMessage(string payload)
+        {
+            await PublishMessageAsync(this.subcribeTopic, payload, false);
+        }
         private IMqttClient mqttClient;
         ConcurrentQueue<MqttApplicationMessage> messageQueue = new ConcurrentQueue<MqttApplicationMessage>();
         MqttClientOptions optionsBuilder;
@@ -45,7 +48,7 @@ namespace Display
 
             this.userName = userName;
             this.password = password;
-            this.subcribeTopic += $"{clientId}/#";
+            this.subcribeTopic += $"{clientId}";
 
             new Task(async () => await InitMqtt()).Start();
         }

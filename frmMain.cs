@@ -8,10 +8,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Management;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 namespace Display
@@ -500,12 +503,53 @@ namespace Display
         private void tick_Tick(object sender, EventArgs e)
         {
             ProcessNewMessage();
-            SendHeartBeatTick();
+            //SendHeartBeatTick();
         }
 
         private void SendHeartBeatTick()
         {
+            PingMessage pingMessage = new PingMessage();
+            pingMessage.appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            pingMessage.role = 2;
+            pingMessage.ip = GetLocalIPAddress();
+            pingMessage.nodeId = GUID_Value;
+            pingMessage.nodeName = "BangDienTu";
+            pingMessage.streamingMaster = "";
+            pingMessage.streamingLink = "";
+            pingMessage.streamState = 0;
+            pingMessage.scheduleId = "";
+            pingMessage.schedulePlayingFile = "";
+            pingMessage.schedulePlayState = 0;
+            pingMessage.isMicOn = false;
+            pingMessage.isSpkOn = true;
+            pingMessage.isCamOn = false;
+            pingMessage.volMeet = 0;
+            pingMessage.volMusic = 0;
 
+            if (CurrentForm == DEFAULT_FORM)
+            {
+                pingMessage.isSpkOn = !defaultForm.GetMuteStatus();
+                pingMessage.volMusic = defaultForm.GetVolume();
+            }
+            else if (CurrentForm == CUSTOM_FORM)
+            {
+                pingMessage.volMusic = customForm.GetVolume();
+            }
+
+            var json = new JavaScriptSerializer().Serialize(pingMessage);
+            mqttMessage.SendMessage(json);
+        }
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         private void ProcessNewMessage()
@@ -729,5 +773,29 @@ namespace Display
         BanTinVideo = 3,
 
         BanTinHinhAnh = 4,
+    }
+    public class PingMessage 
+    {
+        public string serial;              //serial number
+        public int role;                   //Loại bộ thu (0)/phát (1)
+        public string ip;                  //IP của node
+        public string nodeId;              //deviceId
+        public string nodeName;            //deviceName
+        public string masterConfigId;      //master config id
+        public string room;                //Tên room đang join, nếu đang ko join thì empty
+        public bool isJoin;             //Trạng thái join room meeting
+        public string streamingMaster;     //Imei của master đang stream, ko stream thì empty
+        public string streamingLink;       //Link đang streaming, nếu đang ko stream thì empty
+        public int streamState;            //Trạng thái streaming
+        public string scheduleId;  //SheduleID đang phát offline, nếu đang ko phát thì empty
+        public string schedulePlayingFile;    //File đang play theo lịch
+        public int schedulePlayState;      //Trạng thái play theo lịch offline
+        public bool isMicOn;            //Trạng thái Mic On/Off
+        public bool isSpkOn;            //Trạng thái Loa meeting On/Off
+        public bool isCamOn;            //Trạng thái Cam meeting On/Off
+        public string appVersion;          //Phiên bản app
+        public int volMeet;                //Âm lượng loa thoại (%)
+        public int volMusic;               //Âm lượng loa phát nhạc (%)
+        public int hwVersion;               //Phiên bản phần cứng
     }
 }

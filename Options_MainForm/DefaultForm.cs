@@ -152,6 +152,17 @@ namespace Display
             Log.Error("_mp_EncounteredError : {A}", e.ToString());
         }
 
+        public int GetVolume()
+        {
+            if (_mp.IsPlaying != true) return 0;
+            return _mp.Volume;
+        }
+        public bool GetMuteStatus()
+        {
+            if (_mp.IsPlaying != true) return true;
+            return _mp.Mute;
+        }
+
         public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
         {
             Log.Information("ShowVideo: {A}", url);

@@ -227,6 +227,12 @@ namespace Display
             ShowPanel(panel_Multi_Image, page_Multi_Image);
             TabPageID = PAGE_MULTI_IMAGE;
         }
+
+        public int GetVolume()
+        {
+            if (TabPageID != PAGE_VIDEO) return 0;
+            return page_VideoScreen.GetVolume();
+        }
         public void Test()
         {
             page_Text.Test();
