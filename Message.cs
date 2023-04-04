@@ -28,13 +28,16 @@ namespace Display
         }
         public async void SendMessage(string payload)
         {
-            await PublishMessageAsync(this.subcribeTopic, payload, false);
+            await PublishMessageAsync(this.publishTopic_Msg, payload, false);
         }
         private IMqttClient mqttClient;
         ConcurrentQueue<MqttApplicationMessage> messageQueue = new ConcurrentQueue<MqttApplicationMessage>();
         MqttClientOptions optionsBuilder;
 
-        string subcribeTopic = "ttn/g2d/";
+        public string subcribeTopic_Default = "ttn/g2d/";
+        public string subcribeTopic_Groups = "rx/";
+        public string subcribeTopic_Msg = "tx/";
+        public string publishTopic_Msg = "tx/";
 
         private string serverAddress;
         private string userName;
@@ -48,7 +51,8 @@ namespace Display
 
             this.userName = userName;
             this.password = password;
-            this.subcribeTopic += $"{clientId}";
+            this.subcribeTopic_Default += $"{clientId}/#";
+            this.subcribeTopic_Groups += $"{clientId}";
 
             new Task(async () => await InitMqtt()).Start();
         }
@@ -66,7 +70,8 @@ namespace Display
 
                 mqttClient = new MqttFactory().CreateMqttClient();
                 await mqttClient.ConnectAsync(optionsBuilder, CancellationToken.None);
-                await mqttClient.SubscribeAsync(subcribeTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                await mqttClient.SubscribeAsync(subcribeTopic_Default, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                await mqttClient.SubscribeAsync(subcribeTopic_Groups, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
 
                 mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
                 mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
@@ -81,6 +86,24 @@ namespace Display
             }
         }
 
+        public async void Subcribe2Groups(List<Group> groups)
+        {
+            try
+            {
+                foreach (var group in groups)
+                {
+                    string GroupTopic = subcribeTopic_Msg + group.Id;
+                    await mqttClient.SubscribeAsync(GroupTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Subcribe2Groups");
+            }
+            mqttClient.ApplicationMessageReceivedAsync -= ApplicationMessageReceivedHandler;
+            mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
+        }
+
         private async Task MqttDisconnectedEvent(MqttClientDisconnectedEventArgs e)
         {
             Log.Fatal($"MQTT disconnected: {JsonConvert.SerializeObject(e)}");
@@ -88,7 +111,8 @@ namespace Display
             await Task.Delay(5000);
 
             await mqttClient.ConnectAsync(optionsBuilder, CancellationToken.None);
-            await mqttClient.SubscribeAsync(subcribeTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+            await mqttClient.SubscribeAsync(subcribeTopic_Default, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+            await mqttClient.SubscribeAsync(subcribeTopic_Groups, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
         }
 
         public async Task ApplicationMessageReceivedHandler(MqttApplicationMessageReceivedEventArgs eventArgs)
@@ -101,7 +125,6 @@ namespace Display
             {
                 Log.Error(ex, "MQTT AddNewMessage");
             }
-
         }
 
         private async Task PublishMessageAsync(string topic, string payload, bool Retain = false)

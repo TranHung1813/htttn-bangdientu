@@ -355,41 +355,41 @@ namespace Display
                     break;
 
                 case Keys.P:
-                    ScheduleHandle abc = new ScheduleHandle();
-                    abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+                    //ScheduleHandle abc = new ScheduleHandle();
+                    //abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
 
-                    Schedule msg = new Schedule();
-                    msg.id = "001";
-                    msg.from = 1679892014;
-                    msg.to = 1680491799;
-                    msg.isActive = true;
-                    msg.isDaily = true;
-                    msg.days = new List<int> { 4, 5, 3, 1, 6 };
-                    msg.times = new List<int> { 42060, 42180, 42240 };
-                    msg.idleTime = 1;
-                    msg.loops = 0;
-                    msg.duration = 50 * 1000;
-                    msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
-                    abc.Schedule(msg);
+                    //Schedule msg = new Schedule();
+                    //msg.id = "001";
+                    //msg.from = 1679892014;
+                    //msg.to = 1680491799;
+                    //msg.isActive = true;
+                    //msg.isDaily = true;
+                    //msg.days = new List<int> { 4, 5, 3, 1, 6 };
+                    //msg.times = new List<int> { 42060, 42180, 42240 };
+                    //msg.idleTime = 1;
+                    //msg.loops = 0;
+                    //msg.duration = 50 * 1000;
+                    //msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
+                    //abc.Schedule(msg);
 
-                    Schedule msg2 = new Schedule();
-                    msg2.id = "002";
-                    msg2.from = 1679892014;
-                    msg2.to = 1680491799;
-                    msg2.isActive = true;
-                    msg2.isDaily = false;
-                    msg2.times = new List<int> { 42120, 35940, 42210 };
-                    msg2.idleTime = 2;
-                    msg2.loops = 5;
-                    msg2.duration = 500 * 1000;
-                    msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
-                    abc.Schedule(msg2);
+                    //Schedule msg2 = new Schedule();
+                    //msg2.id = "002";
+                    //msg2.from = 1679892014;
+                    //msg2.to = 1680491799;
+                    //msg2.isActive = true;
+                    //msg2.isDaily = false;
+                    //msg2.times = new List<int> { 42120, 35940, 42210 };
+                    //msg2.idleTime = 2;
+                    //msg2.loops = 5;
+                    //msg2.duration = 500 * 1000;
+                    //msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                    //abc.Schedule(msg2);
 
-                    Schedule msg3 = new Schedule();
-                    msg3.id = "002";
-                    msg3.isActive = false;
-                    abc.Schedule(msg3);
-                    break;
+                    //Schedule msg3 = new Schedule();
+                    //msg3.id = "002";
+                    //msg3.isActive = false;
+                    //abc.Schedule(msg3);
+                    //break;
                 case Keys.C:
                     //Test Crash
                     Uri uri = new Uri(null);
@@ -509,31 +509,31 @@ namespace Display
         private void SendHeartBeatTick()
         {
             PingMessage pingMessage = new PingMessage();
-            pingMessage.appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            pingMessage.role = 2;
-            pingMessage.ip = GetLocalIPAddress();
-            pingMessage.nodeId = GUID_Value;
-            pingMessage.nodeName = "BangDienTu";
-            pingMessage.streamingMaster = "";
-            pingMessage.streamingLink = "";
-            pingMessage.streamState = 0;
-            pingMessage.scheduleId = "";
-            pingMessage.schedulePlayingFile = "";
-            pingMessage.schedulePlayState = 0;
-            pingMessage.isMicOn = false;
-            pingMessage.isSpkOn = true;
-            pingMessage.isCamOn = false;
-            pingMessage.volMeet = 0;
-            pingMessage.volMusic = 0;
+            pingMessage.AppVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            pingMessage.Role = 2;
+            pingMessage.Ip = GetLocalIPAddress();
+            pingMessage.NodeId = GUID_Value;
+            pingMessage.NodeName = "BangDienTu";
+            pingMessage.StreamingMaster = "";
+            pingMessage.StreamingLink = "";
+            pingMessage.StreamState = 0;
+            pingMessage.ScheduleId = "";
+            pingMessage.SchedulePlayingFile = "";
+            pingMessage.SchedulePlayState = 0;
+            pingMessage.IsMicOn = false;
+            pingMessage.IsSpkOn = true;
+            pingMessage.IsCamOn = false;
+            pingMessage.VolMeet = 0;
+            pingMessage.VolMusic = 0;
 
             if (CurrentForm == DEFAULT_FORM)
             {
-                pingMessage.isSpkOn = !defaultForm.GetMuteStatus();
-                pingMessage.volMusic = defaultForm.GetVolume();
+                pingMessage.IsSpkOn = !defaultForm.GetMuteStatus();
+                pingMessage.VolMusic = defaultForm.GetVolume();
             }
             else if (CurrentForm == CUSTOM_FORM)
             {
-                pingMessage.volMusic = customForm.GetVolume();
+                pingMessage.VolMusic = customForm.GetVolume();
             }
 
             var json = new JavaScriptSerializer().Serialize(pingMessage);
@@ -560,36 +560,56 @@ namespace Display
                 if (newMessage != null)
                 {
                     var topic = newMessage.Topic;
-                    string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    //Log.Information("ProcessNewMessage: {A}", message);
                     Log.Information("Get_NewMessage");
-                    dynamic payload = JsonConvert.DeserializeObject<object>(message);
-
-                    if (payload.BanTinThongBao != null)
+                    if (newMessage.Topic == mqttMessage.subcribeTopic_Default)
                     {
-                        _TxtThongBao = payload.BanTinThongBao;
-                        //ShowText(_TxtThongBao);
-                        _TxtVanBan = payload.BanTinVanBan;
-                        _VideoUrl = payload.VideoUrl;
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                        //customForm.ShowVideo(_VideoUrl);
-                        // Chuyển sang Form Default
-                        if (CurrentForm != DEFAULT_FORM)
+                        if (payload.BanTinThongBao != null)
                         {
-                            customForm.Close();
-                            Add_UserControl(defaultForm);
-                            CurrentForm = DEFAULT_FORM;
+                            _TxtThongBao = payload.BanTinThongBao;
+                            //ShowText(_TxtThongBao);
+                            _TxtVanBan = payload.BanTinVanBan;
+                            _VideoUrl = payload.VideoUrl;
+
+                            //customForm.ShowVideo(_VideoUrl);
+                            // Chuyển sang Form Default
+                            if (CurrentForm != DEFAULT_FORM)
+                            {
+                                customForm.Close();
+                                Add_UserControl(defaultForm);
+                                CurrentForm = DEFAULT_FORM;
+                            }
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
+                            //defaultForm.ShowVideo(_VideoUrl);
+                            //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
-                        //defaultForm.ShowVideo(_VideoUrl);
-                        //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                     }
-                    else if (payload.message != null)
+                    else if (newMessage.Topic == mqttMessage.subcribeTopic_Groups)
                     {
-                        if (payload.message.schedule != null)
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
+
+                        if(payload.Message.Groups != null)
                         {
-                            string s = JsonConvert.SerializeObject(payload.message.schedule);
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            DeviceConfigMessage newGroups_msg = JsonConvert.DeserializeObject<DeviceConfigMessage>(s);
+                            mqttMessage.Subcribe2Groups(newGroups_msg.Groups);
+                        }
+                    }
+                    else
+                    {
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
+
+                        if (payload.Message.Schedule != null)
+                        {
+                            string s = JsonConvert.SerializeObject(payload.Message.Schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
 
                             scheduleHandle.Schedule(newSchedule_msg);
@@ -726,20 +746,20 @@ namespace Display
 
     public class Schedule
     {
-        public string id { get; set; }     //Schedule ID, định danh các schedule khác nhau
-        public long createdTime { get; set; }        //Thời điểm tạo lịch (UTC second)
-        public int duration { get; set; }       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
-        public int loops { get; set; }        //Số lần phát
-        public int idleTime { get; set; }       //Thời gian nghỉ giữa 2 lần phát (s)
-        public bool isDaily { get; set; }    //Phát lặp lại hàng ngày
-        public bool isBroadcast { get; set; }    //Phát quảng bá cho cả room cùng nghe
-        public long from { get; set; }          //Có hiệu lực từ thời điểm (UTC second)
-        public long to { get; set; }            //Có hiệu lực đến thời điểm (UTC second)
-        public bool isActive { get; set; }       //Còn hiệu lực hay không
-        public List<int> times { get; set; } //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
-        public List<int> days { get; set; }  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
-        public List<string> songs { get; set; }  //Danh sách nội dung
-        public string path { get; set; }          //Remote folder on MinIO server
+        public string Id { get; set; }     //Schedule ID, định danh các schedule khác nhau
+        public long CreatedTime { get; set; }        //Thời điểm tạo lịch (UTC second)
+        public int Duration { get; set; }       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
+        public int Loops { get; set; }        //Số lần phát
+        public int IdleTime { get; set; }       //Thời gian nghỉ giữa 2 lần phát (s)
+        public bool IsDaily { get; set; }    //Phát lặp lại hàng ngày
+        public bool IsBroadcast { get; set; }    //Phát quảng bá cho cả room cùng nghe
+        public long From { get; set; }          //Có hiệu lực từ thời điểm (UTC second)
+        public long To { get; set; }            //Có hiệu lực đến thời điểm (UTC second)
+        public bool IsActive { get; set; }       //Còn hiệu lực hay không
+        public List<int> Times { get; set; } //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
+        public List<int> Days { get; set; }  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
+        public List<string> Songs { get; set; }  //Danh sách nội dung
+        public string Path { get; set; }          //Remote folder on MinIO server
 
         public DisplayScheduleType ScheduleType { get; set; } // Loại bản tin
         public string TextContent { get; set; }
@@ -774,28 +794,44 @@ namespace Display
 
         BanTinHinhAnh = 4,
     }
-    public class PingMessage 
+    public class PingMessage
     {
-        public string serial;              //serial number
-        public int role;                   //Loại bộ thu (0)/phát (1)
-        public string ip;                  //IP của node
-        public string nodeId;              //deviceId
-        public string nodeName;            //deviceName
-        public string masterConfigId;      //master config id
-        public string room;                //Tên room đang join, nếu đang ko join thì empty
-        public bool isJoin;             //Trạng thái join room meeting
-        public string streamingMaster;     //Imei của master đang stream, ko stream thì empty
-        public string streamingLink;       //Link đang streaming, nếu đang ko stream thì empty
-        public int streamState;            //Trạng thái streaming
-        public string scheduleId;  //SheduleID đang phát offline, nếu đang ko phát thì empty
-        public string schedulePlayingFile;    //File đang play theo lịch
-        public int schedulePlayState;      //Trạng thái play theo lịch offline
-        public bool isMicOn;            //Trạng thái Mic On/Off
-        public bool isSpkOn;            //Trạng thái Loa meeting On/Off
-        public bool isCamOn;            //Trạng thái Cam meeting On/Off
-        public string appVersion;          //Phiên bản app
-        public int volMeet;                //Âm lượng loa thoại (%)
-        public int volMusic;               //Âm lượng loa phát nhạc (%)
-        public int hwVersion;               //Phiên bản phần cứng
+        public string Serial;              //serial number
+        public int Role;                   //Loại bộ thu (0)/phát (1)
+        public string Ip;                  //IP của node
+        public string NodeId;              //deviceId
+        public string NodeName;            //deviceName
+        public string MasterConfigId;      //master config id
+        public string Room;                //Tên room đang join, nếu đang ko join thì empty
+        public bool IsJoin;             //Trạng thái join room meeting
+        public string StreamingMaster;     //Imei của master đang stream, ko stream thì empty
+        public string StreamingLink;       //Link đang streaming, nếu đang ko stream thì empty
+        public int StreamState;            //Trạng thái streaming
+        public string ScheduleId;  //SheduleID đang phát offline, nếu đang ko phát thì empty
+        public string SchedulePlayingFile;    //File đang play theo lịch
+        public int SchedulePlayState;      //Trạng thái play theo lịch offline
+        public bool IsMicOn;            //Trạng thái Mic On/Off
+        public bool IsSpkOn;            //Trạng thái Loa meeting On/Off
+        public bool IsCamOn;            //Trạng thái Cam meeting On/Off
+        public string AppVersion;          //Phiên bản app
+        public int VolMeet;                //Âm lượng loa thoại (%)
+        public int VolMusic;               //Âm lượng loa phát nhạc (%)
+        public int HwVersion;               //Phiên bản phần cứng
     }
+    public class DeviceConfigMessage 
+    {
+        public string Id;
+        public int DeviceType; /* 0: Thiết bị thu, 1: Thiết bị phát */
+        public string Name;
+        public int priority;
+        public List<Group> Groups;
+    }
+    public class Group
+    {
+        public string Id;
+        public int MasterType; /* 0: Nhóm, 1: Thiết bị master, 2: User */
+        public int Priority;
+    }
+
+
 }

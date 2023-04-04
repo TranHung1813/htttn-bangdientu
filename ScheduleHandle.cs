@@ -97,7 +97,7 @@ namespace Display
             if (TimeList.Count <= 0) return;
 
             int d = (int)DateTime.Now.DayOfWeek;
-            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds + 24 * 3600 * (d - 1);
+            int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds + 24 * 3600 * (d - 1);
             int TotalSecond_1Week = 7 * 24 * 3600;
 
             TimeList = TimeList.Distinct().ToList();
@@ -143,7 +143,7 @@ namespace Display
         {
             if (TimeList.Count <= 0) return;
 
-            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+            int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds;
 
             TimeList = TimeList.Distinct().ToList();
             TimeList.Sort();
