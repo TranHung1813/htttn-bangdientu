@@ -55,6 +55,46 @@ namespace Display
                 }
             }
         }
+
+        //*****************************************************************************************************************
+        //****************************************** Access to Saved File Infomation *******************************************
+        public static List<DataUser_SavedFiles> Load_SavedFiles_Info()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<DataUser_SavedFiles>("select * from SavedFiles", new DynamicParameters());
+                return output.ToList();
+            }
+        }
+
+        public static void AddInfo_SavedFiles(DataUser_SavedFiles info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("insert into SavedFiles ( ScheduleId, PathLocation, Link) values ( @ScheduleId, @PathLocation, @Link)", info);
+                }
+                catch
+                { }
+            }
+        }
+        public static void SaveInfo_SavedFiles(DataUser_SavedFiles info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                int id = cnn.Query<int>("select Id from SavedFiles where Id like @Id", new { Id = info.Id }).FirstOrDefault();
+
+                if (id == info.Id)
+                {
+                    cnn.Execute("update SavedFiles set ScheduleId= @ScheduleId, PathLocation = @PathLocation, Link = @Link where Id = @Id", info);
+                }
+                else
+                {
+                    cnn.Execute("insert into SavedFiles ( ScheduleId, PathLocation, Link) values ( @ScheduleId, @PathLocation, @Link)", info);
+                }
+            }
+        }
         //*****************************************************************************************************************
         //*****************************************************************************************************************
         private static string LoadConnectionString(string id = "Default")

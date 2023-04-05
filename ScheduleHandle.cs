@@ -46,9 +46,6 @@ namespace Display
 
         private void MessageHandle(ScheduleMsg_Type message)
         {
-            // Notify First Time to Play
-            OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue);
             // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
             List<int> TimeList_perWeek = new List<int>();
             if(message.msg.IsDaily == true)
@@ -67,12 +64,12 @@ namespace Display
 
             // Init Timer
             if (message.TimeList.Length <= 0) return;
+
             message.Schedule_Timer = new Timer();
             message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue);
+                NotifyPlay(message);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
                 {
@@ -93,6 +90,13 @@ namespace Display
             message.Schedule_Timer.Start();
             // Add message to Schedule List (replace if message ID is already existed)
             _schedule_msg_List.Add(message);
+        }
+
+        private void NotifyPlay(ScheduleMsg_Type message)
+        {
+            // Notify First Time to Play
+            OnNotify_Time2Play(message.msg.Id, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title);
         }
 
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
@@ -178,10 +182,9 @@ namespace Display
             if (message.msg.From <= CurrentTime)
             {
                 // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
-                if (message.msg.To == 0)
+                if(message.msg.To == 0)
                 {
-                    MessageHandle(message);
-                    return;
+
                 }
                 else if (CurrentTime < message.msg.To)
                 {
@@ -191,11 +194,11 @@ namespace Display
                     {
                         DeleteMessage_by_Id(message.msg.Id);
 
-                        Timer this_timer = (Timer)sender;
-                        this_timer.Stop();
+                        message.ValidHandle_Timer.Stop();
                     };
                     message.ValidHandle_Timer.Start();
                 }
+                MessageHandle(message);
             }
             else if (message.msg.From > CurrentTime)
             {
@@ -209,20 +212,22 @@ namespace Display
                     {
                         DeleteMessage_by_Id(message.msg.Id);
 
-                        Timer this_timer = (Timer)sender;
-                        this_timer.Stop();
+                        message.ValidHandle_Timer.Stop();
                     }
                     else if (Time >= message.msg.From && Time < message.msg.To)
                     {
+                        // Notify First Time to Play
+                        NotifyPlay(message);
                         message.ValidHandle_Timer.Interval = (int)(message.msg.To - Time) * 1000 + 1000;
                         MessageHandle(message);
                     }
                     else if(Time >= message.msg.From && message.msg.To == 0)
                     {
+                        // Notify First Time to Play
+                        NotifyPlay(message);
                         MessageHandle(message);
 
-                        Timer this_timer = (Timer)sender;
-                        this_timer.Stop();
+                        message.ValidHandle_Timer.Stop();
                     }
                 };
                 message.ValidHandle_Timer.Start();
@@ -239,8 +244,11 @@ namespace Display
                     {
                         schedule_msg.Schedule_Timer.Stop();
                         schedule_msg.Schedule_Timer.Dispose();
-                        schedule_msg.ValidHandle_Timer.Stop();
-                        schedule_msg.ValidHandle_Timer.Dispose();
+                        if (schedule_msg.ValidHandle_Timer != null)
+                        {
+                            schedule_msg.ValidHandle_Timer.Stop();
+                            schedule_msg.ValidHandle_Timer.Dispose();
+                        }
                     }
                     catch { }
                 }
@@ -260,12 +268,12 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
-                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue)
+        protected virtual void OnNotify_Time2Play(string ScheduleId, DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
+                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue, string Title)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title));
             }
         }
     }
@@ -281,6 +289,7 @@ namespace Display
     }
     public class NotifyTime2Play : EventArgs
     {
+        public string ScheduleId;
         public DisplayScheduleType ScheduleType;
         public string Text;
         public List<string> MediaUrl;
@@ -289,8 +298,10 @@ namespace Display
         public int Duration;
         public string ColorValue;
         public bool FullScreen;
-        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue)
+        public string Title;
+        public NotifyTime2Play(string scheduleId, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title)
         {
+            ScheduleId = scheduleId;
             ScheduleType = scheduleType;
             Text = text;
             MediaUrl = mediaUrl;
@@ -300,6 +311,7 @@ namespace Display
             Duration = duration;
             ColorValue = colorValue;
             FullScreen = fullScreen;
+            Title = title;
         }
     }
 }

@@ -20,9 +20,11 @@ namespace Display
     public partial class Page_Image : UserControl
     {
         //private string _ImageURL = "";
-        private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Files");
         private string _ImageName = "";
         System.Timers.Timer Duration_HinhAnh_Tmr;
+
+        private string _ScheduleID_Image = "";
         public Page_Image()
         {
             InitializeComponent();
@@ -32,11 +34,12 @@ namespace Display
             Duration_HinhAnh_Tmr = new System.Timers.Timer();
         }
 
-        public void ShowImage(string Url, int Duration)
+        public void ShowImage(string Url, string ScheduleId, int Duration)
         {
             Log.Information("ShowImage: {A}", Url);
+            _ScheduleID_Image = ScheduleId;
             pictureBox1.Image = null;
-            DownloadAsync_Image(Url);
+            DownloadAsync_Image(Url, ScheduleId);
 
             // Duration Handle
             Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
@@ -75,7 +78,7 @@ namespace Display
             return_tmr = tmr;
         }
 
-        private void DownloadAsync_Image(string Url)
+        private void DownloadAsync_Image(string Url, string ScheduleId)
         {
             string fileExtension = "";
             Uri uri = new Uri(Url);
@@ -87,7 +90,7 @@ namespace Display
             {
                 Log.Error(ex, "Image_GetExtension: {Url}", Url);
             }
-            _ImageName = Path.Combine(PathFile, "SaveImage" + fileExtension);
+            _ImageName = Path.Combine(PathFile, "SaveImage-" + ScheduleId + fileExtension);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _ImageName);
@@ -102,8 +105,43 @@ namespace Display
                 {
                     Log.Error(ex, "DownloadAsync_Image_Completed");
                 }
+
+                // Save to Database
+                SavedFile_Type videoFile = new SavedFile_Type();
+                videoFile.PathLocation = _ImageName;
+                videoFile.ScheduleId = ScheduleId;
+                videoFile.Link = Url;
+                SaveFileDownloaded(videoFile);
+
                 webClient.Dispose();
             };
+        }
+
+        private void SaveFileDownloaded(SavedFile_Type file)
+        {
+            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+            DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
+            if (SavedFiles != null)
+            {
+                int index = SavedFiles.FindIndex(s => s.ScheduleId == file.ScheduleId);
+                if (index == -1)
+                {
+                    info_Save.Id = SavedFiles.Count + 1;
+                }
+                else
+                {
+                    info_Save.Id = index + 1;
+                }
+            }
+            else
+            {
+                info_Save.Id = 1;
+            }
+            info_Save.ScheduleId = file.ScheduleId;
+            info_Save.PathLocation = file.PathLocation;
+            info_Save.Link = file.Link;
+
+            SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
         }
 
         public async Task<Image> GetImageAsync(string url)

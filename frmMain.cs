@@ -50,9 +50,11 @@ namespace Display
 
         private CustomForm customForm = new CustomForm();
         private DefaultForm defaultForm = new DefaultForm();
+        private LiveStreamForm streamForm = new LiveStreamForm();
 
         private const int DEFAULT_FORM = 1;
         private const int CUSTOM_FORM = 2;
+        private const int STREAM_FORM = 3;
         private int CurrentForm = 0;
 
         ScheduleHandle scheduleHandle = new ScheduleHandle();
@@ -100,13 +102,22 @@ namespace Display
         //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h) (done)
         //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường
         //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...) (done)
-        //27. Xóa bản tin theo ID
+        //27. Xóa bản tin theo ID (done)
         //28. Text run không mượt trên máy tính Mini
 
         //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form) (done)
         //30. Xử lý biến Toàn màn hình (done)
         //31. Xóa dữ liệu Show trên màn hình khi: hết Duration (done), hết ValidTime
         //32. Tự động restart máy lúc 2-3h sáng
+
+        //33. Xử lý Priority giữa các Groups
+        //34. Xử lý nốt Page Image cho đồng bộ (done)
+        //35. Test Page Video (done)
+        //36. Xử lý Các bản tin Load từ Database lên (First Time bằng true hay false?)
+        //37. Xử lý bản tin bắn định kỳ (Ping Message) (done)
+        //38. Xử lý lệnh Stream trực tiếp (StreamCommand) (done)
+        //39. Xóa video đã Download sau khi hết Valid Time 
+        //40. Download Video, Image ngay khi đẩy bản tin xuống (Pending do chưa play thì chưa biết Video hay Stream để down)
         public frmMain()
         {
             InitializeComponent();
@@ -274,7 +285,7 @@ namespace Display
                 case Keys.F3:
                     // Chuyen sang tab xem Video
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8", Duration: 25 * 1000, loopNum: 0);
+                        customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8", "");
                     break;
 
                 case Keys.F4:
@@ -291,7 +302,7 @@ namespace Display
                 case Keys.F5:
                     // Chuyen sang tab Image
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowImage("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg", 20 * 1000);
+                        customForm.ShowImage("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg","", 20 * 1000);
                     break;
 
                 case Keys.F6:
@@ -343,7 +354,7 @@ namespace Display
                     }
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).");
-                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", "");
                     //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
                     //defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900");
                     //defaultForm.Test();
@@ -398,6 +409,7 @@ namespace Display
         }
         private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
+            if (CurrentForm == STREAM_FORM) return;
             if (e.FullScreen == false)
             {
                 // Chuyển sang Form Default
@@ -414,12 +426,12 @@ namespace Display
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowVideo(e.MediaUrl[0], e.IdleTime, e.LoopNum, e.Duration * 1000);
+                    defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowImage(e.MediaUrl[0], e.Duration * 1000);
+                    defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Duration * 1000);
                 }
             }
             else
@@ -434,17 +446,17 @@ namespace Display
                 if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowVideo(e.MediaUrl[0], e.IdleTime, e.LoopNum, e.Duration * 1000);
+                    customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowImage(e.MediaUrl[0], e.Duration * 1000);
+                    customForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowText(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
+                    customForm.ShowText(e.Title, e.Text);
                 }
             }
         }
@@ -530,7 +542,10 @@ namespace Display
         private void tick_Tick(object sender, EventArgs e)
         {
             ProcessNewMessage();
-            //SendHeartBeatTick();
+        }
+        private void MQTTPing_Timer_Tick(object sender, EventArgs e)
+        {
+            SendHeartBeatTick();
         }
 
         private void SendHeartBeatTick()
@@ -555,15 +570,29 @@ namespace Display
 
             if (CurrentForm == DEFAULT_FORM)
             {
-                pingMessage.IsSpkOn = !defaultForm.GetMuteStatus();
-                pingMessage.VolMusic = defaultForm.GetVolume();
+                defaultForm.GetScheduleInfo(ref pingMessage.ScheduleId, ref pingMessage.SchedulePlayingFile,
+                                            ref pingMessage.SchedulePlayState, ref pingMessage.IsSpkOn,
+                                            ref pingMessage.VolMusic);
             }
             else if (CurrentForm == CUSTOM_FORM)
             {
-                pingMessage.VolMusic = customForm.GetVolume();
+                customForm.GetScheduleInfo(ref pingMessage.ScheduleId, ref pingMessage.SchedulePlayingFile,
+                                           ref pingMessage.SchedulePlayState, ref pingMessage.IsSpkOn,
+                                           ref pingMessage.VolMusic);
+            }
+            else if(CurrentForm == STREAM_FORM)
+            {
+                streamForm.GetStreamInfo(ref pingMessage.StreamingMaster, ref pingMessage.StreamingLink,
+                                         ref pingMessage.StreamState, ref pingMessage.IsSpkOn, ref pingMessage.VolMusic);
             }
 
-            var json = new JavaScriptSerializer().Serialize(pingMessage);
+            Ping_TxMessage txMsg = new Ping_TxMessage();
+            txMsg.id = 10;
+            txMsg.time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            txMsg.sender = GUID_Value;
+            txMsg.message = pingMessage;
+
+            var json = new JavaScriptSerializer().Serialize(txMsg);
             mqttMessage.SendMessage(json);
         }
         public static string GetLocalIPAddress()
@@ -602,6 +631,7 @@ namespace Display
                             _VideoUrl = payload.VideoUrl;
 
                             //customForm.ShowVideo(_VideoUrl);
+                            if (CurrentForm == STREAM_FORM) return;
                             // Chuyển sang Form Default
                             if (CurrentForm != DEFAULT_FORM)
                             {
@@ -611,7 +641,7 @@ namespace Display
                             }
                             defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
                             defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
-                            defaultForm.ShowVideo(_VideoUrl);
+                            defaultForm.ShowVideo(_VideoUrl, "");
                             //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
                     }
@@ -647,6 +677,7 @@ namespace Display
                         //Log.Information("ProcessNewMessage: {A}", message);
                         dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
+                        // Schedule Message
                         if (payload.Message.Schedule != null)
                         {
                             string s = JsonConvert.SerializeObject(payload.Message.Schedule);
@@ -654,12 +685,67 @@ namespace Display
 
                             scheduleHandle.Schedule(newSchedule_msg);
                         }
+                        // Stream Command
+                        else if(payload.Message.StreamInfo != null)
+                        {
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
+
+                            if(StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
+                            {
+                                if(StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
+                                {
+                                    if(_isRelayOpened == false)
+                                    {
+                                        // Bat man hinh
+                                        OpenRelay();
+                                    }
+                                    CloseCurrentForm();
+                                    Add_UserControl(streamForm);
+                                    CurrentForm = STREAM_FORM;
+                                }
+                                else if(StreamCmd.CmdCode == commandCode.CMD_STREAM_START)
+                                {
+                                    CloseCurrentForm();
+                                    Add_UserControl(streamForm);
+                                    CurrentForm = STREAM_FORM;
+
+                                    streamForm.ShowLiveStream(StreamCmd.StreamInfo.Uri, StreamCmd.Volume, StreamCmd.MasterImei);
+                                }
+                                else if(StreamCmd.CmdCode == commandCode.CMD_STREAM_STOP)
+                                {
+                                    if(CurrentForm == STREAM_FORM)
+                                    {
+                                        streamForm.Close();
+                                        panelContainer.Controls.Clear();
+
+                                        CurrentForm = 0;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "ProcessNewMessage");
+            }
+        }
+
+        private void CloseCurrentForm()
+        {
+            if (CurrentForm == DEFAULT_FORM)
+            {
+                defaultForm.Close();
+            }
+            else if(CurrentForm == CUSTOM_FORM)
+            {
+                customForm.Close();
+            }
+            else if(CurrentForm == STREAM_FORM)
+            {
+                streamForm.Close();
             }
         }
 
@@ -710,6 +796,7 @@ namespace Display
             this.CenterToScreen();
             defaultForm.DefaultForm_FitToContainer(panelContainer.Height, panelContainer.Width);
             customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
+            streamForm.LiveStreamForm_FitToContainer(panelContainer.Height, panelContainer.Width);
 
             Timer_MQTT.Start();
         }
@@ -783,93 +870,4 @@ namespace Display
         public string BanTinVanBan { get; set; }
         public string VideoUrl { get; set; }
     }
-
-    public class Schedule
-    {
-        public string Id { get; set; }     //Schedule ID, định danh các schedule khác nhau
-        public long CreatedTime { get; set; }        //Thời điểm tạo lịch (UTC second)
-        public int Duration { get; set; }       //Thời lượng phát (s) -> bỏ qua nếu có set loopNum
-        public int Loops { get; set; }        //Số lần phát
-        public int IdleTime { get; set; }       //Thời gian nghỉ giữa 2 lần phát (s)
-        public bool IsDaily { get; set; }    //Phát lặp lại hàng ngày
-        public bool IsBroadcast { get; set; }    //Phát quảng bá cho cả room cùng nghe
-        public long From { get; set; }          //Có hiệu lực từ thời điểm (UTC second)
-        public long To { get; set; }            //Có hiệu lực đến thời điểm (UTC second)
-        public bool IsActive { get; set; }       //Còn hiệu lực hay không
-        public List<int> Times { get; set; } //Thời điểm phát trong ngày (số giây trôi qua từ 0h)
-        public List<int> Days { get; set; }  //Ngày phát trong tuần (T2 -> CN) nếu isDaily = true
-        public List<string> Songs { get; set; }  //Danh sách nội dung
-        public string Path { get; set; }          //Remote folder on MinIO server
-
-        public DisplayScheduleType ScheduleType { get; set; } // Loại bản tin
-        public string TextContent { get; set; }
-        public string MediaContent { get; set; }
-        public bool FullScreen { get; set; }
-        public string ColorValue { get; set; }
-    }
-
-    public class Schedule_TxMessage
-    {
-        public int id;          /* Id bản tin - xem danh sách defined */
-
-        public long time;       /* Thời gian bản tin in millisecond UTC */
-
-        public string sender;      /* Imei/ID của đối tượng gửi tin */
-
-        public ScheduleMessage message;    /* Bản tin chi tiết */
-    }
-
-    public class ScheduleMessage
-    {
-        public bool isLeaderOnly;
-        public Schedule schedule;
-    }
-    public enum DisplayScheduleType
-    {
-        BanTinThongBao,
-        BanTinVanBan,
-        BanTinVideo,
-        BanTinHinhAnh,
-    }
-    public class PingMessage
-    {
-        public string Serial;              //serial number
-        public int Role;                   //Loại bộ thu (0)/phát (1)
-        public string Ip;                  //IP của node
-        public string NodeId;              //deviceId
-        public string NodeName;            //deviceName
-        public string MasterConfigId;      //master config id
-        public string Room;                //Tên room đang join, nếu đang ko join thì empty
-        public bool IsJoin;             //Trạng thái join room meeting
-        public string StreamingMaster;     //Imei của master đang stream, ko stream thì empty
-        public string StreamingLink;       //Link đang streaming, nếu đang ko stream thì empty
-        public int StreamState;            //Trạng thái streaming
-        public string ScheduleId;  //SheduleID đang phát offline, nếu đang ko phát thì empty
-        public string SchedulePlayingFile;    //File đang play theo lịch
-        public int SchedulePlayState;      //Trạng thái play theo lịch offline
-        public bool IsMicOn;            //Trạng thái Mic On/Off
-        public bool IsSpkOn;            //Trạng thái Loa meeting On/Off
-        public bool IsCamOn;            //Trạng thái Cam meeting On/Off
-        public string AppVersion;          //Phiên bản app
-        public int VolMeet;                //Âm lượng loa thoại (%)
-        public int VolMusic;               //Âm lượng loa phát nhạc (%)
-        public int HwVersion;               //Phiên bản phần cứng
-    }
-    public class DeviceConfigMessage 
-    {
-        public string Id;
-        public int DeviceType; /* 0: Thiết bị thu, 1: Thiết bị phát */
-        public string Name;
-        public int priority;
-        public List<Group> Groups;
-    }
-    public class Group
-    {
-        public string Id;
-        public int MasterType; /* 0: Nhóm, 1: Thiết bị master, 2: User */
-        public int Priority;
-        public string Name;
-    }
-
-
 }

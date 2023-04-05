@@ -172,6 +172,13 @@
   <ItemGroup>
     <Compile Include="Comport.cs" />
     <Compile Include="DataUser.cs" />
+    <Compile Include="DefineMessage.cs" />
+    <Compile Include="Options_MainForm\LiveStreamForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Options_MainForm\LiveStreamForm.Designer.cs">
+      <DependentUpon>LiveStreamForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ScheduleHandle.cs" />
     <Compile Include="SqLiteDataAccess.cs" />
     <Compile Include="TextOverlay\Transparent_BackGround.cs">
@@ -247,6 +254,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="Options_MainForm\LiveStreamForm.resx">
+      <DependentUpon>LiveStreamForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TextOverlay\Transparent_BackGround.resx">
       <DependentUpon>Transparent_BackGround.cs</DependentUpon>
     </EmbeddedResource>

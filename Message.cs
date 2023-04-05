@@ -28,7 +28,21 @@ namespace Display
         }
         public async void SendMessage(string payload)
         {
-            await PublishMessageAsync(this.publishTopic_Msg, payload, false);
+            if(GroupsList.Count > 0)
+            {
+                try
+                {
+                    foreach (var group in GroupsList)
+                    {
+                        string GroupPublishTopic = publishTopic_Msg + group.Id + "/" + ClientId;
+                        await PublishMessageAsync(GroupPublishTopic, payload, false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "PublishMessage");
+                }
+            }
         }
         private IMqttClient mqttClient;
         ConcurrentQueue<MqttApplicationMessage> messageQueue = new ConcurrentQueue<MqttApplicationMessage>();
@@ -44,6 +58,8 @@ namespace Display
         private string password;
         private int serverPort;
 
+        private string ClientId = "";
+
         static List<Group> GroupsList = new List<Group>();
 
         public Message(string serverAddress, int serverPort, string userName, string password, string clientId)
@@ -53,6 +69,7 @@ namespace Display
 
             this.userName = userName;
             this.password = password;
+            ClientId = clientId;
             this.subcribeTopic_Default += $"{clientId}/#";
             this.subcribeTopic_Groups += $"{clientId}";
 

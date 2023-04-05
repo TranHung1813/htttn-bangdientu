@@ -145,25 +145,34 @@ namespace Display
 
 
         //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
-        public void ShowVideo(string Url, int IdleTime = 0, int loopNum = Page_VideoScreen.MAXVALUE, int Duration = Page_VideoScreen.MAXVALUE)
+        public void ShowVideo(string Url, string ScheduleId)
         {
             ShowPanel(panel_Video, page_VideoScreen);
-            page_VideoScreen.ShowVideo(Url, IdleTime, loopNum, Duration);
+            page_VideoScreen.ShowVideo(Url, ScheduleId);
             TabPageID = PAGE_VIDEO;
         }
-        public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "", int Duration = MAXVALUE)
+        public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
         {
             panel_Text.Visible = false;
 
             page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
             ShowPanel(panel_Text, page_Text);
-            page_Text.ShowText(ScheduleType, Text, ColorValue, Duration);
+            page_Text.ShowText(ScheduleType, Text, ColorValue);
             TabPageID = PAGE_TEXT;
         }
-        public void ShowImage(string ImageURL, int Duration)
+        public void ShowText(string Title, string Content)
         {
-            page_Image.ShowImage(ImageURL, Duration);
+            panel_Text.Visible = false;
+
+            page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
+            ShowPanel(panel_Text, page_Text);
+            page_Text.ShowText(Title, Content);
+            TabPageID = PAGE_TEXT;
+        }
+        public void ShowImage(string ImageURL, string ScheduleId, int Duration)
+        {
             ShowPanel(panel_Image, page_Image);
+            page_Image.ShowImage(ImageURL, ScheduleId, Duration);
             TabPageID = PAGE_IMAGE;
         }
         public void Show_TextOverlay(string Content)
@@ -228,10 +237,11 @@ namespace Display
             TabPageID = PAGE_MULTI_IMAGE;
         }
 
-        public int GetVolume()
+        public void GetScheduleInfo(ref string ScheduleID, ref string PlayingFile, ref int PlayState, ref bool IsSpkOn, ref int Volume)
         {
-            if (TabPageID != PAGE_VIDEO) return 0;
-            return page_VideoScreen.GetVolume();
+            if (TabPageID != PAGE_VIDEO) return;
+
+            page_VideoScreen.GetScheduleInfo(ref ScheduleID, ref PlayingFile, ref PlayState, ref IsSpkOn, ref Volume);
         }
         public void Test()
         {

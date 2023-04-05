@@ -20,29 +20,20 @@ namespace Display
         private LibVLC _libVLC;
         private MediaPlayer _mp;
         private string _VideoUrl = "";
-        private string PathFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Files");
         private string _FileName = "";
         private string _ImageName = "";
-        Timer tick;
-        System.Timers.Timer Duration_Media_Tmr;
-        System.Timers.Timer Duration_ThongBao_Tmr;
-        System.Timers.Timer Duration_VanBan_Tmr;
-        System.Timers.Timer Duration_HinhAnh_Tmr;
 
+        System.Timers.Timer Duration_HinhAnh_Tmr;
         private bool _is_ImageAvailable = false;
         private bool _is_VideoAvailable = false;
         private bool _is_ThongBaoAvailable = false;
         private bool _is_VanBanAvailable = false;
 
-        private int _IdleTime = 0;
-        private int _LoopNum = MAXVALUE;
-        private int _Duration = MAXVALUE;
-        private int CountTimeLoop = 0;
-        private int IdleTimeCount = 0;
+        private string _ScheduleID_Video = "";
+        private string _ScheduleID_Image = "";
 
         private const int MAXVALUE = 1000 * 1000 * 1000;
-
-        private bool _EnableLoop = false;
 
         public DefaultForm()
         {
@@ -55,6 +46,8 @@ namespace Display
 
             pictureBox1.Visible = false;
             pictureBox2.Visible = false;
+
+            Duration_HinhAnh_Tmr = new System.Timers.Timer();
         }
 
         private void Init_VLC_Library()
@@ -66,85 +59,12 @@ namespace Display
             videoView1.MediaPlayer = _mp;
             _mp.AspectRatio = "320:277";
             _mp.EncounteredError += _mp_EncounteredError;
-
-            tick = new Timer();
-            tick.Interval = 500;
-            tick.Tick += Tick_Tick;
-
-            Duration_Media_Tmr = new System.Timers.Timer();
-            Duration_ThongBao_Tmr = new System.Timers.Timer();
-            Duration_VanBan_Tmr = new System.Timers.Timer();
-            Duration_HinhAnh_Tmr = new System.Timers.Timer();
+            _mp.EndReached += _mp_EndReached;
         }
 
-        private void Tick_Tick(object sender, EventArgs e)
+        private void _mp_EndReached(object sender, EventArgs e)
         {
-            if (_EnableLoop != true) return;
-            if (_mp.IsPlaying == false)
-            {
-                //Số lần Loop kết thúc
-                if (CountTimeLoop >= _LoopNum)
-                {
-                    Task.Run(() =>
-                    {
-                        videoView1.Visible = false;
-                        _mp.Stop();
-                        videoView1.Visible = true;
-                    });
-                    tick.Stop();
-                    return;
-                }
-                // Xu ly Idle Time
-                if (IdleTimeCount > 0)
-                {
-                    if (_mp.State != VLCState.Stopped)
-                    {
-                        Task.Run(() =>
-                        {
-                            videoView1.Visible = false;
-                            _mp.Stop();
-                            videoView1.Visible = true;
-                        });
-                    }
-                    IdleTimeCount -= tick.Interval;
-                    return;
-                }
-                else
-                {
-                    IdleTimeCount = _IdleTime;
-                }
-                // Chay video
-                if (_isVideo_DownloadDone == true)
-                {
-                    long length = new FileInfo(_FileName).Length;
-                    if (length > 1.5 * 1024 * 1024)
-                    {
-                        string[] @params = new string[] { "input-repeat=0" };
-                        try
-                        {
-                            _mp.Play(new Media(_libVLC, new Uri(_FileName), @params));
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "PlayMedia_Fail: {A}", _FileName);
-                        }
-                    }
-                    //tick.Stop();
-                }
-                else
-                {
-                    string[] @params = new string[] { "input-repeat=0" };
-                    try
-                    {
-                        _mp.Play(new Media(_libVLC, new Uri(_VideoUrl), @params));
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "PlayMedia_Fail: {A}", _VideoUrl);
-                    }
-                }
-                CountTimeLoop++;
-            }
+            videoView1.Visible = false;
         }
 
         private void _mp_EncounteredError(object sender, EventArgs e)
@@ -152,48 +72,62 @@ namespace Display
             Log.Error("_mp_EncounteredError : {A}", e.ToString());
         }
 
-        public int GetVolume()
+        public void GetScheduleInfo(ref string ScheduleID, ref string PlayingFile, ref int PlayState, ref bool IsSpkOn, ref int Volume)
         {
-            if (_mp.IsPlaying != true) return 0;
-            return _mp.Volume;
-        }
-        public bool GetMuteStatus()
-        {
-            if (_mp.IsPlaying != true) return true;
-            return _mp.Mute;
+            ScheduleID = _ScheduleID_Video;
+            PlayingFile = _VideoUrl;
+            switch (_mp.State)
+            {
+                case VLCState.NothingSpecial:
+                    PlayState = 0;
+                    break;
+                case VLCState.Opening:
+                    PlayState = 1;
+                    break;
+                case VLCState.Buffering:
+                    PlayState = 2;
+                    break;
+                case VLCState.Playing:
+                    PlayState = 3;
+                    break;
+                case VLCState.Stopped:
+                    PlayState = 4;
+                    break;
+                case VLCState.Error:
+                    PlayState = 5;
+                    break;
+            }
+            IsSpkOn = !_mp.Mute;
+            Volume = _mp.Volume;
         }
 
-        public void ShowVideo(string url, int IdleTime = 0, int loopNum = MAXVALUE, int Duration = MAXVALUE)
+        public void ShowVideo(string url, string ScheduleID)
         {
             Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
-            _IdleTime = IdleTime; //  ms
-            CountTimeLoop = 1;
-            IdleTimeCount = _IdleTime;
-            _LoopNum = loopNum;
-            _Duration = Duration; //  ms
-            _EnableLoop = false;
             _is_VideoAvailable = true;
+            _ScheduleID_Video = ScheduleID;
 
-            PlayVideo(url);
-
-            // Duration Handle
-            if (_LoopNum == 0 && _Duration > 0)
+            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+            
+            if (SavedFiles != null)
             {
-                Duration_Handle(Duration_Media_Tmr, ref Duration_Media_Tmr, Duration, () =>
+                // Kiem tra xem File da download chua, neu roi thi Play
+                int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleID) && (s.Link == url));
+                if (index != -1)
                 {
-                    // Stop Media
-                    Task.Run(() =>
-                    {
-                        videoView1.Visible = false;
-                        _mp.Stop();
-                        videoView1.Visible = true;
-                        _is_VideoAvailable = false;
-                    });
-                    _EnableLoop = false;
-                    Log.Information("Video Stop!");
-                });
-                _LoopNum = MAXVALUE;
+                    PlayVideo(SavedFiles[index].PathLocation);
+                }
+                else
+                {
+                    // Neu chua download thi play link nhu binh thuong
+                    PlayVideo(url);
+                }
+            }
+            else
+            {
+                // Neu chua download thi play link nhu binh thuong
+                PlayVideo(url);
             }
         }
 
@@ -221,8 +155,6 @@ namespace Display
 
             await PlayVideo;
 
-            tick.Stop();
-            tick.Start();
         }
 
         private void _mp_Playing(object sender, EventArgs e)
@@ -232,13 +164,31 @@ namespace Display
             if (VideoLength <= 0)
             {
                 // Video Stream co length = 0;
-                _EnableLoop = false;
             }
             else
             {
                 // Link Video khong Stream co length > 0
-                DownloadAsync_Video(_VideoUrl);
-                _EnableLoop = true;
+                List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+
+                if (SavedFiles != null)
+                {
+                    // Kiem tra xem File da download chua, neu roi thi khong can Download
+                    int index = SavedFiles.FindIndex(s => (s.ScheduleId == _ScheduleID_Video) && (s.Link == _VideoUrl));
+                    if (index != -1)
+                    {
+                        // Da Download
+                    }
+                    else
+                    {
+                        // Neu chua download thi Download
+                        DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
+                    }
+                }
+                else
+                {
+                    // Neu chua download thi Download
+                    DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
+                }
             }
 
             try
@@ -248,28 +198,12 @@ namespace Display
             catch { }
         }
 
-        private int Duration_Caculate(int VideoLength, int IdleTime, int Duration)
-        {
-            return Duration / (VideoLength + IdleTime) + 1;
-        }
         public void Close()
         {
             try
             {
                 panelThongBao.Stop();
                 panelVanBan.Stop();
-
-                Duration_Media_Tmr.Stop();
-                Duration_Media_Tmr.Dispose();
-                Duration_ThongBao_Tmr.Stop();
-                Duration_ThongBao_Tmr.Dispose();
-                Duration_VanBan_Tmr.Stop();
-                Duration_VanBan_Tmr.Dispose();
-                Duration_HinhAnh_Tmr.Stop();
-                Duration_HinhAnh_Tmr.Dispose();
-
-                _EnableLoop = false;
-                _isVideo_DownloadDone = false;
             }
             catch { }
             Task.Run(() =>
@@ -283,7 +217,6 @@ namespace Display
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
             _is_ImageAvailable = false;
-            tick.Stop();
             try
             {
                 _mp.Playing -= _mp_Playing;
@@ -311,14 +244,6 @@ namespace Display
                 int Text_Height1 = txtThongBao.Height;
                 panelThongBao.Start(Text_Height1, 10000);
 
-                // Duration Handle
-                Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
-                {
-                    panelThongBao.Stop();
-                    txtThongBao.Text = "";
-                    Log.Information("{A} Stop!", ScheduleType);
-                    _is_ThongBaoAvailable = false;
-                });
                 _is_ThongBaoAvailable = true;
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
@@ -338,15 +263,6 @@ namespace Display
                 panelVanBan.SetSpeed = 1;
                 int Text_Height2 = txtVanBan.Height;
                 panelVanBan.Start(Text_Height2, 10000);
-
-                // Duration Handle
-                Duration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
-                {
-                    panelVanBan.Stop();
-                    txtVanBan.Text = "";
-                    Log.Information("{A} Stop!", ScheduleType);
-                    _is_VanBanAvailable = false;
-                });
 
                 _is_VanBanAvailable = true;
             }
@@ -370,9 +286,10 @@ namespace Display
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
         }
-        public async void ShowImage(string Url, int Duration = MAXVALUE)
+        public async void ShowImage(string Url, string ScheduleId, int Duration = MAXVALUE)
         {
             Log.Information("ShowImage: {A}", Url);
+            _ScheduleID_Image = ScheduleId;
 
             Task task = Task.Run(() =>
             {
@@ -381,7 +298,7 @@ namespace Display
                 videoView1.Visible = true;
             });
             await task;
-            DownloadAsync_Image(Url);
+            DownloadAsync_Image(Url, ScheduleId);
 
             // Duration Handle
             Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
@@ -526,11 +443,8 @@ namespace Display
                 return AdjustedWords.TrimEnd();
             }))();
         }
-        private bool _isVideo_DownloadDone = false;
-        private void DownloadAsync_Video(string Url)
+        private void DownloadAsync_Video(string Url, string ScheduleId)
         {
-            _isVideo_DownloadDone = false;
-
             string fileExtension = "";
             Uri uri = new Uri(Url);
             try
@@ -541,19 +455,51 @@ namespace Display
             {
                 Log.Error(ex, "Video_GetExtension: {Url}", Url);
             }
-            _FileName = Path.Combine(PathFile, "SaveVideo" + fileExtension);
+            _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _FileName);
             webClient.DownloadFileCompleted += (sender , e)=>
             {
-                _isVideo_DownloadDone = true;
                 Log.Information("DownloadVideoCompleted: {A}", Url);
+
+                // Save to Database
+                SavedFile_Type videoFile = new SavedFile_Type();
+                videoFile.PathLocation = _FileName;
+                videoFile.ScheduleId = ScheduleId;
+                videoFile.Link = Url;
+                SaveFileDownloaded(videoFile);
+
                 webClient.Dispose();
             };
         }
+        private void SaveFileDownloaded(SavedFile_Type file)
+        {
+            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+            DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
+            if (SavedFiles != null)
+            {
+                int index = SavedFiles.FindIndex(s => s.ScheduleId == file.ScheduleId);
+                if (index == -1)
+                {
+                    info_Save.Id = SavedFiles.Count + 1;
+                }
+                else
+                {
+                    info_Save.Id = index + 1;
+                }
+            }
+            else
+            {
+                info_Save.Id = 1;
+            }
+            info_Save.ScheduleId = file.ScheduleId;
+            info_Save.PathLocation = file.PathLocation;
+            info_Save.Link = file.Link;
 
-        private void DownloadAsync_Image(string Url)
+            SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
+        }
+        private void DownloadAsync_Image(string Url, string ScheduleId)
         {
             string fileExtension = "";
             Uri uri = new Uri(Url);
@@ -565,14 +511,23 @@ namespace Display
             {
                 Log.Error(ex, "Image_GetExtension: {Url}", Url);
             }
-            _ImageName = Path.Combine(PathFile, "SaveImage" + fileExtension);
+            _ImageName = Path.Combine(PathFile, "SaveImage-" + ScheduleId + fileExtension);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _ImageName);
             webClient.DownloadFileCompleted += (sender, e) =>
             {
                 Log.Information("DownloadImageCompleted: {A}", Url);
-                _mp.Play(new Media(_libVLC, new Uri(_ImageName)));
+                string[] @params = new string[] { "input-repeat=65536" };//, "run-time=5" };
+                _mp.Play(new Media(_libVLC, new Uri(_ImageName), @params));
+
+                // Save to Database
+                SavedFile_Type videoFile = new SavedFile_Type();
+                videoFile.PathLocation = _FileName;
+                videoFile.ScheduleId = ScheduleId;
+                videoFile.Link = Url;
+                SaveFileDownloaded(videoFile);
+
                 webClient.Dispose();
             };
         }
@@ -601,5 +556,11 @@ namespace Display
                 this.Visible = true;
             }
         }
+    }
+    public class SavedFile_Type
+    {
+        public string ScheduleId;
+        public string PathLocation; /* Path File Downloaded */
+        public string Link;
     }
 }

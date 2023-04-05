@@ -33,6 +33,7 @@
             this.panelContainer = new System.Windows.Forms.Panel();
             this.Timer_FindComPort = new System.Windows.Forms.Timer(this.components);
             this.Timer_SendPing = new System.Windows.Forms.Timer(this.components);
+            this.MQTTPing_Timer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // Timer_MQTT
@@ -58,6 +59,12 @@
             this.Timer_SendPing.Interval = 2000;
             this.Timer_SendPing.Tick += new System.EventHandler(this.Timer_SendPing_Tick);
             // 
+            // MQTTPing_Timer
+            // 
+            this.MQTTPing_Timer.Enabled = true;
+            this.MQTTPing_Timer.Interval = 60000;
+            this.MQTTPing_Timer.Tick += new System.EventHandler(this.MQTTPing_Timer_Tick);
+            // 
             // frmMain
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -80,6 +87,7 @@
         private System.Windows.Forms.Panel panelContainer;
         private System.Windows.Forms.Timer Timer_FindComPort;
         private System.Windows.Forms.Timer Timer_SendPing;
+        private System.Windows.Forms.Timer MQTTPing_Timer;
     }
 }
 
