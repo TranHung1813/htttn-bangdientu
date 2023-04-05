@@ -409,17 +409,17 @@ namespace Display
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
-                    defaultForm.Set_Infomation(e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000);
+                    defaultForm.Set_Infomation(e.ScheduleType, e.Text);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                    defaultForm.ShowVideo(e.MediaUrl[0], e.IdleTime, e.LoopNum, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowImage(e.MediaUrl, e.Duration * 1000);
+                    defaultForm.ShowImage(e.MediaUrl[0], e.Duration * 1000);
                 }
             }
             else
@@ -434,12 +434,12 @@ namespace Display
                 if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowVideo(e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000);
+                    customForm.ShowVideo(e.MediaUrl[0], e.IdleTime, e.LoopNum, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowImage(e.MediaUrl, e.Duration * 1000);
+                    customForm.ShowImage(e.MediaUrl[0], e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
@@ -611,7 +611,7 @@ namespace Display
                             }
                             defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
                             defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
-                            //defaultForm.ShowVideo(_VideoUrl);
+                            defaultForm.ShowVideo(_VideoUrl);
                             //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
                     }
@@ -826,13 +826,10 @@ namespace Display
     }
     public enum DisplayScheduleType
     {
-        BanTinThongBao = 1,
-
-        BanTinVanBan = 2,
-
-        BanTinVideo = 3,
-
-        BanTinHinhAnh = 4,
+        BanTinThongBao,
+        BanTinVanBan,
+        BanTinVideo,
+        BanTinHinhAnh,
     }
     public class PingMessage
     {

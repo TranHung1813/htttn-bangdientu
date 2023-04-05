@@ -46,6 +46,9 @@ namespace Display
 
         private void MessageHandle(ScheduleMsg_Type message)
         {
+            // Notify First Time to Play
+            OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue);
             // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
             List<int> TimeList_perWeek = new List<int>();
             if(message.msg.IsDaily == true)
@@ -68,7 +71,7 @@ namespace Display
             message.Schedule_Timer.Interval = message.TimeList[0] * 1000;
             message.Schedule_Timer.Tick += delegate (object sender, EventArgs e)
             {
-                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.MediaContent, message.msg.FullScreen,
+                OnNotify_Time2Play(message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
                                    message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue);
                 Timer this_timer = (Timer)sender;
                 if (++message.CountTime >= message.TimeList.Length)
@@ -171,22 +174,28 @@ namespace Display
         private void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (message.msg.From <= CurrentTime && CurrentTime < message.msg.To)
+
+            if (message.msg.From <= CurrentTime)
             {
                 // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
-
-                message.ValidHandle_Timer = new Timer();
-                message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
-                message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                if (message.msg.To == 0)
                 {
-                    DeleteMessage_by_Id(message.msg.Id);
+                    MessageHandle(message);
+                    return;
+                }
+                else if (CurrentTime < message.msg.To)
+                {
+                    message.ValidHandle_Timer = new Timer();
+                    message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
+                    message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                    {
+                        DeleteMessage_by_Id(message.msg.Id);
 
-                    Timer this_timer = (Timer)sender;
-                    this_timer.Stop();
-                };
-                message.ValidHandle_Timer.Start();
-
-                MessageHandle(message);
+                        Timer this_timer = (Timer)sender;
+                        this_timer.Stop();
+                    };
+                    message.ValidHandle_Timer.Start();
+                }
             }
             else if (message.msg.From > CurrentTime)
             {
@@ -196,7 +205,7 @@ namespace Display
                 message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                 {
                     long Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                    if (Time >= message.msg.To)
+                    if (Time >= message.msg.To && message.msg.To != 0)
                     {
                         DeleteMessage_by_Id(message.msg.Id);
 
@@ -207,6 +216,13 @@ namespace Display
                     {
                         message.ValidHandle_Timer.Interval = (int)(message.msg.To - Time) * 1000 + 1000;
                         MessageHandle(message);
+                    }
+                    else if(Time >= message.msg.From && message.msg.To == 0)
+                    {
+                        MessageHandle(message);
+
+                        Timer this_timer = (Timer)sender;
+                        this_timer.Stop();
                     }
                 };
                 message.ValidHandle_Timer.Start();
@@ -244,7 +260,7 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, string MediaUrl, bool FullScreen,
+        protected virtual void OnNotify_Time2Play(DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
                                                                         int IdleTime, int LoopNum, int Duration, string ColorValue)
         {
             if (_NotifyTime2Play != null)
@@ -267,13 +283,13 @@ namespace Display
     {
         public DisplayScheduleType ScheduleType;
         public string Text;
-        public string MediaUrl;
+        public List<string> MediaUrl;
         public int IdleTime;
         public int LoopNum;
         public int Duration;
         public string ColorValue;
         public bool FullScreen;
-        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, string mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue)
+        public NotifyTime2Play(DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue)
         {
             ScheduleType = scheduleType;
             Text = text;

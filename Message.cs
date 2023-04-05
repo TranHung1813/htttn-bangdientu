@@ -135,6 +135,25 @@ namespace Display
             await mqttClient.ConnectAsync(optionsBuilder, CancellationToken.None);
             await mqttClient.SubscribeAsync(subcribeTopic_Default, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
             await mqttClient.SubscribeAsync(subcribeTopic_Groups, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+
+            if (GroupsList.Count > 0)
+            {
+                try
+                {
+                    foreach (var group in GroupsList)
+                    {
+                        string GroupTopic = subcribeTopic_Msg + group.Id;
+                        await mqttClient.SubscribeAsync(GroupTopic, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Subcribe2Groups");
+                }
+            }
+
+            mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
+            mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
         }
 
         public async Task ApplicationMessageReceivedHandler(MqttApplicationMessageReceivedEventArgs eventArgs)
