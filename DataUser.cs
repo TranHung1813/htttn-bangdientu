@@ -22,4 +22,11 @@ namespace Display
         public string PathLocation { get; set; } /* Path File Downloaded */
         public string Link { get; set; }
     }
+
+    public class DataUser_DeviceInfo
+    {
+        public int Id { get; set; }
+        public string NodeId { get; set; }
+        public string NodeName { get; set; }
+    }
 }

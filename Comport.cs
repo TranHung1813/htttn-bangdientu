@@ -105,7 +105,7 @@ namespace Display
 
                     SendManager_trd = new Thread(new ThreadStart(this.SendManager_Thread));
                     SendManager_trd.IsBackground = true;
-                    SendManager_trd.Start();
+                    //SendManager_trd.Start();
 
                     RecvManager_trd = new Thread(new ThreadStart(this.ReceiverManager_Thread));
                     RecvManager_trd.IsBackground = true;
@@ -380,7 +380,7 @@ namespace Display
 
             SendManager_trd = new Thread(new ThreadStart(this.SendManager_Thread));
             SendManager_trd.IsBackground = true;
-            SendManager_trd.Start();
+            //SendManager_trd.Start();
 
             RecvManager_trd = new Thread(new ThreadStart(this.ReceiverManager_Thread));
             RecvManager_trd.IsBackground = true;

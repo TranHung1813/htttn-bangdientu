@@ -14,7 +14,7 @@ namespace Display
     public partial class PanelEx2 : Panel
     {
         Thread trd_Handle_TextRun;
-        System.Windows.Forms.Timer tmrTick;
+        System.Timers.Timer tmrTick;
         int repeat_Count = 0;
         int speed, width, maxPosition;
         bool enableScrollPanel = false;
@@ -27,14 +27,14 @@ namespace Display
             trd_Handle_TextRun.IsBackground = true;
             //trd_Handle_TextRun.Start();
 
-            tmrTick = new System.Windows.Forms.Timer();
-            tmrTick.Interval = 24;
-            tmrTick.Tick += TmrTick_Tick;
+            tmrTick = new System.Timers.Timer();
+            tmrTick.Interval = 30;
+            tmrTick.Elapsed += TmrTick_Elapsed;
 
             Control.CheckForIllegalCrossThreadCalls = false;
         }
 
-        private void TmrTick_Tick(object sender, EventArgs e)
+        private void TmrTick_Elapsed(object sender, EventArgs e)
         {
             if (!enableScrollPanel) return;
 

@@ -60,7 +60,7 @@ namespace Display
 
         private string ClientId = "";
 
-        static List<Group> GroupsList = new List<Group>();
+        public static List<Group> GroupsList = new List<Group>();
 
         public Message(string serverAddress, int serverPort, string userName, string password, string clientId)
         {
@@ -92,7 +92,7 @@ namespace Display
                 await mqttClient.SubscribeAsync(subcribeTopic_Default, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
                 await mqttClient.SubscribeAsync(subcribeTopic_Groups, MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
 
-                if(GroupsList.Count > 0)
+                if (GroupsList.Count > 0)
                 {
                     try
                     {

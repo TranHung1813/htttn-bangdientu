@@ -15,6 +15,8 @@ namespace Display
 
         private bool _is_ThongBaoAvailable = false;
         private bool _is_VanBanAvailable = false;
+        public int _Priority_VanBan = 1000;
+        public string ScheduleID_VanBan = "";
         public Page_Text()
         {
             InitializeComponent();
@@ -25,7 +27,7 @@ namespace Display
 
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
         {
-            Log.Information("ShowText: {A}, Noi dung: {B}", ScheduleType, Text);
+            Log.Information("ShowText: {A}, Noi dung: {B}", ScheduleType, Text.Substring(0, Text.Length / 5));
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
             {
                 try
@@ -79,9 +81,9 @@ namespace Display
                 _is_VanBanAvailable = true;
             }
         }
-        public void ShowText(string Title, string Content)
+        public void ShowText(string Title, string Content, string ScheduleId, int Priority)
         {
-            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content);
+            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
 
             try
             {
@@ -91,7 +93,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content);
+                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
             }
 
             panel_TextRun.SetSpeed = 1;
@@ -100,7 +102,8 @@ namespace Display
 
             _is_ThongBaoAvailable = true;
             _is_VanBanAvailable = true;
-
+            _Priority_VanBan = Priority;
+            ScheduleID_VanBan = ScheduleId;
         }
         public Bitmap ConvertTextToImage(Control control)
         {
@@ -235,6 +238,8 @@ namespace Display
         }
         public void Close()
         {
+            lb_Title.Text = "";
+            lb_Content.Text = "";
             panel_TextRun.Stop();
             try
             {
@@ -244,6 +249,7 @@ namespace Display
 
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
+            _Priority_VanBan = 1000;
         }
         public void PageText_FitToContainer(int Height, int Width)
         {

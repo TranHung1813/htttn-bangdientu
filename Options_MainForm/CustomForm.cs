@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -145,10 +146,10 @@ namespace Display
 
 
         //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
-        public void ShowVideo(string Url, string ScheduleId)
+        public void ShowVideo(string Url, string ScheduleId, int Priority = 0)
         {
             ShowPanel(panel_Video, page_VideoScreen);
-            page_VideoScreen.ShowVideo(Url, ScheduleId);
+            page_VideoScreen.ShowVideo(Url, ScheduleId, Priority);
             TabPageID = PAGE_VIDEO;
         }
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
@@ -160,19 +161,19 @@ namespace Display
             page_Text.ShowText(ScheduleType, Text, ColorValue);
             TabPageID = PAGE_TEXT;
         }
-        public void ShowText(string Title, string Content)
+        public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0)
         {
             panel_Text.Visible = false;
 
             page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
             ShowPanel(panel_Text, page_Text);
-            page_Text.ShowText(Title, Content);
+            page_Text.ShowText(Title, Content, ScheduleId, Priority);
             TabPageID = PAGE_TEXT;
         }
-        public void ShowImage(string ImageURL, string ScheduleId, int Duration)
+        public void ShowImage(string ImageURL, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             ShowPanel(panel_Image, page_Image);
-            page_Image.ShowImage(ImageURL, ScheduleId, Duration);
+            page_Image.ShowImage(ImageURL, ScheduleId, Priority, Duration);
             TabPageID = PAGE_IMAGE;
         }
         public void Show_TextOverlay(string Content)
@@ -242,6 +243,70 @@ namespace Display
             if (TabPageID != PAGE_VIDEO) return;
 
             page_VideoScreen.GetScheduleInfo(ref ScheduleID, ref PlayingFile, ref PlayState, ref IsSpkOn, ref Volume);
+        }
+        public void Close_by_Id(string ScheduleId)
+        {
+            switch (TabPageID)
+            {
+                case PAGE_IMAGE:
+                    //guna2Transition1.HideSync(panel_Image);
+                    if(page_Image.ScheduleID_Image == ScheduleId)
+                    {
+                        Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
+                        page_Image.Close();
+                    }
+                    panel_Image.Visible = false;
+
+                    break;
+
+                case PAGE_TEXT:
+                    //guna2Transition1.HideSync(panel_Text);
+                    if(page_Text.ScheduleID_VanBan == ScheduleId)
+                    {
+                        Log.Information("Ban tin Van Ban het thoi gian Valid!");
+                        page_Text.Close();
+                    }
+                    panel_Text.Visible = false;
+
+                    break;
+
+                case PAGE_VIDEO:
+                    if(page_VideoScreen.ScheduleID_Video == ScheduleId)
+                    {
+                        Log.Information("Ban tin Video het thoi gian Valid!");
+                        page_VideoScreen.StopVideo();
+                    }
+                    panel_Video.Visible = false;
+
+                    break;
+            }
+        }
+        public bool CheckPriority(int Priority)
+        {
+            switch (TabPageID)
+            {
+                case PAGE_IMAGE:
+                    if (page_Image._Priority_Image < Priority)
+                    {
+                        return false;
+                    }
+                    break;
+
+                case PAGE_TEXT:
+                    if (page_Text._Priority_VanBan < Priority)
+                    {
+                        return false;
+                    }
+                    break;
+
+                case PAGE_VIDEO:
+                    if (page_VideoScreen._Priority_Video < Priority)
+                    {
+                        return false;
+                    }
+                    break;
+            }
+            return true;
         }
         public void Test()
         {

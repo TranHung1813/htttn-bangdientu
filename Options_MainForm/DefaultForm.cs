@@ -2,10 +2,8 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -25,13 +23,20 @@ namespace Display
         private string _ImageName = "";
 
         System.Timers.Timer Duration_HinhAnh_Tmr;
-        private bool _is_ImageAvailable = false;
-        private bool _is_VideoAvailable = false;
-        private bool _is_ThongBaoAvailable = false;
-        private bool _is_VanBanAvailable = false;
+        public bool _is_ImageAvailable = false;
+        public bool _is_VideoAvailable = false;
+        public bool _is_ThongBaoAvailable = false;
+        public bool _is_VanBanAvailable = false;
 
+        private string _ScheduleID_ThongBao = "";
+        private string _ScheduleID_VanBan = "";
         private string _ScheduleID_Video = "";
         private string _ScheduleID_Image = "";
+
+        private int _Priority_ThongBao = 1000;
+        private int _Priority_VanBan = 1000;
+        private int _Priority_Video = 1000;
+        private int _Priority_Image = 1000;
 
         private const int MAXVALUE = 1000 * 1000 * 1000;
 
@@ -52,7 +57,7 @@ namespace Display
 
         private void Init_VLC_Library()
         {
-            Core.Initialize();
+            Core.Initialize(); 
 
             _libVLC = new LibVLC();
             _mp = new MediaPlayer(_libVLC);
@@ -101,15 +106,17 @@ namespace Display
             Volume = _mp.Volume;
         }
 
-        public void ShowVideo(string url, string ScheduleID)
+        public void ShowVideo(string url, string ScheduleID, int Priority = 0)
         {
+            if (_Priority_Video < Priority) return;
             Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
             _is_VideoAvailable = true;
             _ScheduleID_Video = ScheduleID;
+            _Priority_Video = Priority;
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
-            
+
             if (SavedFiles != null)
             {
                 // Kiem tra xem File da download chua, neu roi thi Play
@@ -154,7 +161,6 @@ namespace Display
             });
 
             await PlayVideo;
-
         }
 
         private void _mp_Playing(object sender, EventArgs e)
@@ -197,13 +203,40 @@ namespace Display
             }
             catch { }
         }
-
+        public bool CheckPriority(int Priority)
+        {
+            if(_is_ImageAvailable == true)
+            {
+                if (_Priority_Image < Priority) return false;
+            }
+            else if(_is_VideoAvailable == true)
+            {
+                if (_Priority_Video < Priority) return false;
+            }
+            else if(_is_ThongBaoAvailable == true)
+            {
+                if (_Priority_ThongBao < Priority) return false;
+            }
+            else if(_is_VanBanAvailable == true)
+            {
+                if (_Priority_VanBan < Priority) return false;
+            }
+            return true;
+        }
         public void Close()
         {
             try
             {
+                txtThongBao.Text = "";
+                txtVanBan.Text = "";
                 panelThongBao.Stop();
                 panelVanBan.Stop();
+
+                if (Duration_HinhAnh_Tmr != null)
+                {
+                    Duration_HinhAnh_Tmr.Stop();
+                    Duration_HinhAnh_Tmr.Dispose();
+                }
             }
             catch { }
             Task.Run(() =>
@@ -217,17 +250,87 @@ namespace Display
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
             _is_ImageAvailable = false;
+
+            _Priority_ThongBao = 1000;
+            _Priority_VanBan = 1000;
+            _Priority_Video = 1000;
+            _Priority_Image = 1000;
             try
             {
                 _mp.Playing -= _mp_Playing;
             }
             catch { }
         }
-        public void Set_Infomation(DisplayScheduleType ScheduleType, string Content = "", string ColorValue = "", int Duration = MAXVALUE)
+
+        public async void Close_by_Id(string ScheduleId)
+        {
+            if (_ScheduleID_Video == ScheduleId)
+            {
+                Log.Information("Ban tin Video het thoi gian Valid!");
+                await Task.Run(() =>
+                {
+                    videoView1.Visible = false;
+                    _mp.Stop();
+                    videoView1.Visible = true;
+                });
+
+                _is_VideoAvailable = false;
+                _Priority_Video = 1000;
+
+                try
+                {
+                    _mp.Playing -= _mp_Playing;
+                }
+                catch { }
+            }
+            else if (_ScheduleID_Image == ScheduleId)
+            {
+                Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
+                await Task.Run(() =>
+                {
+                    videoView1.Visible = false;
+                    _mp.Stop();
+                    videoView1.Visible = true;
+                });
+                if (Duration_HinhAnh_Tmr != null)
+                {
+                    Duration_HinhAnh_Tmr.Stop();
+                    Duration_HinhAnh_Tmr.Dispose();
+                }
+                _is_ImageAvailable = false;
+                _Priority_Image = 1000;
+            }
+            else if (_ScheduleID_ThongBao == ScheduleId)
+            {
+                Log.Information("Ban tin Thong Bao het thoi gian Valid!");
+                try
+                {
+                    panelThongBao.Stop();
+                    txtThongBao.Text = "";
+                    _is_ThongBaoAvailable = false;
+                    _Priority_ThongBao = 1000;
+                }
+                catch { }
+            }
+            else if (_ScheduleID_VanBan == ScheduleId)
+            {
+                Log.Information("Ban tin Van Ban het thoi gian Valid!");
+                try
+                {
+                    panelVanBan.Stop();
+                    txtVanBan.Text = "";
+                    _is_VanBanAvailable = false;
+                    _Priority_VanBan = 1000;
+                }
+                catch { }
+            }
+        }
+        public void Set_Infomation(DisplayScheduleType ScheduleType, string ScheduleID, string Content = "", int Priority = 0, string ColorValue = "", int Duration = MAXVALUE)
         {
             Log.Information("Set_Infomation: {A}, Content: {B}", ScheduleType, Content.Substring(0, Content.Length / 5));
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
             {
+                if (_Priority_ThongBao < Priority) return;
                 try
                 {
                     txtThongBao.Text = Content.Trim().ToUpper();
@@ -245,9 +348,12 @@ namespace Display
                 panelThongBao.Start(Text_Height1, 10000);
 
                 _is_ThongBaoAvailable = true;
+                _Priority_ThongBao = Priority;
+                _ScheduleID_ThongBao = ScheduleID;
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
+                if (_Priority_VanBan < Priority) return;
                 try
                 {
                     txtVanBan.Text = Content;
@@ -265,6 +371,8 @@ namespace Display
                 panelVanBan.Start(Text_Height2, 10000);
 
                 _is_VanBanAvailable = true;
+                _Priority_VanBan = Priority;
+                _ScheduleID_VanBan = ScheduleID;
             }
 
             pictureBox1.Visible = false;
@@ -286,10 +394,12 @@ namespace Display
             ////pictureBox2.Image = ConvertTextToImage(txtVanBan);
             //txtVanBan.Visible = false;
         }
-        public async void ShowImage(string Url, string ScheduleId, int Duration = MAXVALUE)
+        public async void ShowImage(string Url, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
+            if (_Priority_Image < Priority) return;
             Log.Information("ShowImage: {A}", Url);
             _ScheduleID_Image = ScheduleId;
+            _Priority_Image = Priority;
 
             Task task = Task.Run(() =>
             {
@@ -310,6 +420,7 @@ namespace Display
                     _mp.Stop();
                     videoView1.Visible = true;
                     _is_ImageAvailable = false;
+                    _Priority_Image = 1000;
                 });
                 Log.Information("Image Stop!");
             });
@@ -459,7 +570,7 @@ namespace Display
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _FileName);
-            webClient.DownloadFileCompleted += (sender , e)=>
+            webClient.DownloadFileCompleted += (sender, e) =>
             {
                 Log.Information("DownloadVideoCompleted: {A}", Url);
 
@@ -546,7 +657,7 @@ namespace Display
 
         private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
         {
-            if (_is_VideoAvailable == false && _is_ThongBaoAvailable == false && _is_VanBanAvailable == false && 
+            if (_is_VideoAvailable == false && _is_ThongBaoAvailable == false && _is_VanBanAvailable == false &&
                                                                                  _is_ImageAvailable == false)
             {
                 this.Visible = false;

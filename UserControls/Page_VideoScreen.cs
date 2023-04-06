@@ -24,7 +24,8 @@ namespace Display
         private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Files");
         private string _FileName = "";
 
-        private string _ScheduleID_Video = "";
+        public string ScheduleID_Video = "";
+        public int _Priority_Video = 1000;
 
         public const int MAXVALUE = 1000 * 1000 * 1000;
 
@@ -61,7 +62,7 @@ namespace Display
         }
         public void GetScheduleInfo(ref string ScheduleID, ref string PlayingFile, ref int PlayState, ref bool IsSpkOn, ref int Volume)
         {
-            ScheduleID = _ScheduleID_Video;
+            ScheduleID = ScheduleID_Video;
             PlayingFile = _VideoUrl;
             switch (_mp.State)
             {
@@ -87,11 +88,12 @@ namespace Display
             IsSpkOn = !_mp.Mute;
             Volume = _mp.Volume;
         }
-        public void ShowVideo(string url, string ScheduleID)
+        public void ShowVideo(string url, string ScheduleID, int Priority = 0)
         {
             Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
-            _ScheduleID_Video = ScheduleID;
+            ScheduleID_Video = ScheduleID;
+            _Priority_Video = Priority;
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -158,7 +160,7 @@ namespace Display
                 if (SavedFiles != null)
                 {
                     // Kiem tra xem File da download chua, neu roi thi khong can Download
-                    int index = SavedFiles.FindIndex(s => (s.ScheduleId == _ScheduleID_Video) && (s.Link == _VideoUrl));
+                    int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleID_Video) && (s.Link == _VideoUrl));
                     if (index != -1)
                     {
                         // Da Download
@@ -166,13 +168,13 @@ namespace Display
                     else
                     {
                         // Neu chua download thi Download
-                        DownloadAsync(_VideoUrl, _ScheduleID_Video);
+                        DownloadAsync(_VideoUrl, ScheduleID_Video);
                     }
                 }
                 else
                 {
                     // Neu chua download thi Download
-                    DownloadAsync(_VideoUrl, _ScheduleID_Video);
+                    DownloadAsync(_VideoUrl, ScheduleID_Video);
                 }
             }
 
@@ -257,6 +259,8 @@ namespace Display
                 _mp.Playing -= _mp_Playing;
             }
             catch { }
+
+            _Priority_Video = 1000;
         }
     }
 }

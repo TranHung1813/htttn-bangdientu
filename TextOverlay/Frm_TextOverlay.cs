@@ -70,7 +70,7 @@ namespace Display
             Font font = new Font("Arial", _Text_Size, FontStyle.Bold);
             pictureBox1.Width = (int)this.CreateGraphics().MeasureString(_Text, font).Width;
             pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(_Text, font).Height * 1.3);
-            pictureBox1.Image = ConvertTextToImage(_Text, font, Color.Transparent, Color.Honeydew,Color.Red, (float)3.5, pictureBox1.Width, pictureBox1.Height);
+            pictureBox1.Image = ConvertTextToImage(_Text, font, Color.Transparent, Color.Honeydew,Color.Red, (float)3, pictureBox1.Width, pictureBox1.Height);
 
             panel_TxtOverlay.Visible = false;
             timer_DelayText.Interval = 1000;

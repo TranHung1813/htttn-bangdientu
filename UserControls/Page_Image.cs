@@ -24,7 +24,9 @@ namespace Display
         private string _ImageName = "";
         System.Timers.Timer Duration_HinhAnh_Tmr;
 
-        private string _ScheduleID_Image = "";
+        public string ScheduleID_Image = "";
+        public int _Priority_Image = 1000;
+        private const int MAXVALUE = 1000 * 1000 * 1000;
         public Page_Image()
         {
             InitializeComponent();
@@ -34,10 +36,11 @@ namespace Display
             Duration_HinhAnh_Tmr = new System.Timers.Timer();
         }
 
-        public void ShowImage(string Url, string ScheduleId, int Duration)
+        public void ShowImage(string Url, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             Log.Information("ShowImage: {A}", Url);
-            _ScheduleID_Image = ScheduleId;
+            ScheduleID_Image = ScheduleId;
+            _Priority_Image = Priority;
             pictureBox1.Image = null;
             DownloadAsync_Image(Url, ScheduleId);
 
@@ -47,6 +50,7 @@ namespace Display
                 // Stop Media
                 pictureBox1.Image = null;
                 Log.Information("Image Stop!");
+                _Priority_Image = 1000;
             });
             //var result = GetImageAsync(_ImageURL);
             //result.ContinueWith(task =>
@@ -172,6 +176,7 @@ namespace Display
             Duration_HinhAnh_Tmr.Stop();
             Duration_HinhAnh_Tmr.Dispose();
             pictureBox1.Image = null;
+            _Priority_Image = 1000;
         }
     }
 }

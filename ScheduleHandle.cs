@@ -17,7 +17,7 @@ namespace Display
             //ScheduleHandle_trd.Start();
         }
 
-        public void Schedule(Schedule message)
+        public void Schedule(Schedule message, int Priority)
         {
             if (message.IsActive != true)
             {
@@ -33,6 +33,7 @@ namespace Display
             }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
+            new_messsage.Priority = Priority;
 
             try
             {
@@ -95,8 +96,8 @@ namespace Display
         private void NotifyPlay(ScheduleMsg_Type message)
         {
             // Notify First Time to Play
-            OnNotify_Time2Play(message.msg.Id, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                                   message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title);
+            OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                               message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title);
         }
 
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
@@ -193,6 +194,7 @@ namespace Display
                     message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                     {
                         DeleteMessage_by_Id(message.msg.Id);
+                        OnNotify_Time2Delete(message.msg.Id);
 
                         message.ValidHandle_Timer.Stop();
                     };
@@ -211,6 +213,7 @@ namespace Display
                     if (Time >= message.msg.To && message.msg.To != 0)
                     {
                         DeleteMessage_by_Id(message.msg.Id);
+                        OnNotify_Time2Delete(message.msg.Id);
 
                         message.ValidHandle_Timer.Stop();
                     }
@@ -268,18 +271,38 @@ namespace Display
                 _NotifyTime2Play -= value;
             }
         }
-        protected virtual void OnNotify_Time2Play(string ScheduleId, DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
+        private event EventHandler<NotifyTime2Delete> _NotifyTime2Delete;
+        public event EventHandler<NotifyTime2Delete> NotifyTime2Delete
+        {
+            add
+            {
+                _NotifyTime2Delete += value;
+            }
+            remove
+            {
+                _NotifyTime2Delete -= value;
+            }
+        }
+        protected virtual void OnNotify_Time2Play(string ScheduleId, int Priority, DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
                                                                         int IdleTime, int LoopNum, int Duration, string ColorValue, string Title)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, Priority, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title));
+            }
+        }
+        protected virtual void OnNotify_Time2Delete(string ScheduleId)
+        {
+            if (_NotifyTime2Delete != null)
+            {
+                _NotifyTime2Delete(this, new NotifyTime2Delete(ScheduleId));
             }
         }
     }
     public struct ScheduleMsg_Type
     {
         public Schedule msg;
+        public int Priority;
         public int[] TimeList;
         public int[] WeeklyTimeList;
         public Timer Schedule_Timer;
@@ -290,6 +313,7 @@ namespace Display
     public class NotifyTime2Play : EventArgs
     {
         public string ScheduleId;
+        public int Priority;
         public DisplayScheduleType ScheduleType;
         public string Text;
         public List<string> MediaUrl;
@@ -299,9 +323,10 @@ namespace Display
         public string ColorValue;
         public bool FullScreen;
         public string Title;
-        public NotifyTime2Play(string scheduleId, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title)
+        public NotifyTime2Play(string scheduleId,int priority, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title)
         {
             ScheduleId = scheduleId;
+            Priority = priority;
             ScheduleType = scheduleType;
             Text = text;
             MediaUrl = mediaUrl;
@@ -312,6 +337,15 @@ namespace Display
             ColorValue = colorValue;
             FullScreen = fullScreen;
             Title = title;
+        }
+    }
+
+    public class NotifyTime2Delete : EventArgs
+    {
+        public string ScheduleId;
+        public NotifyTime2Delete(string scheduleId)
+        {
+            ScheduleId = scheduleId;
         }
     }
 }

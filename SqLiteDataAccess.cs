@@ -17,6 +17,42 @@ namespace Display
         private static string DatabasePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"BangDienTu.db");
 
         //*****************************************************************************************************************
+        //****************************************** Access to Device Infomation *******************************************
+        public static DataUser_DeviceInfo Load_Device_Info()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    DataUser_DeviceInfo output = cnn.Query<DataUser_DeviceInfo>("select * from Device_Info", new DynamicParameters()).FirstOrDefault();
+                    return output;
+                }
+                catch
+                {
+
+                }
+
+                return null;
+            }
+        }
+
+        public static void SaveInfo_Device(DataUser_DeviceInfo info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                int id = cnn.Query<int>("select Id from Device_Info where Id like @Id", new { Id = 1 }).FirstOrDefault();
+
+                if (id != 0)
+                {
+                    cnn.Execute("update Device_Info set  NodeId = @NodeId, NodeName = @NodeName where Id = 1", info);
+                }
+                else
+                {
+                    cnn.Execute("insert into Device_Info ( NodeId, NodeName) values ( @NodeId, @NodeName)", info);
+                }
+            }
+        }
+        //*****************************************************************************************************************
         //****************************************** Access to Groups Infomation *******************************************
         public static List<DataUser_Groups_Info> Load_Groups_Info()
         {

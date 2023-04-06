@@ -45,6 +45,8 @@ namespace Display
         private string _TxtThongBao = "";
         private string _TxtVanBan = "";
 
+        System.Timers.Timer Timer_SendPing;
+
         private static int MAX_BUFFER_SIZE = 1024;
         ComPort Uart2Com = new ComPort(115200, MAX_BUFFER_SIZE, false);
 
@@ -56,6 +58,9 @@ namespace Display
         private const int CUSTOM_FORM = 2;
         private const int STREAM_FORM = 3;
         private int CurrentForm = 0;
+
+        private string NodeId = "";
+        private string NodeName = "";
 
         ScheduleHandle scheduleHandle = new ScheduleHandle();
 
@@ -107,16 +112,16 @@ namespace Display
 
         //29. Kiểm tra: Không có gì để Show => Tắt màn hình (cả Default, Custom Form) (done)
         //30. Xử lý biến Toàn màn hình (done)
-        //31. Xóa dữ liệu Show trên màn hình khi: hết Duration (done), hết ValidTime
+        //31. Xóa dữ liệu Show trên màn hình khi: hết Duration (done), hết ValidTime (done)
         //32. Tự động restart máy lúc 2-3h sáng
 
-        //33. Xử lý Priority giữa các Groups
+        //33. Xử lý Priority giữa các Groups (done)
         //34. Xử lý nốt Page Image cho đồng bộ (done)
         //35. Test Page Video (done)
         //36. Xử lý Các bản tin Load từ Database lên (First Time bằng true hay false?)
         //37. Xử lý bản tin bắn định kỳ (Ping Message) (done)
         //38. Xử lý lệnh Stream trực tiếp (StreamCommand) (done)
-        //39. Xóa video đã Download sau khi hết Valid Time 
+        //39. Xóa video đã Download sau khi hết Valid Time  (done)
         //40. Download Video, Image ngay khi đẩy bản tin xuống (Pending do chưa play thì chưa biết Video hay Stream để down)
         public frmMain()
         {
@@ -133,13 +138,27 @@ namespace Display
             //Uart2Com.StatusConnection += Notify_StatusConnection;
 
             scheduleHandle.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+            scheduleHandle.NotifyTime2Delete += ScheduleHandle_NotifyTime2Delete;
 
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
 
             Log.Information("App Start!");
-        }
 
+            // Load Device Info
+            DataUser_DeviceInfo Info = SqLiteDataAccess.Load_Device_Info();
+
+            if (Info != null)
+            {
+                // Set Folder Name to Save File to ucPage1, ucPage2
+                NodeId = Info.NodeId;
+                NodeName = Info.NodeName;
+            }
+            else
+            {
+                // Handle when database = null
+            }
+        }
         private void GUID_Handle()
         {
             //opening the subkey  
@@ -352,9 +371,9 @@ namespace Display
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
                     }
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ");
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).");
-                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", "");
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", 0);
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", 0);
+                    defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", "", 0);
                     //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
                     //defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900");
                     //defaultForm.Test();
@@ -407,9 +426,27 @@ namespace Display
                     break;
             }
         }
+        private bool PrioritySchedule_Check(int Priority)
+        {
+            if (CurrentForm == STREAM_FORM) return false;
+            else if(CurrentForm == CUSTOM_FORM)
+            {
+                return customForm.CheckPriority(Priority);
+            }
+            else if(CurrentForm == DEFAULT_FORM)
+            {
+                return defaultForm.CheckPriority(Priority);
+            }
+            return true;
+        }
         private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
             if (CurrentForm == STREAM_FORM) return;
+            if (PrioritySchedule_Check(e.Priority) == false)
+            {
+                Log.Information("Message reject by Priority: {A}, Id:{B}, Priority:{C}", e.ScheduleType, e.ScheduleId, e.Priority);
+                return;
+            }
             if (e.FullScreen == false)
             {
                 // Chuyển sang Form Default
@@ -420,18 +457,18 @@ namespace Display
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
-                    Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
-                    defaultForm.Set_Infomation(e.ScheduleType, e.Text);
+                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
-                    Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId);
+                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
-                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Duration * 1000);
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration * 1000, e.FullScreen);
+                    defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                 }
             }
             else
@@ -445,33 +482,96 @@ namespace Display
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
-                    Log.Information("NotifyTime2Play: Video: {A}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId);
+                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
-                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Duration * 1000);
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
-                    Log.Information("NotifyTime2Play: {A}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.Text, e.ColorValue, e.Duration * 1000, e.FullScreen);
-                    customForm.ShowText(e.Title, e.Text);
+                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    customForm.ShowText(e.Title, e.Text, e.ScheduleId, e.Priority);
                 }
+            }
+        }
+        private void ScheduleHandle_NotifyTime2Delete(object sender, NotifyTime2Delete e)
+        {
+            if (CurrentForm == STREAM_FORM) return;
+            else if(CurrentForm == DEFAULT_FORM)
+            {
+                defaultForm.Close_by_Id(e.ScheduleId);
+            }
+            else if(CurrentForm == CUSTOM_FORM)
+            {
+                customForm.Close_by_Id(e.ScheduleId);
+            }
+
+            DeleteFile_in_Database(e.ScheduleId);
+        }
+        private void DeleteFile_in_Database(string ScheduleId)
+        {
+            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+
+            if (SavedFiles != null)
+            {
+                // Kiem tra xem File da download chua, neu roi thi Xoa
+                int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleId));
+                if (index != -1)
+                {
+                    try
+                    {
+                        if (File.Exists(SavedFiles[index].PathLocation))
+                        {
+                            File.Delete(SavedFiles[index].PathLocation);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "ScheduleHandle_NotifyTime2Delete");
+                    }
+
+                    SavedFiles.RemoveAt(index);
+
+                    // Save lai
+                    foreach (var file in SavedFiles)
+                    {
+                        DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
+
+                        info_Save.Id = file.Id;
+                        info_Save.ScheduleId = file.ScheduleId;
+                        info_Save.PathLocation = file.PathLocation;
+                        info_Save.Link = file.Link;
+
+                        SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
+                    }
+                }
+                else
+                {
+                    // Do nothing
+                }
+            }
+            else
+            {
+                // Do nothing
             }
         }
         private void Close_Relay()
         {
             // Close Relay
             Log.Information("Close_Relay");
-            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
+            //Uart2Com.SendPacket(Uart2Com.GetChanelFree(), ClosePacket, ClosePacket.Length);
+            Uart2Com.Send(ClosePacket, ClosePacket.Length);
             _isRelayOpened = false;
         }
         private void OpenRelay()
         {
             // Open Relay
             Log.Information("Open_Relay");
-            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
+            //Uart2Com.SendPacket(Uart2Com.GetChanelFree(), OpenPacket, OpenPacket.Length);
+            Uart2Com.Send(OpenPacket, OpenPacket.Length);
             _isRelayOpened = true;
         }
 
@@ -551,46 +651,47 @@ namespace Display
         private void SendHeartBeatTick()
         {
             PingMessage pingMessage = new PingMessage();
-            pingMessage.AppVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            pingMessage.Role = 2;
+            pingMessage.Ver = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            pingMessage.Type = 2;
             pingMessage.Ip = GetLocalIPAddress();
-            pingMessage.NodeId = GUID_Value;
-            pingMessage.NodeName = "BangDienTu";
-            pingMessage.StreamingMaster = "";
-            pingMessage.StreamingLink = "";
-            pingMessage.StreamState = 0;
-            pingMessage.ScheduleId = "";
-            pingMessage.SchedulePlayingFile = "";
-            pingMessage.SchedulePlayState = 0;
-            pingMessage.IsMicOn = false;
-            pingMessage.IsSpkOn = true;
-            pingMessage.IsCamOn = false;
-            pingMessage.VolMeet = 0;
-            pingMessage.VolMusic = 0;
+            pingMessage.Sn = GUID_Value;
+            pingMessage.Id = NodeId;
+            pingMessage.Name = NodeName;
+            pingMessage.Stmt = "";
+            pingMessage.Stlk = "";
+            pingMessage.Stst = 0;
+            pingMessage.Scid = "";
+            pingMessage.Scf = "";
+            pingMessage.Scst = 0;
+            pingMessage.Mic = false;
+            pingMessage.Spk = true;
+            pingMessage.Cam = false;
+            pingMessage.Vl1 = 0;
+            pingMessage.Vl2 = 0;
 
             if (CurrentForm == DEFAULT_FORM)
             {
-                defaultForm.GetScheduleInfo(ref pingMessage.ScheduleId, ref pingMessage.SchedulePlayingFile,
-                                            ref pingMessage.SchedulePlayState, ref pingMessage.IsSpkOn,
-                                            ref pingMessage.VolMusic);
+                defaultForm.GetScheduleInfo(ref pingMessage.Scid, ref pingMessage.Scf,
+                                            ref pingMessage.Scst, ref pingMessage.Spk,
+                                            ref pingMessage.Vl2);
             }
             else if (CurrentForm == CUSTOM_FORM)
             {
-                customForm.GetScheduleInfo(ref pingMessage.ScheduleId, ref pingMessage.SchedulePlayingFile,
-                                           ref pingMessage.SchedulePlayState, ref pingMessage.IsSpkOn,
-                                           ref pingMessage.VolMusic);
+                customForm.GetScheduleInfo(ref pingMessage.Scid, ref pingMessage.Scf,
+                                            ref pingMessage.Scst, ref pingMessage.Spk,
+                                            ref pingMessage.Vl2);
             }
             else if(CurrentForm == STREAM_FORM)
             {
-                streamForm.GetStreamInfo(ref pingMessage.StreamingMaster, ref pingMessage.StreamingLink,
-                                         ref pingMessage.StreamState, ref pingMessage.IsSpkOn, ref pingMessage.VolMusic);
+                streamForm.GetStreamInfo(ref pingMessage.Stmt, ref pingMessage.Stlk,
+                                         ref pingMessage.Stst, ref pingMessage.Spk, ref pingMessage.Vl2);
             }
 
             Ping_TxMessage txMsg = new Ping_TxMessage();
-            txMsg.id = 10;
-            txMsg.time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            txMsg.sender = GUID_Value;
-            txMsg.message = pingMessage;
+            txMsg.Id = 10;
+            txMsg.Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            txMsg.Sender = GUID_Value;
+            txMsg.Message = pingMessage;
 
             var json = new JavaScriptSerializer().Serialize(txMsg);
             mqttMessage.SendMessage(json);
@@ -617,7 +718,7 @@ namespace Display
                 {
                     var topic = newMessage.Topic;
                     Log.Information("Get_NewMessage");
-                    if (newMessage.Topic == mqttMessage.subcribeTopic_Default)
+                    if (mqttMessage.subcribeTopic_Default.Contains(newMessage.Topic))
                     {
                         string message = Encoding.UTF8.GetString(newMessage.Payload);
                         //Log.Information("ProcessNewMessage: {A}", message);
@@ -639,8 +740,8 @@ namespace Display
                                 Add_UserControl(defaultForm);
                                 CurrentForm = DEFAULT_FORM;
                             }
-                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, _TxtThongBao);
-                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, _TxtVanBan);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao,"", _TxtThongBao);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan,"", _TxtVanBan);
                             defaultForm.ShowVideo(_VideoUrl, "");
                             //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
@@ -669,10 +770,25 @@ namespace Display
 
                                 SqLiteDataAccess.SaveInfo_Groups(info_Save);
                             }
+
+                            NodeId = payload.Message.Id;
+                            NodeName = payload.Message.Name;
+
+                            DataUser_DeviceInfo info = new DataUser_DeviceInfo();
+                            info.Id = 1;
+                            info.NodeId = payload.Message.Id;
+                            info.NodeName = payload.Message.Name;
+                            SqLiteDataAccess.SaveInfo_Device(info);
                         }
                     }
                     else
                     {
+                        int Priority = -1;
+                        int index = Message.GroupsList.FindIndex(s => newMessage.Topic.Contains(s.Id) == true);
+                        if (index != -1)
+                        {
+                            Priority = Message.GroupsList[index].Priority;
+                        }
                         string message = Encoding.UTF8.GetString(newMessage.Payload);
                         //Log.Information("ProcessNewMessage: {A}", message);
                         dynamic payload = JsonConvert.DeserializeObject<object>(message);
@@ -683,7 +799,7 @@ namespace Display
                             string s = JsonConvert.SerializeObject(payload.Message.Schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
 
-                            scheduleHandle.Schedule(newSchedule_msg);
+                            scheduleHandle.Schedule(newSchedule_msg, Priority);
                         }
                         // Stream Command
                         else if(payload.Message.StreamInfo != null)
@@ -849,18 +965,26 @@ namespace Display
         {
             try
             {
-                Timer_SendPing.Stop();
+                if (Timer_SendPing != null)
+                {
+                    Timer_SendPing.Stop();
+                    Timer_SendPing.Dispose();
+                }
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Timer_SendPing.Stop");
             }
+            Timer_SendPing = new System.Timers.Timer();
             Timer_SendPing.Interval = Interval;
+            Timer_SendPing.Elapsed += Timer_SendPing_Elapsed; ;
             Timer_SendPing.Start();
         }
-        private void Timer_SendPing_Tick(object sender, EventArgs e)
+
+        private void Timer_SendPing_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Uart2Com.SendPacket(Uart2Com.GetChanelFree(), PingPacket, PingPacket.Length);
+            //Uart2Com.SendPacket(Uart2Com.GetChanelFree(), PingPacket, PingPacket.Length);
+            Uart2Com.Send(PingPacket, PingPacket.Length);
         }
     }
 

@@ -43,13 +43,13 @@ namespace Display
     }
     public class Ping_TxMessage
     {
-        public int id;          /* Id bản tin - xem danh sách defined */
+        public int Id;          /* Id bản tin - xem danh sách defined */
 
-        public long time;       /* Thời gian bản tin in millisecond UTC */
+        public long Time;       /* Thời gian bản tin in millisecond UTC */
 
-        public string sender;      /* Imei/ID của đối tượng gửi tin */
+        public string Sender;      /* Imei/ID của đối tượng gửi tin */
 
-        public PingMessage message;    /* Bản tin chi tiết */
+        public PingMessage Message;    /* Bản tin chi tiết */
     }
 
     public class ScheduleMessage
@@ -66,34 +66,34 @@ namespace Display
     }
     public class PingMessage
     {
-        public string Serial;              //serial number
-        public int Role;                   //Loại bộ thu (0)/phát (1)
+        public string Sn;              //serial number
+        public int Type;                   //Loại bộ thu (0)/phát (1)
         public string Ip;                  //IP của node
-        public string NodeId;              //deviceId
-        public string NodeName;            //deviceName
-        public string MasterConfigId;      //master config id
+        public string Id;              //deviceId
+        public string Name;            //deviceName
+        public string Mid;      //master config id
         public string Room;                //Tên room đang join, nếu đang ko join thì empty
-        public bool IsJoin;             //Trạng thái join room meeting
-        public string StreamingMaster;     //Imei của master đang stream, ko stream thì empty
-        public string StreamingLink;       //Link đang streaming, nếu đang ko stream thì empty
-        public int StreamState;            //Trạng thái streaming
-        public string ScheduleId;  //SheduleID đang phát offline, nếu đang ko phát thì empty
-        public string SchedulePlayingFile;    //File đang play theo lịch
-        public int SchedulePlayState;      //Trạng thái play theo lịch offline
-        public bool IsMicOn;            //Trạng thái Mic On/Off
-        public bool IsSpkOn;            //Trạng thái Loa meeting On/Off
-        public bool IsCamOn;            //Trạng thái Cam meeting On/Off
-        public string AppVersion;          //Phiên bản app
-        public int VolMeet;                //Âm lượng loa thoại (%)
-        public int VolMusic;               //Âm lượng loa phát nhạc (%)
-        public int HwVersion;               //Phiên bản phần cứng
+        public bool Join;             //Trạng thái join room meeting
+        public string Stmt;     //Imei của master đang stream, ko stream thì empty
+        public string Stlk;       //Link đang streaming, nếu đang ko stream thì empty
+        public int Stst;            //Trạng thái streaming
+        public string Scid;  //SheduleID đang phát offline, nếu đang ko phát thì empty
+        public string Scf;    //File đang play theo lịch
+        public int Scst;      //Trạng thái play theo lịch offline
+        public bool Mic;            //Trạng thái Mic On/Off
+        public bool Spk;            //Trạng thái Loa meeting On/Off
+        public bool Cam;            //Trạng thái Cam meeting On/Off
+        public string Ver;          //Phiên bản app
+        public int Vl1;                //Âm lượng loa thoại (%)
+        public int Vl2;               //Âm lượng loa phát nhạc (%)
+        public int Hw;               //Phiên bản phần cứng
     }
     public class DeviceConfigMessage
     {
         public string Id;
         public int DeviceType; /* 0: Thiết bị thu, 1: Thiết bị phát */
         public string Name;
-        public int priority;
+        public int Priority;
         public List<Group> Groups;
     }
     public class Group
