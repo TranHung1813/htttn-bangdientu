@@ -72,11 +72,17 @@ namespace Display
                     break;
             }
 
+            CloseTextOverlay();
+        }
+        private void CloseTextOverlay()
+        {
             if (frm_TextOverlay != null)
             {
                 try
                 {
+                    frm_TextOverlay.CloseForm();
                     frm_TextOverlay.Dispose();
+                    frm_TextOverlay = null;
                 }
                 catch { }
             }
@@ -85,6 +91,7 @@ namespace Display
                 try
                 {
                     backGround.Dispose();
+                    backGround = null;
                 }
                 catch { }
             }
@@ -105,6 +112,8 @@ namespace Display
                     page_Image.Close();
                     panel_Image.Visible = false;
 
+                    if(panel != panel_Image) CloseTextOverlay();
+
                     break;
 
                 case PAGE_TEXT:
@@ -119,6 +128,7 @@ namespace Display
                     //guna2Transition1.HideSync(panel_Video);
                     panel_Video.Visible = false;
 
+                    if (panel != panel_Video) CloseTextOverlay();
                     //panel.Visible = true;
                     //guna2Transition1.ShowSync(panel);
                     break;
@@ -176,12 +186,15 @@ namespace Display
             page_Image.ShowImage(ImageURL, ScheduleId, Priority, Duration);
             TabPageID = PAGE_IMAGE;
         }
-        public void Show_TextOverlay(string Content)
+        public void Show_TextOverlay(string Content, string ColorValue = "", int Duration = MAXVALUE)
         {
             if (frm_TextOverlay != null)
             {
+                if (frm_TextOverlay.CurrentContent == Content &&
+                    frm_TextOverlay.TextColorValue == ColorValue) return;
                 try
                 {
+                    frm_TextOverlay.CloseForm();
                     frm_TextOverlay.Dispose();
                 }
                 catch { }
@@ -202,32 +215,32 @@ namespace Display
             backGround.Size = panel_TextOverlay.Size;
             backGround.Location = panel_TextOverlay.Location;
             backGround.ShowInTaskbar = false;
-            backGround.Show();
+            //backGround.Show(); // Tam thoi bỏ Background
             frm_TextOverlay.Owner = backGround;
 
             frm_TextOverlay.Location = panel_TextOverlay.Location;
             frm_TextOverlay.StartPosition = FormStartPosition.Manual;
             frm_TextOverlay.ShowInTaskbar = false;
             //frm_TextOverlay.Size = panel_TextOverlay.Size;
-            frm_TextOverlay.Notify_TextOverlay_Finish += (object o, Notify_TextRun_Finish e) =>
-            {
-                if(this.InvokeRequired)
-                {
-                    this.Invoke((MethodInvoker)delegate
-                    {
-                        frm_TextOverlay.Dispose();
-                        backGround.Dispose();
-                    });
-                }
-                else
-                {
-                    frm_TextOverlay.Dispose();
-                    backGround.Dispose();
-                }
-            };
+            //frm_TextOverlay.Notify_TextOverlay_Finish += (object o, Notify_TextRun_Finish e) =>
+            //{
+            //    if(this.InvokeRequired)
+            //    {
+            //        this.Invoke((MethodInvoker)delegate
+            //        {
+            //            frm_TextOverlay.Dispose();
+            //            backGround.Dispose();
+            //        });
+            //    }
+            //    else
+            //    {
+            //        frm_TextOverlay.Dispose();
+            //        backGround.Dispose();
+            //    }
+            //};
             frm_TextOverlay.TxtOverlay_FitToContainer(panel_TextOverlay.Height, panel_TextOverlay.Width);
-            frm_TextOverlay.ShowTextOverlay("");
-            //frm_TextOverlay.BringToFront();
+            frm_TextOverlay.ShowTextOverlay(Content, ColorValue, Duration);
+            frm_TextOverlay.BringToFront();
             frm_TextOverlay.Show();
             
         }
@@ -254,8 +267,10 @@ namespace Display
                     {
                         Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
                         page_Image.Close();
+
+                        CloseTextOverlay();
+                        panel_Image.Visible = false;
                     }
-                    panel_Image.Visible = false;
 
                     break;
 
@@ -265,8 +280,9 @@ namespace Display
                     {
                         Log.Information("Ban tin Van Ban het thoi gian Valid!");
                         page_Text.Close();
+
+                        panel_Text.Visible = false;
                     }
-                    panel_Text.Visible = false;
 
                     break;
 
@@ -275,8 +291,11 @@ namespace Display
                     {
                         Log.Information("Ban tin Video het thoi gian Valid!");
                         page_VideoScreen.StopVideo();
+
+                        CloseTextOverlay();
+                        panel_Video.Visible = false;
                     }
-                    panel_Video.Visible = false;
+
 
                     break;
             }
@@ -311,6 +330,7 @@ namespace Display
         public void Test()
         {
             page_Text.Test();
+            //panel1.BackColor = System.Drawing.Color.FromArgb(100, 0, 0, 0);
         }
 
         //-----------------------------------------------------------------------------------------------------//

@@ -30,7 +30,7 @@ namespace Display
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Guna.UI2.AnimatorNS.Animation animation5 = new Guna.UI2.AnimatorNS.Animation();
+            Guna.UI2.AnimatorNS.Animation animation1 = new Guna.UI2.AnimatorNS.Animation();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CustomForm));
             this.panel_TextOverlay = new System.Windows.Forms.Panel();
             this.guna2Transition1 = new Guna.UI2.WinForms.Guna2Transition();
@@ -39,11 +39,11 @@ namespace Display
             // 
             // panel_TextOverlay
             // 
-            this.panel_TextOverlay.BackColor = System.Drawing.Color.Gray;
+            this.panel_TextOverlay.BackColor = System.Drawing.SystemColors.Control;
             this.guna2Transition1.SetDecoration(this.panel_TextOverlay, Guna.UI2.AnimatorNS.DecorationType.None);
-            this.panel_TextOverlay.Location = new System.Drawing.Point(0, 433);
+            this.panel_TextOverlay.Location = new System.Drawing.Point(0, 425);
             this.panel_TextOverlay.Name = "panel_TextOverlay";
-            this.panel_TextOverlay.Size = new System.Drawing.Size(915, 42);
+            this.panel_TextOverlay.Size = new System.Drawing.Size(915, 50);
             this.panel_TextOverlay.TabIndex = 1;
             this.panel_TextOverlay.Visible = false;
             // 
@@ -51,22 +51,22 @@ namespace Display
             // 
             this.guna2Transition1.AnimationType = Guna.UI2.AnimatorNS.AnimationType.Transparent;
             this.guna2Transition1.Cursor = null;
-            animation5.AnimateOnlyDifferences = true;
-            animation5.BlindCoeff = ((System.Drawing.PointF)(resources.GetObject("animation5.BlindCoeff")));
-            animation5.LeafCoeff = 0F;
-            animation5.MaxTime = 1F;
-            animation5.MinTime = 0F;
-            animation5.MosaicCoeff = ((System.Drawing.PointF)(resources.GetObject("animation5.MosaicCoeff")));
-            animation5.MosaicShift = ((System.Drawing.PointF)(resources.GetObject("animation5.MosaicShift")));
-            animation5.MosaicSize = 0;
-            animation5.Padding = new System.Windows.Forms.Padding(0);
-            animation5.RotateCoeff = 0F;
-            animation5.RotateLimit = 0F;
-            animation5.ScaleCoeff = ((System.Drawing.PointF)(resources.GetObject("animation5.ScaleCoeff")));
-            animation5.SlideCoeff = ((System.Drawing.PointF)(resources.GetObject("animation5.SlideCoeff")));
-            animation5.TimeCoeff = 0F;
-            animation5.TransparencyCoeff = 1F;
-            this.guna2Transition1.DefaultAnimation = animation5;
+            animation1.AnimateOnlyDifferences = true;
+            animation1.BlindCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.BlindCoeff")));
+            animation1.LeafCoeff = 0F;
+            animation1.MaxTime = 1F;
+            animation1.MinTime = 0F;
+            animation1.MosaicCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicCoeff")));
+            animation1.MosaicShift = ((System.Drawing.PointF)(resources.GetObject("animation1.MosaicShift")));
+            animation1.MosaicSize = 0;
+            animation1.Padding = new System.Windows.Forms.Padding(0);
+            animation1.RotateCoeff = 0F;
+            animation1.RotateLimit = 0F;
+            animation1.ScaleCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.ScaleCoeff")));
+            animation1.SlideCoeff = ((System.Drawing.PointF)(resources.GetObject("animation1.SlideCoeff")));
+            animation1.TimeCoeff = 0F;
+            animation1.TransparencyCoeff = 1F;
+            this.guna2Transition1.DefaultAnimation = animation1;
             // 
             // tick
             // 

@@ -179,6 +179,9 @@
     <Compile Include="Options_MainForm\LiveStreamForm.Designer.cs">
       <DependentUpon>LiveStreamForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PerPixelAlphaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ScheduleHandle.cs" />
     <Compile Include="SqLiteDataAccess.cs" />
     <Compile Include="TextOverlay\Transparent_BackGround.cs">

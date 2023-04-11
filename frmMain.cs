@@ -326,8 +326,10 @@ namespace Display
 
                 case Keys.F6:
                     //Show Text Overlay
+                    string tex = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.Show_TextOverlay("");
+                        
+                        customForm.Show_TextOverlay(tex, "#5d0b83");
                     break;
 
                 case Keys.F7:
@@ -381,7 +383,7 @@ namespace Display
 
                 case Keys.F:
                     Copy2ClipBoard(GUID_Value);
-                    //customForm.Test();
+                    customForm.Test();
                     break;
 
                 case Keys.P:
@@ -457,17 +459,17 @@ namespace Display
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
-                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
                     defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
-                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration, e.FullScreen);
                     defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
-                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration, e.FullScreen);
                     defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                 }
             }
@@ -482,17 +484,21 @@ namespace Display
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
-                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}, Text: {F}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration, e.FullScreen, e.TextContent.Substring(0, e.TextContent.Length / 5));
                     customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
+
+                    int Duration_TextOverlay = (e.Duration + e.IdleTime) * e.LoopNum;
+                    customForm.Show_TextOverlay(e.TextContent, e.ColorValue, Duration_TextOverlay * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
-                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}, Text: {D}", e.MediaUrl, e.ScheduleId, e.Duration, e.FullScreen, e.TextContent.Substring(0, e.TextContent.Length / 5));
                     customForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
+                    customForm.Show_TextOverlay(e.TextContent, e.ColorValue, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
-                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration * 1000, e.FullScreen);
+                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
                     customForm.ShowText(e.Title, e.Text, e.ScheduleId, e.Priority);
                 }
             }
@@ -509,7 +515,7 @@ namespace Display
                 customForm.Close_by_Id(e.ScheduleId);
             }
 
-            DeleteFile_in_Database(e.ScheduleId);
+            if(e.DeleteSavedFile == true) DeleteFile_in_Database(e.ScheduleId);
         }
         private void DeleteFile_in_Database(string ScheduleId)
         {
@@ -717,8 +723,7 @@ namespace Display
                 if (newMessage != null)
                 {
                     var topic = newMessage.Topic;
-                    Log.Information("Get_NewMessage");
-                    if (mqttMessage.subcribeTopic_Default.Contains(newMessage.Topic))
+                    if (newMessage.Topic == mqttMessage.subcribeTopic_Default)
                     {
                         string message = Encoding.UTF8.GetString(newMessage.Payload);
                         //Log.Information("ProcessNewMessage: {A}", message);
@@ -726,6 +731,7 @@ namespace Display
 
                         if (payload.BanTinThongBao != null)
                         {
+                            Log.Information("Get_NewMessage: DefaultTopic");
                             _TxtThongBao = payload.BanTinThongBao;
                             //ShowText(_TxtThongBao);
                             _TxtVanBan = payload.BanTinVanBan;
@@ -754,6 +760,7 @@ namespace Display
 
                         if(payload.Message.Groups != null)
                         {
+                            Log.Information("Get_NewMessage: DeviceConfigMessage");
                             string s = JsonConvert.SerializeObject(payload.Message);
                             DeviceConfigMessage newGroups_msg = JsonConvert.DeserializeObject<DeviceConfigMessage>(s);
                             mqttMessage.Subcribe2Groups(newGroups_msg.Groups);
@@ -796,6 +803,7 @@ namespace Display
                         // Schedule Message
                         if (payload.Message.Schedule != null)
                         {
+                            Log.Information("Get_NewMessage: ScheduleMessage");
                             string s = JsonConvert.SerializeObject(payload.Message.Schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
 
@@ -804,6 +812,7 @@ namespace Display
                         // Stream Command
                         else if(payload.Message.StreamInfo != null)
                         {
+                            Log.Information("Get_NewMessage: StreamCommandMessage");
                             string s = JsonConvert.SerializeObject(payload.Message);
                             StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
 

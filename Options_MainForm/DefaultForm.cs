@@ -23,6 +23,8 @@ namespace Display
         private string _ImageName = "";
 
         System.Timers.Timer Duration_HinhAnh_Tmr;
+        System.Timers.Timer Duration_Video_Tmr;
+
         public bool _is_ImageAvailable = false;
         public bool _is_VideoAvailable = false;
         public bool _is_ThongBaoAvailable = false;
@@ -53,6 +55,8 @@ namespace Display
             pictureBox2.Visible = false;
 
             Duration_HinhAnh_Tmr = new System.Timers.Timer();
+            Duration_Video_Tmr = new System.Timers.Timer();
+            AutoHideScreen_Check();
         }
 
         private void Init_VLC_Library()
@@ -70,6 +74,8 @@ namespace Display
         private void _mp_EndReached(object sender, EventArgs e)
         {
             videoView1.Visible = false;
+            _is_VideoAvailable = false;
+            AutoHideScreen_Check();
         }
 
         private void _mp_EncounteredError(object sender, EventArgs e)
@@ -106,7 +112,7 @@ namespace Display
             Volume = _mp.Volume;
         }
 
-        public void ShowVideo(string url, string ScheduleID, int Priority = 0)
+        public void ShowVideo(string url, string ScheduleID, int Priority = 0, int Duration = MAXVALUE)
         {
             if (_Priority_Video < Priority) return;
             Log.Information("ShowVideo: {A}", url);
@@ -114,6 +120,7 @@ namespace Display
             _is_VideoAvailable = true;
             _ScheduleID_Video = ScheduleID;
             _Priority_Video = Priority;
+            this.Visible = true;
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -123,7 +130,14 @@ namespace Display
                 int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleID) && (s.Link == url));
                 if (index != -1)
                 {
-                    PlayVideo(SavedFiles[index].PathLocation);
+                    if (File.Exists(SavedFiles[index].PathLocation))
+                    {
+                        PlayVideo(SavedFiles[index].PathLocation);
+                    }
+                    else
+                    {
+                        PlayVideo(url);
+                    }
                 }
                 else
                 {
@@ -136,6 +150,14 @@ namespace Display
                 // Neu chua download thi play link nhu binh thuong
                 PlayVideo(url);
             }
+
+            // Duration Handle
+            //Duration_Handle(Duration_Video_Tmr, ref Duration_Video_Tmr, Duration, () =>
+            //{
+            //    // Stop Media
+            //    _is_VideoAvailable = false;
+            //    Log.Information("Het Video!");
+            //});
         }
 
         private async void PlayVideo(string url)
@@ -183,6 +205,15 @@ namespace Display
                     if (index != -1)
                     {
                         // Da Download
+                        if (File.Exists(SavedFiles[index].PathLocation))
+                        {
+
+                        }
+                        else
+                        {
+                            // Neu chua download thi Download
+                            DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
+                        }
                     }
                     else
                     {
@@ -237,6 +268,12 @@ namespace Display
                     Duration_HinhAnh_Tmr.Stop();
                     Duration_HinhAnh_Tmr.Dispose();
                 }
+
+                if(Duration_Video_Tmr != null)
+                {
+                    Duration_Video_Tmr.Stop();
+                    Duration_Video_Tmr.Dispose();
+                }
             }
             catch { }
             Task.Run(() =>
@@ -250,6 +287,7 @@ namespace Display
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
             _is_ImageAvailable = false;
+            AutoHideScreen_Check();
 
             _Priority_ThongBao = 1000;
             _Priority_VanBan = 1000;
@@ -274,7 +312,14 @@ namespace Display
                     videoView1.Visible = true;
                 });
 
+                if (Duration_Video_Tmr != null)
+                {
+                    Duration_Video_Tmr.Stop();
+                    Duration_Video_Tmr.Dispose();
+                }
+
                 _is_VideoAvailable = false;
+                AutoHideScreen_Check();
                 _Priority_Video = 1000;
 
                 try
@@ -298,6 +343,7 @@ namespace Display
                     Duration_HinhAnh_Tmr.Dispose();
                 }
                 _is_ImageAvailable = false;
+                AutoHideScreen_Check();
                 _Priority_Image = 1000;
             }
             else if (_ScheduleID_ThongBao == ScheduleId)
@@ -308,6 +354,7 @@ namespace Display
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
                     _is_ThongBaoAvailable = false;
+                    AutoHideScreen_Check();
                     _Priority_ThongBao = 1000;
                 }
                 catch { }
@@ -320,6 +367,7 @@ namespace Display
                     panelVanBan.Stop();
                     txtVanBan.Text = "";
                     _is_VanBanAvailable = false;
+                    AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
                 }
                 catch { }
@@ -331,6 +379,7 @@ namespace Display
             if (ScheduleType == DisplayScheduleType.BanTinThongBao)
             {
                 if (_Priority_ThongBao < Priority) return;
+                if (txtThongBao.Text == Content) return;
                 try
                 {
                     txtThongBao.Text = Content.Trim().ToUpper();
@@ -350,10 +399,12 @@ namespace Display
                 _is_ThongBaoAvailable = true;
                 _Priority_ThongBao = Priority;
                 _ScheduleID_ThongBao = ScheduleID;
+                this.Visible = true;
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
                 if (_Priority_VanBan < Priority) return;
+                if (txtVanBan.Text == Content) return;
                 try
                 {
                     txtVanBan.Text = Content;
@@ -373,6 +424,7 @@ namespace Display
                 _is_VanBanAvailable = true;
                 _Priority_VanBan = Priority;
                 _ScheduleID_VanBan = ScheduleID;
+                this.Visible = true;
             }
 
             pictureBox1.Visible = false;
@@ -420,12 +472,14 @@ namespace Display
                     _mp.Stop();
                     videoView1.Visible = true;
                     _is_ImageAvailable = false;
+                    AutoHideScreen_Check();
                     _Priority_Image = 1000;
                 });
                 Log.Information("Image Stop!");
             });
 
             _is_ImageAvailable = true;
+            this.Visible = true;
 
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
@@ -655,16 +709,12 @@ namespace Display
             label1.Height = 1;
         }
 
-        private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
+        private void AutoHideScreen_Check()
         {
             if (_is_VideoAvailable == false && _is_ThongBaoAvailable == false && _is_VanBanAvailable == false &&
                                                                                  _is_ImageAvailable == false)
             {
                 this.Visible = false;
-            }
-            else
-            {
-                this.Visible = true;
             }
         }
     }

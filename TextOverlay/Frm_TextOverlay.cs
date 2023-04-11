@@ -1,84 +1,106 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class Frm_TextOverlay : Form
+    public partial class Frm_TextOverlay : CSWinFormLayeredWindow.PerPixelAlphaForm
     {
-        protected override bool ShowWithoutActivation
-        {
-            get { return true; }
-        }
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams baseParams = base.CreateParams;
-
-                const int WS_EX_NOACTIVATE = 0x08000000;
-                const int WS_EX_TOOLWINDOW = 0x00000080;
-                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
-
-                return baseParams;
-            }
-        }
-        private const int MAX_REPEAT_TIME = 2;
-        private string _Text = "";
+        System.Timers.Timer Moving_Tmr;
         private float _Text_Size = 31;
+        private float _OutlineWidth = 4;
+
+        public string CurrentContent = "";
+        public string TextColorValue = "";
+        private bool _isValid = false;
+
+        System.Timers.Timer Duration_TextOverlay_Tmr;
+
+        private const int MAXVALUE = 1000 * 1000 * 1000;
+
+        private int MaxPosition = 0;
         public Frm_TextOverlay()
         {
             InitializeComponent();
+            Moving_Tmr = new System.Timers.Timer();
+            Moving_Tmr.Interval = 2000;
+            Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
 
-            BackColor = Color.Crimson;
-            TransparencyKey = Color.Crimson;
-
-            panel_TxtOverlay.NotifyEndProcess_TextRun += (object o, NotifyEndProcess e) =>
-            {
-                OnNotify_TextRun_Finish(true);
-                //panel_TxtOverlay.NotifyEndProcess_TextRun = new EventHandler<NotifyEndProcess>();
-            };
+            Duration_TextOverlay_Tmr = new System.Timers.Timer();
         }
-        private event EventHandler<Notify_TextRun_Finish> _Notify_TextOverlay_Finish;
-        public event EventHandler<Notify_TextRun_Finish> Notify_TextOverlay_Finish
+        private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            add
+            Moving_Tmr.Interval = 12;
+            if (this.Location.X < -MaxPosition)
             {
-                _Notify_TextOverlay_Finish += value;
+                if (_isValid == false)
+                {
+                    Moving_Tmr.Stop();
+                    return;
+                }
+                this.Location = new Point((int)Screen.PrimaryScreen.Bounds.Size.Width, this.Location.Y);
             }
-            remove
-            {
-                _Notify_TextOverlay_Finish -= value;
-            }
-        }
-        protected virtual void OnNotify_TextRun_Finish(bool isFinished)
-        {
-            if (_Notify_TextOverlay_Finish != null)
-            {
-                _Notify_TextOverlay_Finish(this, new Notify_TextRun_Finish(isFinished));
-            }
+            this.Location = new Point(this.Location.X - 1, this.Location.Y);
         }
 
-        public void ShowTextOverlay(string Txt)
+        public void ShowTextOverlay(string Content, string ColorValue, int Duration = MAXVALUE)
         {
-            _Text = Txt;
-            _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
-            //_Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ";
-
-            //txtOverlay.Text = _Text;
+            CurrentContent = Content;// "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
+            TextColorValue = ColorValue;
             Font font = new Font("Arial", _Text_Size, FontStyle.Bold);
-            pictureBox1.Width = (int)this.CreateGraphics().MeasureString(_Text, font).Width;
-            pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(_Text, font).Height * 1.3);
-            pictureBox1.Image = ConvertTextToImage(_Text, font, Color.Transparent, Color.Honeydew,Color.Red, (float)3, pictureBox1.Width, pictureBox1.Height);
+            Color TextColor = Color.Red;
+            if (ColorValue != "") TextColor = ColorTranslator.FromHtml(ColorValue);
 
-            panel_TxtOverlay.Visible = false;
-            timer_DelayText.Interval = 1000;
-            timer_DelayText.Start();
+            // Draw Text
+            int Meas_Width = (int)this.CreateGraphics().MeasureString(CurrentContent, font).Width;
+            MaxPosition = Meas_Width;
+            int Meas_Height = (int)(this.CreateGraphics().MeasureString(CurrentContent, font).Height * 1.3);
+            this.SelectBitmap(ConvertTextToImage(CurrentContent, font, Color.Transparent, Color.Honeydew, TextColor, _OutlineWidth, Meas_Width, Meas_Height));
+
+            // Set First Location
+            int NewLocationY = this.Location.Y + ((int)Screen.PrimaryScreen.Bounds.Size.Height - this.Location.Y - (int)(Meas_Height / 1.3)) / 2;
+            this.Location = new Point(this.Location.X + (int)Screen.PrimaryScreen.Bounds.Size.Width, NewLocationY);
+
+            Moving_Tmr.Stop();
+            Moving_Tmr.Start();
+
+            // Duration Handle
+            Duration_Handle(Duration_TextOverlay_Tmr, ref Duration_TextOverlay_Tmr, Duration, () =>
+            {
+                // Stop Media
+                _isValid = false;
+                Log.Information("Text Overlay Stop!");
+            });
+            _isValid = true;
+        }
+
+        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        {
+            try
+            {
+                tmr.Stop();
+                tmr.Dispose();
+            }
+            catch { }
+            tmr = new System.Timers.Timer();
+            // Xu ly Duration cho text content
+            tmr.Interval = Duration + 1000;
+            tmr.Elapsed += (o, ev) =>
+            {
+                action();
+                // Stop this Timer
+                tmr.Stop();
+                tmr.Dispose();
+            };
+            tmr.Start();
+
+            return_tmr = tmr;
         }
 
         public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor,
-                                            Color OutlineForeColor, float OutlineWidth, int width, int Height)
+                                    Color OutlineForeColor, float OutlineWidth, int width, int Height)
         {
             Bitmap bmp = new Bitmap(width, Height);
             using (Graphics graphics = Graphics.FromImage(bmp))
@@ -117,48 +139,30 @@ namespace Display
             }
             return bmp;
         }
-
-        public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor, int width, int Height)
+        public void CloseForm()
         {
-            Bitmap bmp = new Bitmap(width, Height);
-            using (Graphics graphics = Graphics.FromImage(bmp))
+            if (Moving_Tmr != null)
             {
-                Rectangle rectF1 = new Rectangle(0, 0, width, Height);
-                graphics.FillRectangle(new SolidBrush(bgcolor), 0, 0, bmp.Width, bmp.Height);
-                graphics.DrawString(txt, font, new SolidBrush(fcolor), rectF1);
-                graphics.Flush();
-                font.Dispose();
-                graphics.Dispose();
-
-
+                Moving_Tmr.Stop();
+                Moving_Tmr.Dispose();
             }
-            return bmp;
-        }
+            if (Duration_TextOverlay_Tmr != null)
+            {
+                Duration_TextOverlay_Tmr.Stop();
+                Duration_TextOverlay_Tmr.Dispose();
+            }
 
-        private void timer_DelayText_Tick(object sender, EventArgs e)
-        {
-            panel_TxtOverlay.Visible = true;
-            panel_TxtOverlay.SetSpeed = 2;
-            panel_TxtOverlay.Max_Repeat_Time = MAX_REPEAT_TIME;
-            panel_TxtOverlay.Start(pictureBox1.Width);
-
-            timer_DelayText.Stop();
-        }
+            CurrentContent = "";
+            TextColorValue = "";
+            _isValid = false;
+    }
 
         public void TxtOverlay_FitToContainer(int Height, int Width)
         {
             int h = this.Height;
             Utility.fitFormToContainer(this, this.Height, this.Width, Height, Width);
             _Text_Size = _Text_Size * ((float)Height / (float)h);
+            _OutlineWidth = _OutlineWidth * ((float)Height / (float)h);
         }
     }
-    public class Notify_TextRun_Finish : EventArgs
-    {
-        private bool _isFinished = false;
-        public Notify_TextRun_Finish(bool isFinished)
-        {
-            _isFinished = isFinished;
-        }
-    }
-
 }

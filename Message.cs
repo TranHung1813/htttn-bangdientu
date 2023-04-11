@@ -70,7 +70,7 @@ namespace Display
             this.userName = userName;
             this.password = password;
             ClientId = clientId;
-            this.subcribeTopic_Default += $"{clientId}/#";
+            this.subcribeTopic_Default += $"{clientId}";
             this.subcribeTopic_Groups += $"{clientId}";
 
             new Task(async () => await InitMqtt()).Start();

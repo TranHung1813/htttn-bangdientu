@@ -39,7 +39,7 @@ namespace Display
             this.ClientSize = new System.Drawing.Size(796, 192);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Transparent_BackGround";
-            this.Opacity = 0.4D;
+            this.Opacity = 0.2D;
             this.Text = "Transparent_BackGround";
             this.ResumeLayout(false);
 

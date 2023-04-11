@@ -22,6 +22,8 @@ namespace Display
             if (message.IsActive != true)
             {
                 DeleteMessage_by_Id(message.Id);
+                OnNotify_Time2Delete(message.Id, true);
+
                 return;
             }
 
@@ -30,6 +32,7 @@ namespace Display
             if (index != -1)
             {
                 DeleteMessage_by_Id(message.Id);
+                OnNotify_Time2Delete(message.Id, false);
             }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
@@ -90,14 +93,23 @@ namespace Display
             };
             message.Schedule_Timer.Start();
             // Add message to Schedule List (replace if message ID is already existed)
-            _schedule_msg_List.Add(message);
+            //replace if message ID is already existed
+            int index = _schedule_msg_List.FindIndex(s => s.msg.Id == message.msg.Id);
+            if (index != -1)
+            {
+                _schedule_msg_List[index] = message;
+            }
+            else
+            {
+                _schedule_msg_List.Add(message);
+            }
         }
 
         private void NotifyPlay(ScheduleMsg_Type message)
         {
             // Notify First Time to Play
             OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                               message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title);
+                               message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent);
         }
 
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
@@ -194,7 +206,7 @@ namespace Display
                     message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
                     {
                         DeleteMessage_by_Id(message.msg.Id);
-                        OnNotify_Time2Delete(message.msg.Id);
+                        OnNotify_Time2Delete(message.msg.Id, true);
 
                         message.ValidHandle_Timer.Stop();
                     };
@@ -213,7 +225,7 @@ namespace Display
                     if (Time >= message.msg.To && message.msg.To != 0)
                     {
                         DeleteMessage_by_Id(message.msg.Id);
-                        OnNotify_Time2Delete(message.msg.Id);
+                        OnNotify_Time2Delete(message.msg.Id, true);
 
                         message.ValidHandle_Timer.Stop();
                     }
@@ -235,18 +247,25 @@ namespace Display
                 };
                 message.ValidHandle_Timer.Start();
             }
+
+            // Add message to Schedule List (replace if message ID is already existed)
+            _schedule_msg_List.Add(message);
         }
 
         public void DeleteMessage_by_Id(string messageId)
         {
+            Log.Information("DeleteMessage_by_Id: {A}", messageId);
             foreach(var schedule_msg in _schedule_msg_List)
             {
                 if(schedule_msg.msg.Id == messageId)
                 {
                     try
                     {
-                        schedule_msg.Schedule_Timer.Stop();
-                        schedule_msg.Schedule_Timer.Dispose();
+                        if (schedule_msg.Schedule_Timer != null)
+                        {
+                            schedule_msg.Schedule_Timer.Stop();
+                            schedule_msg.Schedule_Timer.Dispose();
+                        }
                         if (schedule_msg.ValidHandle_Timer != null)
                         {
                             schedule_msg.ValidHandle_Timer.Stop();
@@ -284,18 +303,18 @@ namespace Display
             }
         }
         protected virtual void OnNotify_Time2Play(string ScheduleId, int Priority, DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
-                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue, string Title)
+                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue, string Title, string TextContent)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, Priority, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, Priority, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title, TextContent));
             }
         }
-        protected virtual void OnNotify_Time2Delete(string ScheduleId)
+        protected virtual void OnNotify_Time2Delete(string ScheduleId, bool DeleteSavedFile)
         {
             if (_NotifyTime2Delete != null)
             {
-                _NotifyTime2Delete(this, new NotifyTime2Delete(ScheduleId));
+                _NotifyTime2Delete(this, new NotifyTime2Delete(ScheduleId, DeleteSavedFile));
             }
         }
     }
@@ -323,7 +342,8 @@ namespace Display
         public string ColorValue;
         public bool FullScreen;
         public string Title;
-        public NotifyTime2Play(string scheduleId,int priority, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title)
+        public string TextContent;
+        public NotifyTime2Play(string scheduleId, int priority, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title, string textContent)
         {
             ScheduleId = scheduleId;
             Priority = priority;
@@ -337,15 +357,18 @@ namespace Display
             ColorValue = colorValue;
             FullScreen = fullScreen;
             Title = title;
+            TextContent = textContent;
         }
     }
 
     public class NotifyTime2Delete : EventArgs
     {
         public string ScheduleId;
-        public NotifyTime2Delete(string scheduleId)
+        public bool DeleteSavedFile;
+        public NotifyTime2Delete(string scheduleId, bool deleteSavedFile)
         {
             ScheduleId = scheduleId;
+            DeleteSavedFile = deleteSavedFile;
         }
     }
 }

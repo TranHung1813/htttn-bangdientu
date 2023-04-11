@@ -90,7 +90,6 @@ namespace Display
         }
         public void ShowVideo(string url, string ScheduleID, int Priority = 0)
         {
-            Log.Information("ShowVideo: {A}", url);
             _VideoUrl = url;
             ScheduleID_Video = ScheduleID;
             _Priority_Video = Priority;
@@ -103,7 +102,14 @@ namespace Display
                 int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleID) && (s.Link == url));
                 if (index != -1)
                 {
-                    PlayVideo(SavedFiles[index].PathLocation);
+                    if (File.Exists(SavedFiles[index].PathLocation))
+                    {
+                        PlayVideo(SavedFiles[index].PathLocation);
+                    }
+                    else
+                    {
+                        PlayVideo(url);
+                    }
                 }
                 else
                 {
@@ -133,6 +139,8 @@ namespace Display
                     videoView1.Visible = true;
                     _mp.Play(new Media(_libVLC, new Uri(url), @params));
                     _mp.Playing += _mp_Playing;
+
+                    Log.Information("ShowVideo: {A}", url);
                 }
                 catch (Exception ex)
                 {
@@ -164,6 +172,15 @@ namespace Display
                     if (index != -1)
                     {
                         // Da Download
+                        if (File.Exists(SavedFiles[index].PathLocation))
+                        {
+                            
+                        }
+                        else
+                        {
+                            // Neu chua download thi Download
+                            DownloadAsync(_VideoUrl, ScheduleID_Video);
+                        }
                     }
                     else
                     {

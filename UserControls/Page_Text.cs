@@ -84,7 +84,7 @@ namespace Display
         public void ShowText(string Title, string Content, string ScheduleId, int Priority)
         {
             Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
-
+            if (lb_Content.Text == Content && lb_Title.Text == Title) return;
             try
             {
                 lb_Title.Text = Title.Trim().ToUpper() + "\n";
@@ -238,8 +238,8 @@ namespace Display
         }
         public void Close()
         {
-            lb_Title.Text = "";
-            lb_Content.Text = "";
+            //lb_Title.Text = "";
+            //lb_Content.Text = "";
             panel_TextRun.Stop();
             try
             {
@@ -265,10 +265,6 @@ namespace Display
         {
             lb_Content.Location = new Point(lb_Content.Location.X, lb_Title.Height);
         }
-        public void Test()
-        {
-            MessageBox.Show(lb_Title.Height.ToString() + "," + lb_Content.Height.ToString());
-        }
 
         private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
         {
@@ -280,6 +276,10 @@ namespace Display
             {
                 this.Visible = true;
             }
+        }
+        public void Test()
+        {
+            //panel1.BackColor = Color.FromArgb(100, 0, 0, 0);
         }
     }
     public class GrowLabel : Label
