@@ -1,7 +1,9 @@
-﻿using Serilog;
+﻿using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 namespace Display
@@ -9,12 +11,43 @@ namespace Display
     public class ScheduleHandle
     {
         List<ScheduleMsg_Type> _schedule_msg_List = new List<ScheduleMsg_Type>();
-        //Thread ScheduleHandle_trd;
         public ScheduleHandle()
         {
-            //ScheduleHandle_trd = new Thread(new ThreadStart(this.ScheduleHandle_Thread));
-            //ScheduleHandle_trd.IsBackground = true;
-            //ScheduleHandle_trd.Start();
+            Load_ScheduleMessageInfo();
+        }
+
+        private void Load_ScheduleMessageInfo()
+        {
+            List<DataUser_ScheduleMessage> messages = SqLiteDataAccess.Load_ScheduleMessage_Info();
+            if (messages != null)
+            {
+                foreach (var message in messages)
+                {
+                    Schedule msg = JsonConvert.DeserializeObject<Schedule>(message.JsonData);
+                    Schedule(msg, message.Priority);
+                }
+            }
+            else
+            {
+                // Null Handle
+            }
+        }
+
+        private void Delete_ScheduleMessage_inDB(string MsgId)
+        {
+            List<DataUser_ScheduleMessage> messages = SqLiteDataAccess.Load_ScheduleMessage_Info();
+            if (messages != null)
+            {
+                int index = messages.FindIndex(s => (s.ScheduleId == MsgId));
+                if (index != -1)
+                {
+                    SqLiteDataAccess.DeleteInfo_ScheduleMessage(messages[index]);
+                }
+            }
+            else
+            {
+                // Null Handle
+            }
         }
 
         public void Schedule(Schedule message, int Priority)
@@ -54,6 +87,7 @@ namespace Display
             List<int> TimeList_perWeek = new List<int>();
             if(message.msg.IsDaily == true)
             {
+                // Daily
                 for(int CountDay = 0; CountDay < message.msg.Days.Count; CountDay++)
                 {
                     TimeList_perWeek.AddRange(message.msg.Times.Select(x => x + 24 * 3600 * (message.msg.Days[CountDay] - 1)).ToList());
@@ -62,6 +96,7 @@ namespace Display
             }
             else
             {
+                // Today
                 TimeList_perWeek.AddRange(message.msg.Times);
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList);
             }
@@ -194,25 +229,32 @@ namespace Display
 
             if (message.msg.From <= CurrentTime)
             {
-                // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
-                if(message.msg.To == 0)
+                // Check xem Current Time có chung ngày với FromTime không?
+                DateTime FromTime = UnixTimeStampToDateTime(message.msg.From);
+                if (DateTime.Now.DayOfWeek == FromTime.DayOfWeek)
                 {
-
-                }
-                else if (CurrentTime < message.msg.To)
-                {
-                    message.ValidHandle_Timer = new Timer();
-                    message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
-                    message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                    // Nếu FromTime chung ngày với CurrentTime => Xử lý bình thường
+                    // Nếu không chung ngày => Skip bản tin (không cần xóa, việc xóa của Server)
+                    if (message.msg.To == 0)
                     {
-                        DeleteMessage_by_Id(message.msg.Id);
-                        OnNotify_Time2Delete(message.msg.Id, true);
+                        // Nếu toTime = 0 => Không cần tạo Timer chạy đến toTime
+                    }
+                    else if (CurrentTime < message.msg.To)
+                    {
+                        // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
+                        message.ValidHandle_Timer = new Timer();
+                        message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
+                        message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                        {
+                            DeleteMessage_by_Id(message.msg.Id);
+                            OnNotify_Time2Delete(message.msg.Id, true);
 
-                        message.ValidHandle_Timer.Stop();
-                    };
-                    message.ValidHandle_Timer.Start();
+                            message.ValidHandle_Timer.Stop();
+                        };
+                        message.ValidHandle_Timer.Start();
+                    }
+                    MessageHandle(message);
                 }
-                MessageHandle(message);
             }
             else if (message.msg.From > CurrentTime)
             {
@@ -249,6 +291,29 @@ namespace Display
             }
 
             // Add message to Schedule List (replace if message ID is already existed)
+            List<DataUser_ScheduleMessage> Messages = SqLiteDataAccess.Load_ScheduleMessage_Info();
+            DataUser_ScheduleMessage info_Save = new DataUser_ScheduleMessage();
+            if (Messages != null)
+            {
+                int index = Messages.FindIndex(s => s.ScheduleId == message.msg.Id);
+                if (index == -1)
+                {
+                    info_Save.Id = Messages.Count + 1;
+                }
+                else
+                {
+                    info_Save.Id = index + 1;
+                }
+            }
+            else
+            {
+                info_Save.Id = 1;
+            }
+            info_Save.ScheduleId = message.msg.Id;
+            info_Save.JsonData = new JavaScriptSerializer().Serialize(message.msg);
+            info_Save.Priority = message.Priority;
+
+            SqLiteDataAccess.SaveInfo_ScheduleMessage(info_Save);
             _schedule_msg_List.Add(message);
         }
 
@@ -276,6 +341,15 @@ namespace Display
                 }
             }
             _schedule_msg_List.RemoveAll(r => r.msg.Id == messageId);
+            Delete_ScheduleMessage_inDB(messageId);
+        }
+
+        public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dateTime;
         }
 
         private event EventHandler<NotifyTime2Play> _NotifyTime2Play;

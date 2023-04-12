@@ -777,6 +777,7 @@ namespace Display
 
                                 SqLiteDataAccess.SaveInfo_Groups(info_Save);
                             }
+                            Load_Groups_Info();
 
                             NodeId = payload.Message.Id;
                             NodeName = payload.Message.Name;
@@ -803,20 +804,25 @@ namespace Display
                         // Schedule Message
                         if (payload.Message.Schedule != null)
                         {
-                            Log.Information("Get_NewMessage: ScheduleMessage");
                             string s = JsonConvert.SerializeObject(payload.Message.Schedule);
                             Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
+                            Log.Information("Get_NewMessage: ScheduleMessage, Id: {A}, isActive: {B}, Type: {C}",
+                                                                                        newSchedule_msg.Id,
+                                                                                        newSchedule_msg.IsActive.ToString(),
+                                                                                        newSchedule_msg.ScheduleType);
 
                             scheduleHandle.Schedule(newSchedule_msg, Priority);
                         }
                         // Stream Command
                         else if(payload.Message.StreamInfo != null)
                         {
-                            Log.Information("Get_NewMessage: StreamCommandMessage");
                             string s = JsonConvert.SerializeObject(payload.Message);
                             StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
+                            Log.Information("Get_NewMessage: StreamCommandMessage, Command: {A}, Url: {B}",
+                                                                                        StreamCmd.CmdCode,
+                                                                                        StreamCmd.StreamInfo.Uri);
 
-                            if(StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
+                            if (StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
                             {
                                 if(StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
                                 {

@@ -17,6 +17,57 @@ namespace Display
         private static string DatabasePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"BangDienTu.db");
 
         //*****************************************************************************************************************
+        //****************************************** Access to Schedule Message Infomation *******************************************
+        public static List<DataUser_ScheduleMessage> Load_ScheduleMessage_Info()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                var output = cnn.Query<DataUser_ScheduleMessage>("select * from ScheduleMessage", new DynamicParameters());
+                return output.ToList();
+            }
+        }
+
+        public static void AddInfo_ScheduleMessage(DataUser_ScheduleMessage info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("insert into ScheduleMessage ( JsonData, Priority, ScheduleId) values ( @JsonData, @Priority, @ScheduleId)", info);
+                }
+                catch
+                { }
+            }
+        }
+        public static void DeleteInfo_ScheduleMessage(DataUser_ScheduleMessage info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("delete from ScheduleMessage where Id like @Id", new { Id = info.Id });
+                }
+                catch (Exception ex)
+                { }
+            }
+        }
+        public static void SaveInfo_ScheduleMessage(DataUser_ScheduleMessage info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                int id = cnn.Query<int>("select Id from ScheduleMessage where Id like @Id", new { Id = info.Id }).FirstOrDefault();
+
+                if (id == info.Id)
+                {
+                    cnn.Execute("update ScheduleMessage set JsonData= @JsonData, Priority = @Priority, ScheduleId = @ScheduleId where Id = @Id", info);
+                }
+                else
+                {
+                    cnn.Execute("insert into ScheduleMessage ( JsonData, Priority, ScheduleId) values ( @JsonData, @Priority, @ScheduleId)", info);
+                }
+            }
+        }
+        //*****************************************************************************************************************
         //****************************************** Access to Device Infomation *******************************************
         public static DataUser_DeviceInfo Load_Device_Info()
         {

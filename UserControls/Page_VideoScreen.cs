@@ -26,13 +26,14 @@ namespace Display
 
         public string ScheduleID_Video = "";
         public int _Priority_Video = 1000;
+        public bool _is_VideoAvailable = false;
 
         public const int MAXVALUE = 1000 * 1000 * 1000;
 
         public Page_VideoScreen()
         {
             InitializeComponent();
-            Init_VLC_Library();
+            //Init_VLC_Library();
 
             //_VideoURL = "https://dev-data.radiotech.vn/media/Yêu dấu theo gió bay.mp4";
             //_VideoURL = "https://dev-data.radiotech.vn/media/041d3e6b-29af-4dbc-9ee1-94655ddec328.mp4";
@@ -44,11 +45,27 @@ namespace Display
             Core.Initialize();
 
             _libVLC = new LibVLC();
+            if(_mp != null)
+            {
+                try
+                {
+                    videoView1.Visible = false;
+                    videoView1.MediaPlayer = null;
+                    _mp.Stop();
+                    _mp.EncounteredError -= _mp_EncounteredError;
+                    _mp.EndReached -= _mp_EndReached;
+                    _mp.Playing -= _mp_Playing;
+                    // _mp = null;
+                    //_mp.Dispose();
+                }
+                catch { }
+            }
             _mp = new MediaPlayer(_libVLC);
             //_mp.AspectRatio = "4:3";
             videoView1.MediaPlayer = _mp;
             _mp.EncounteredError += _mp_EncounteredError;
             _mp.EndReached += _mp_EndReached;
+            videoView1.Visible = true;
         }
 
         private void _mp_EndReached(object sender, EventArgs e)
@@ -62,6 +79,7 @@ namespace Display
         }
         public void GetScheduleInfo(ref string ScheduleID, ref string PlayingFile, ref int PlayState, ref bool IsSpkOn, ref int Volume)
         {
+            if (_mp == null) return;
             ScheduleID = ScheduleID_Video;
             PlayingFile = _VideoUrl;
             switch (_mp.State)
@@ -93,6 +111,7 @@ namespace Display
             _VideoUrl = url;
             ScheduleID_Video = ScheduleID;
             _Priority_Video = Priority;
+            _is_VideoAvailable = true;
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -134,13 +153,12 @@ namespace Display
             {
                 try
                 {
-                    videoView1.Visible = false;
-                    _mp.Stop();
-                    videoView1.Visible = true;
+                    Init_VLC_Library();
                     _mp.Play(new Media(_libVLC, new Uri(url), @params));
                     _mp.Playing += _mp_Playing;
 
                     Log.Information("ShowVideo: {A}", url);
+
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +167,16 @@ namespace Display
             });
 
             await PlayVideo;
-
+            await Task.Delay(5000);
+            if (_is_VideoAvailable == true)
+            {
+                if (_mp.State != VLCState.Playing)
+                {
+                    Log.Error("PlayMedia_Fail: {A}, TimeWait: {B}ms", url, 5000);
+                    //Log.Information("Retry Play Video 1 time!");
+                    //await PlayVideo;
+                }
+            }
         }
 
         private void _mp_Playing(object sender, EventArgs e)
@@ -266,17 +293,20 @@ namespace Display
         {
             Task.Run(() =>
             {
-                videoView1.Visible = false;
-                _mp.Stop();
-                videoView1.Visible = true;
+                try
+                {
+                    //videoView1.Visible = false;
+                    videoView1.MediaPlayer = null;
+                    _mp.Stop();
+                    _mp.EncounteredError -= _mp_EncounteredError;
+                    _mp.EndReached -= _mp_EndReached;
+                    _mp.Playing -= _mp_Playing;
+                    //_mp = null;
+                }
+                catch { }
             });
-
-            try
-            {
-                _mp.Playing -= _mp_Playing;
-            }
-            catch { }
-
+            //videoView1.Visible = true;
+            _is_VideoAvailable = false;
             _Priority_Video = 1000;
         }
     }

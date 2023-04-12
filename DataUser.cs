@@ -29,4 +29,12 @@ namespace Display
         public string NodeId { get; set; }
         public string NodeName { get; set; }
     }
+
+    public class DataUser_ScheduleMessage
+    {
+        public int Id { get; set; }
+        public string ScheduleId { get; set; }
+        public string JsonData { get; set; }
+        public int Priority { get; set; }
+    }
 }
