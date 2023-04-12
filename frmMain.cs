@@ -539,20 +539,7 @@ namespace Display
                         Log.Error(ex, "ScheduleHandle_NotifyTime2Delete");
                     }
 
-                    SavedFiles.RemoveAt(index);
-
-                    // Save lai
-                    foreach (var file in SavedFiles)
-                    {
-                        DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
-
-                        info_Save.Id = file.Id;
-                        info_Save.ScheduleId = file.ScheduleId;
-                        info_Save.PathLocation = file.PathLocation;
-                        info_Save.Link = file.Link;
-
-                        SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
-                    }
+                    SqLiteDataAccess.DeleteInfo_SavedFiles(SavedFiles[index]);
                 }
                 else
                 {

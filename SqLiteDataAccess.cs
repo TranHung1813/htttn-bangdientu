@@ -166,6 +166,18 @@ namespace Display
                 { }
             }
         }
+        public static void DeleteInfo_SavedFiles(DataUser_SavedFiles info)
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("delete from SavedFiles where Id like @Id", new { Id = info.Id });
+                }
+                catch (Exception ex)
+                { }
+            }
+        }
         public static void SaveInfo_SavedFiles(DataUser_SavedFiles info)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
