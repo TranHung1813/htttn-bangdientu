@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using LibVLCSharp.Shared;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
+using WMPLib;
 
 namespace Display
 {
@@ -13,10 +16,10 @@ namespace Display
         List<ScheduleMsg_Type> _schedule_msg_List = new List<ScheduleMsg_Type>();
         public ScheduleHandle()
         {
-            Load_ScheduleMessageInfo();
+
         }
 
-        private void Load_ScheduleMessageInfo()
+        public void Load_ScheduleMessageInfo()
         {
             List<DataUser_ScheduleMessage> messages = SqLiteDataAccess.Load_ScheduleMessage_Info();
             if (messages != null)
@@ -41,7 +44,24 @@ namespace Display
                 int index = messages.FindIndex(s => (s.ScheduleId == MsgId));
                 if (index != -1)
                 {
-                    SqLiteDataAccess.DeleteInfo_ScheduleMessage(messages[index]);
+                    // Save lai
+                    SqLiteDataAccess.DeleteAll_ScheduleMessage();
+                    if (messages.Count > 1)
+                    {
+                        messages.RemoveAt(index);
+                        int Id = 0;
+                        foreach (var msg in messages)
+                        {
+                            DataUser_ScheduleMessage info_Save = new DataUser_ScheduleMessage();
+
+                            info_Save.Id = Id++;
+                            info_Save.ScheduleId = msg.ScheduleId;
+                            info_Save.JsonData = msg.JsonData;
+                            info_Save.Priority = msg.Priority;
+
+                            SqLiteDataAccess.SaveInfo_ScheduleMessage(info_Save);
+                        }
+                    }
                 }
             }
             else
@@ -83,6 +103,8 @@ namespace Display
 
         private void MessageHandle(ScheduleMsg_Type message)
         {
+            // Tinh lai Times theo từng loại bản tin (Times của Server chưa chuẩn)
+            List<int> NewTimes = Caculate_TimeList(message.msg);
             // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
             List<int> TimeList_perWeek = new List<int>();
             if(message.msg.IsDaily == true)
@@ -90,14 +112,14 @@ namespace Display
                 // Daily
                 for(int CountDay = 0; CountDay < message.msg.Days.Count; CountDay++)
                 {
-                    TimeList_perWeek.AddRange(message.msg.Times.Select(x => x + 24 * 3600 * (message.msg.Days[CountDay] - 1)).ToList());
+                    TimeList_perWeek.AddRange(NewTimes.Select(x => x + 24 * 3600 * (message.msg.Days[CountDay] - 1)).ToList());
                 }
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList);
             }
             else
             {
                 // Today
-                TimeList_perWeek.AddRange(message.msg.Times);
+                TimeList_perWeek.AddRange(NewTimes);
                 TimeList_Handle(TimeList_perWeek, ref message.TimeList);
             }
 
@@ -139,12 +161,67 @@ namespace Display
                 _schedule_msg_List.Add(message);
             }
         }
+        private List<int> Caculate_TimeList(Schedule message)
+        {
+            List<int> TimesList_Return = new List<int>();
+            if (message.ScheduleType == DisplayScheduleType.BanTinThongBao || message.ScheduleType == DisplayScheduleType.BanTinVanBan)
+            {
+                TimesList_Return.Add(message.Times[0]);
+            }
+            else if (message.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
+            {
+                TimesList_Return = message.Times;
+            }
+            else if (message.ScheduleType == DisplayScheduleType.BanTinVideo)
+            {
+                if (message.Duration == 0)
+                {
+                    TimesList_Return.Add(message.Times[0]);
+                }
+                else
+                {
+                    for (int CountTimeLoop = 0; CountTimeLoop < message.Loops; CountTimeLoop++)
+                    {
+                        int Value = message.Times[0] + (message.Duration + message.IdleTime) * CountTimeLoop;
+                        TimesList_Return.Add(Value);
+                    }
+                }
+            }
+            return TimesList_Return;
+        }
+        private async Task<int> Duration_Calculate(string url)
+        {
+            int Duration = 0;
+            Core.Initialize();
+            var tcs = new TaskCompletionSource<int>();
 
+            LibVLC _libVLC = new LibVLC();
+            MediaPlayer _mp = new MediaPlayer(_libVLC);
+                
+            try
+            {
+                _mp.Play(new Media(_libVLC, new Uri(url)));
+                _mp.Playing += (o, e) =>
+                {
+                    Duration = (int)(_mp.Length / 1000) + 1;
+                    tcs.TrySetResult(Duration);
+                    _mp.Stop();
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Duration_Calculate: {A}", url);
+            }
+
+            //await Task.Delay(5000);
+
+            return tcs.Task.Result;
+        }
         private void NotifyPlay(ScheduleMsg_Type message)
         {
             // Notify First Time to Play
             OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                               message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent);
+                               message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
         }
 
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
@@ -227,12 +304,41 @@ namespace Display
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+            {
+                message.msg.Duration = Duration_Calculate(message.msg.Songs[0]).Result;
+            }
+
             if (message.msg.From <= CurrentTime)
             {
                 // Check xem Current Time có chung ngày với FromTime không?
                 DateTime FromTime = UnixTimeStampToDateTime(message.msg.From);
                 if (DateTime.Now.DayOfWeek == FromTime.DayOfWeek)
                 {
+                    // Đang chạy dở => Chạy tiếp
+                    if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+                    {
+                        if ((CurrentTime - message.msg.From) < ((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops))
+                        {
+                            // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
+                            int StartPosition = (int)(CurrentTime - message.msg.From) % (message.msg.Duration + message.msg.IdleTime);
+                            int Duration = (int)((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops - (CurrentTime - message.msg.From) - message.msg.IdleTime);
+                            OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                               message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, StartPosition);
+                        }
+                    }
+                    else if (message.msg.ScheduleType == DisplayScheduleType.BanTinThongBao ||
+                             message.msg.ScheduleType == DisplayScheduleType.BanTinVanBan   ||
+                             message.msg.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
+                    {
+                        if ((CurrentTime - message.msg.From) < message.msg.Duration)
+                        {
+                            // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
+                            int Duration = (int)(CurrentTime - message.msg.From);
+                            OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                               message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
+                        }
+                    }
                     // Nếu FromTime chung ngày với CurrentTime => Xử lý bình thường
                     // Nếu không chung ngày => Skip bản tin (không cần xóa, việc xóa của Server)
                     if (message.msg.To == 0)
@@ -377,11 +483,11 @@ namespace Display
             }
         }
         protected virtual void OnNotify_Time2Play(string ScheduleId, int Priority, DisplayScheduleType ScheduleType, string Text, List<string> MediaUrl, bool FullScreen,
-                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue, string Title, string TextContent)
+                                                                        int IdleTime, int LoopNum, int Duration, string ColorValue, string Title, string TextContent, int StartPosition)
         {
             if (_NotifyTime2Play != null)
             {
-                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, Priority, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title, TextContent));
+                _NotifyTime2Play(this, new NotifyTime2Play(ScheduleId, Priority, ScheduleType, Text, MediaUrl, FullScreen, IdleTime, LoopNum, Duration, ColorValue, Title, TextContent, StartPosition));
             }
         }
         protected virtual void OnNotify_Time2Delete(string ScheduleId, bool DeleteSavedFile)
@@ -417,7 +523,9 @@ namespace Display
         public bool FullScreen;
         public string Title;
         public string TextContent;
-        public NotifyTime2Play(string scheduleId, int priority, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title, string textContent)
+
+        public int StartPosition = 0;
+        public NotifyTime2Play(string scheduleId, int priority, DisplayScheduleType scheduleType, string text, List<string> mediaUrl, bool fullScreen, int idleTime, int loopNum, int duration, string colorValue, string title, string textContent, int startPosition)
         {
             ScheduleId = scheduleId;
             Priority = priority;
@@ -432,6 +540,8 @@ namespace Display
             FullScreen = fullScreen;
             Title = title;
             TextContent = textContent;
+
+            StartPosition = startPosition;
         }
     }
 

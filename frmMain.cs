@@ -465,7 +465,7 @@ namespace Display
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration, e.FullScreen);
-                    defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
+                    defaultForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority, e.StartPosition);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
@@ -485,10 +485,9 @@ namespace Display
                 if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
                     Log.Information("NotifyTime2Play: Video: {A}, Id : {id}, Idle: {B}, Loops: {C}, Duration: {D}, FullScreen: {E}, Text: {F}", e.MediaUrl, e.ScheduleId, e.IdleTime, e.LoopNum, e.Duration, e.FullScreen, e.TextContent.Substring(0, e.TextContent.Length / 5));
-                    customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority);
+                    customForm.ShowVideo(e.MediaUrl[0], e.ScheduleId, e.Priority, e.StartPosition);
 
-                    int Duration_TextOverlay = (e.Duration + e.IdleTime) * e.LoopNum;
-                    customForm.Show_TextOverlay(e.TextContent, e.ColorValue, Duration_TextOverlay * 1000);
+                    customForm.Show_TextOverlay(e.TextContent, e.ColorValue, e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
                 {
@@ -539,7 +538,25 @@ namespace Display
                         Log.Error(ex, "ScheduleHandle_NotifyTime2Delete");
                     }
 
-                    SqLiteDataAccess.DeleteInfo_SavedFiles(SavedFiles[index]);
+                    // Save lai
+                    SqLiteDataAccess.DeleteAll_SavedFiles();
+                    if (SavedFiles.Count > 1)
+                    {
+                        SavedFiles.RemoveAt(index);
+
+                        int Id = 1;
+                        foreach (var file in SavedFiles)
+                        {
+                            DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
+
+                            info_Save.Id = Id++;
+                            info_Save.ScheduleId = file.ScheduleId;
+                            info_Save.PathLocation = file.PathLocation;
+                            info_Save.Link = file.Link;
+
+                            SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
+                        }
+                    }
                 }
                 else
                 {
@@ -917,6 +934,8 @@ namespace Display
             streamForm.LiveStreamForm_FitToContainer(panelContainer.Height, panelContainer.Width);
 
             Timer_MQTT.Start();
+
+            scheduleHandle.Load_ScheduleMessageInfo();
         }
 
         private void Timer_FindComPort_Tick(object sender, EventArgs e)

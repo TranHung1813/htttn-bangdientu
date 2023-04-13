@@ -106,7 +106,7 @@ namespace Display
             IsSpkOn = !_mp.Mute;
             Volume = _mp.Volume;
         }
-        public void ShowVideo(string url, string ScheduleID, int Priority = 0)
+        public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0)
         {
             _VideoUrl = url;
             ScheduleID_Video = ScheduleID;
@@ -123,29 +123,29 @@ namespace Display
                 {
                     if (File.Exists(SavedFiles[index].PathLocation))
                     {
-                        PlayVideo(SavedFiles[index].PathLocation);
+                        PlayVideo(SavedFiles[index].PathLocation, StartPos);
                     }
                     else
                     {
-                        PlayVideo(url);
+                        PlayVideo(url, StartPos);
                     }
                 }
                 else
                 {
                     // Neu chua download thi play link nhu binh thuong
-                    PlayVideo(url);
+                    PlayVideo(url, StartPos);
                 }
             }
             else
             {
                 // Neu chua download thi play link nhu binh thuong
-                PlayVideo(url);
+                PlayVideo(url, StartPos);
             }
         }
 
-        private async void PlayVideo(string url)
+        private async void PlayVideo(string url, int StartPos = 0)
         {
-            string[] @params = new string[] { "input-repeat=0" };//, "run-time=5" };
+            string[] @params = new string[] { "input-repeat=0" , "start-time=" + StartPos.ToString() };//, "run-time=5" };
             //string[] mediaOptions = { };
 
             // Stop Media
@@ -172,7 +172,7 @@ namespace Display
             {
                 if (_mp.State != VLCState.Playing)
                 {
-                    Log.Error("PlayMedia_Fail: {A}, TimeWait: {B}ms", url, 5000);
+                    Log.Error("PlayMedia_Fail: {A}, TimeWait: {B}ms, VLC_State: {C}", url, 5000, _mp.State);
                     //Log.Information("Retry Play Video 1 time!");
                     //await PlayVideo;
                 }

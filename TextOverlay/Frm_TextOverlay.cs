@@ -9,8 +9,8 @@ namespace Display
     public partial class Frm_TextOverlay : CSWinFormLayeredWindow.PerPixelAlphaForm
     {
         System.Timers.Timer Moving_Tmr;
-        private float _Text_Size = 31;
-        private float _OutlineWidth = 4;
+        private float _Text_Size = 38;
+        private float _OutlineWidth = (float)4.8;
 
         public string CurrentContent = "";
         public string TextColorValue = "";

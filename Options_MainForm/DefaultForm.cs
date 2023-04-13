@@ -80,7 +80,6 @@ namespace Display
                 catch { }
             }
             _mp = new MediaPlayer(_libVLC);
-            //_mp.AspectRatio = "4:3";
             videoView1.MediaPlayer = _mp;
             _mp.AspectRatio = "320:277";
             _mp.EncounteredError += _mp_EncounteredError;
@@ -90,9 +89,12 @@ namespace Display
 
         private void _mp_EndReached(object sender, EventArgs e)
         {
-            videoView1.Visible = false;
-            _is_VideoAvailable = false;
-            AutoHideScreen_Check();
+            if (_is_VideoAvailable == true)
+            {
+                videoView1.Visible = false;
+                _is_VideoAvailable = false;
+                AutoHideScreen_Check();
+            }
         }
 
         private void _mp_EncounteredError(object sender, EventArgs e)
@@ -129,7 +131,7 @@ namespace Display
             Volume = _mp.Volume;
         }
 
-        public void ShowVideo(string url, string ScheduleID, int Priority = 0, int Duration = MAXVALUE)
+        public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0, int Duration = MAXVALUE)
         {
             if (_Priority_Video < Priority) return;
             Log.Information("ShowVideo: {A}", url);
@@ -149,23 +151,23 @@ namespace Display
                 {
                     if (File.Exists(SavedFiles[index].PathLocation))
                     {
-                        PlayVideo(SavedFiles[index].PathLocation);
+                        PlayVideo(SavedFiles[index].PathLocation, StartPos);
                     }
                     else
                     {
-                        PlayVideo(url);
+                        PlayVideo(url, StartPos);
                     }
                 }
                 else
                 {
                     // Neu chua download thi play link nhu binh thuong
-                    PlayVideo(url);
+                    PlayVideo(url, StartPos);
                 }
             }
             else
             {
                 // Neu chua download thi play link nhu binh thuong
-                PlayVideo(url);
+                PlayVideo(url, StartPos);
             }
 
             // Duration Handle
@@ -177,9 +179,9 @@ namespace Display
             //});
         }
 
-        private async void PlayVideo(string url)
+        private async void PlayVideo(string url, int StartPos = 0)
         {
-            string[] @params = new string[] { "input-repeat=0" };//, "run-time=5" };
+            string[] @params = new string[] { "input-repeat=0", "start-time=" + StartPos.ToString() };//, "run-time=5" };
             //string[] mediaOptions = { };
 
             // Stop Media
@@ -307,11 +309,13 @@ namespace Display
                 {
                     //videoView1.Visible = false;
                     videoView1.MediaPlayer = null;
-                    _mp.Stop();
-                    _mp.EncounteredError -= _mp_EncounteredError;
-                    _mp.EndReached -= _mp_EndReached;
-                    _mp.Playing -= _mp_Playing;
-                    //_mp = null;
+                    if (_mp != null)
+                    {
+                        _mp.Stop();
+                        _mp.EncounteredError -= _mp_EncounteredError;
+                        _mp.EndReached -= _mp_EndReached;
+                        _mp.Playing -= _mp_Playing;
+                    }
                 }
                 catch { }
             });
@@ -483,9 +487,7 @@ namespace Display
 
             Task task = Task.Run(() =>
             {
-                videoView1.Visible = false;
-                _mp.Stop();
-                videoView1.Visible = true;
+                Init_VLC_Library();
             });
             await task;
             DownloadAsync_Image(Url, ScheduleId);
@@ -710,13 +712,13 @@ namespace Display
             webClient.DownloadFileAsync(uri, _ImageName);
             webClient.DownloadFileCompleted += (sender, e) =>
             {
-                Log.Information("DownloadImageCompleted: {A}", Url);
+                Log.Information("DownloadImageCompleted: {A}, PathLocation: {B}", Url, _ImageName);
                 string[] @params = new string[] { "input-repeat=65536" };//, "run-time=5" };
                 _mp.Play(new Media(_libVLC, new Uri(_ImageName), @params));
 
                 // Save to Database
                 SavedFile_Type videoFile = new SavedFile_Type();
-                videoFile.PathLocation = _FileName;
+                videoFile.PathLocation = _ImageName;
                 videoFile.ScheduleId = ScheduleId;
                 videoFile.Link = Url;
                 SaveFileDownloaded(videoFile);

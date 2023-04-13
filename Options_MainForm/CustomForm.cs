@@ -156,10 +156,10 @@ namespace Display
 
 
         //-----------------------------------API Show Page Text, Video, Image, Text Overlay-----------------------------//
-        public void ShowVideo(string Url, string ScheduleId, int Priority = 0)
+        public void ShowVideo(string Url, string ScheduleId, int Priority = 0, int StartPos = 0)
         {
             ShowPanel(panel_Video, page_VideoScreen);
-            page_VideoScreen.ShowVideo(Url, ScheduleId, Priority);
+            page_VideoScreen.ShowVideo(Url, ScheduleId, Priority, StartPos);
             TabPageID = PAGE_VIDEO;
         }
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")

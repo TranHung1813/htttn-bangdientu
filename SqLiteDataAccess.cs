@@ -51,6 +51,18 @@ namespace Display
                 { }
             }
         }
+        public static void DeleteAll_ScheduleMessage()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("delete from ScheduleMessage");
+                }
+                catch (Exception ex)
+                { }
+            }
+        }
         public static void SaveInfo_ScheduleMessage(DataUser_ScheduleMessage info)
         {
             using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
@@ -173,6 +185,18 @@ namespace Display
                 try
                 {
                     cnn.Execute("delete from SavedFiles where Id like @Id", new { Id = info.Id });
+                }
+                catch (Exception ex)
+                { }
+            }
+        }
+        public static void DeleteAll_SavedFiles()
+        {
+            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
+            {
+                try
+                {
+                    cnn.Execute("delete from SavedFiles");
                 }
                 catch (Exception ex)
                 { }
