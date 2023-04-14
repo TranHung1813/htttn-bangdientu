@@ -105,7 +105,7 @@ namespace Display
         //22. Duration với video stream (done)
         //23. Schedule theo ngay trong tuan (done)
         //24. Chuyen thoi gian Schedule ve thoi gian trong ngay (số giây từ 0h) (done)
-        //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường
+        //25. Lưu lại Time Schedule để sau khi app crash vẫn chạy bình thường (done)
         //26. Tính lại Time List theo ngày = số giây từ 0h00 T2 đến thời điểm phát(T2, T5, T7,...) (done)
         //27. Xóa bản tin theo ID (done)
         //28. Text run không mượt trên máy tính Mini
@@ -321,14 +321,14 @@ namespace Display
                 case Keys.F5:
                     // Chuyen sang tab Image
                     if (CurrentForm == CUSTOM_FORM)
-                        customForm.ShowImage("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg","", 20 * 1000);
+                        customForm.ShowImage("https://i2.wp.com/beebom.com/wp-content/uploads/2016/01/Reverse-Image-Search-Engines-Apps-And-Its-Uses-2016.jpg", "", 20 * 1000);
                     break;
 
                 case Keys.F6:
                     //Show Text Overlay
                     string tex = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
                     if (CurrentForm == CUSTOM_FORM)
-                        
+
                         customForm.Show_TextOverlay(tex, "#5d0b83");
                     break;
 
@@ -387,41 +387,41 @@ namespace Display
                     break;
 
                 case Keys.P:
-                    //ScheduleHandle abc = new ScheduleHandle();
-                    //abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+                //ScheduleHandle abc = new ScheduleHandle();
+                //abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
 
-                    //Schedule msg = new Schedule();
-                    //msg.id = "001";
-                    //msg.from = 1679892014;
-                    //msg.to = 1680491799;
-                    //msg.isActive = true;
-                    //msg.isDaily = true;
-                    //msg.days = new List<int> { 4, 5, 3, 1, 6 };
-                    //msg.times = new List<int> { 42060, 42180, 42240 };
-                    //msg.idleTime = 1;
-                    //msg.loops = 0;
-                    //msg.duration = 50 * 1000;
-                    //msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
-                    //abc.Schedule(msg);
+                //Schedule msg = new Schedule();
+                //msg.id = "001";
+                //msg.from = 1679892014;
+                //msg.to = 1680491799;
+                //msg.isActive = true;
+                //msg.isDaily = true;
+                //msg.days = new List<int> { 4, 5, 3, 1, 6 };
+                //msg.times = new List<int> { 42060, 42180, 42240 };
+                //msg.idleTime = 1;
+                //msg.loops = 0;
+                //msg.duration = 50 * 1000;
+                //msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
+                //abc.Schedule(msg);
 
-                    //Schedule msg2 = new Schedule();
-                    //msg2.id = "002";
-                    //msg2.from = 1679892014;
-                    //msg2.to = 1680491799;
-                    //msg2.isActive = true;
-                    //msg2.isDaily = false;
-                    //msg2.times = new List<int> { 42120, 35940, 42210 };
-                    //msg2.idleTime = 2;
-                    //msg2.loops = 5;
-                    //msg2.duration = 500 * 1000;
-                    //msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
-                    //abc.Schedule(msg2);
+                //Schedule msg2 = new Schedule();
+                //msg2.id = "002";
+                //msg2.from = 1679892014;
+                //msg2.to = 1680491799;
+                //msg2.isActive = true;
+                //msg2.isDaily = false;
+                //msg2.times = new List<int> { 42120, 35940, 42210 };
+                //msg2.idleTime = 2;
+                //msg2.loops = 5;
+                //msg2.duration = 500 * 1000;
+                //msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                //abc.Schedule(msg2);
 
-                    //Schedule msg3 = new Schedule();
-                    //msg3.id = "002";
-                    //msg3.isActive = false;
-                    //abc.Schedule(msg3);
-                    //break;
+                //Schedule msg3 = new Schedule();
+                //msg3.id = "002";
+                //msg3.isActive = false;
+                //abc.Schedule(msg3);
+                //break;
                 case Keys.C:
                     //Test Crash
                     Uri uri = new Uri(null);
@@ -431,11 +431,11 @@ namespace Display
         private bool PrioritySchedule_Check(int Priority)
         {
             if (CurrentForm == STREAM_FORM) return false;
-            else if(CurrentForm == CUSTOM_FORM)
+            else if (CurrentForm == CUSTOM_FORM)
             {
                 return customForm.CheckPriority(Priority);
             }
-            else if(CurrentForm == DEFAULT_FORM)
+            else if (CurrentForm == DEFAULT_FORM)
             {
                 return defaultForm.CheckPriority(Priority);
             }
@@ -460,7 +460,7 @@ namespace Display
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
-                    defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority);
+                    defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority, Duration: e.Duration * 1000);
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
@@ -495,26 +495,26 @@ namespace Display
                     customForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                     customForm.Show_TextOverlay(e.TextContent, e.ColorValue, e.Duration * 1000);
                 }
-                else if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+                else if (e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
-                    customForm.ShowText(e.Title, e.Text, e.ScheduleId, e.Priority);
+                    customForm.ShowText(e.Title, e.Text, e.ScheduleId, e.Priority, Duration: e.Duration * 1000);
                 }
             }
         }
         private void ScheduleHandle_NotifyTime2Delete(object sender, NotifyTime2Delete e)
         {
             if (CurrentForm == STREAM_FORM) return;
-            else if(CurrentForm == DEFAULT_FORM)
+            else if (CurrentForm == DEFAULT_FORM)
             {
                 defaultForm.Close_by_Id(e.ScheduleId);
             }
-            else if(CurrentForm == CUSTOM_FORM)
+            else if (CurrentForm == CUSTOM_FORM)
             {
                 customForm.Close_by_Id(e.ScheduleId);
             }
 
-            if(e.DeleteSavedFile == true) DeleteFile_in_Database(e.ScheduleId);
+            if (e.DeleteSavedFile == true) DeleteFile_in_Database(e.ScheduleId);
         }
         private void DeleteFile_in_Database(string ScheduleId)
         {
@@ -618,9 +618,9 @@ namespace Display
             List<Group> GroupsList = new List<Group>();
 
             List<DataUser_Groups_Info> GroupsInfo = SqLiteDataAccess.Load_Groups_Info();
-            if(GroupsInfo != null)
+            if (GroupsInfo != null)
             {
-                foreach(var groupInfo in GroupsInfo)
+                foreach (var groupInfo in GroupsInfo)
                 {
                     Group gr = new Group();
                     gr.Id = groupInfo.GroupId;
@@ -691,7 +691,7 @@ namespace Display
                                             ref pingMessage.Scst, ref pingMessage.Spk,
                                             ref pingMessage.Vl2);
             }
-            else if(CurrentForm == STREAM_FORM)
+            else if (CurrentForm == STREAM_FORM)
             {
                 streamForm.GetStreamInfo(ref pingMessage.Stmt, ref pingMessage.Stlk,
                                          ref pingMessage.Stst, ref pingMessage.Spk, ref pingMessage.Vl2);
@@ -750,8 +750,8 @@ namespace Display
                                 Add_UserControl(defaultForm);
                                 CurrentForm = DEFAULT_FORM;
                             }
-                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao,"", _TxtThongBao);
-                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan,"", _TxtVanBan);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", _TxtThongBao);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", _TxtVanBan);
                             defaultForm.ShowVideo(_VideoUrl, "");
                             //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
@@ -762,7 +762,7 @@ namespace Display
                         //Log.Information("ProcessNewMessage: {A}", message);
                         dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                        if(payload.Message.Groups != null)
+                        if (payload.Message.Groups != null)
                         {
                             Log.Information("Get_NewMessage: DeviceConfigMessage");
                             string s = JsonConvert.SerializeObject(payload.Message);
@@ -818,7 +818,7 @@ namespace Display
                             scheduleHandle.Schedule(newSchedule_msg, Priority);
                         }
                         // Stream Command
-                        else if(payload.Message.StreamInfo != null)
+                        else if (payload.Message.StreamInfo != null)
                         {
                             string s = JsonConvert.SerializeObject(payload.Message);
                             StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
@@ -828,9 +828,9 @@ namespace Display
 
                             if (StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
                             {
-                                if(StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
+                                if (StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
                                 {
-                                    if(_isRelayOpened == false)
+                                    if (_isRelayOpened == false)
                                     {
                                         // Bat man hinh
                                         OpenRelay();
@@ -839,7 +839,7 @@ namespace Display
                                     Add_UserControl(streamForm);
                                     CurrentForm = STREAM_FORM;
                                 }
-                                else if(StreamCmd.CmdCode == commandCode.CMD_STREAM_START)
+                                else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_START)
                                 {
                                     CloseCurrentForm();
                                     Add_UserControl(streamForm);
@@ -847,9 +847,9 @@ namespace Display
 
                                     streamForm.ShowLiveStream(StreamCmd.StreamInfo.Uri, StreamCmd.Volume, StreamCmd.MasterImei);
                                 }
-                                else if(StreamCmd.CmdCode == commandCode.CMD_STREAM_STOP)
+                                else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_STOP)
                                 {
-                                    if(CurrentForm == STREAM_FORM)
+                                    if (CurrentForm == STREAM_FORM)
                                     {
                                         streamForm.Close();
                                         panelContainer.Controls.Clear();
@@ -874,11 +874,11 @@ namespace Display
             {
                 defaultForm.Close();
             }
-            else if(CurrentForm == CUSTOM_FORM)
+            else if (CurrentForm == CUSTOM_FORM)
             {
                 customForm.Close();
             }
-            else if(CurrentForm == STREAM_FORM)
+            else if (CurrentForm == STREAM_FORM)
             {
                 streamForm.Close();
             }
@@ -936,6 +936,9 @@ namespace Display
             Timer_MQTT.Start();
 
             scheduleHandle.Load_ScheduleMessageInfo();
+            ComputerRestart_Handle(2.0);
+            ComputerRestart_Handle(3.0);
+            ComputerRestart_Handle(4.0);
         }
 
         private void Timer_FindComPort_Tick(object sender, EventArgs e)
@@ -1006,6 +1009,69 @@ namespace Display
         {
             //Uart2Com.SendPacket(Uart2Com.GetChanelFree(), PingPacket, PingPacket.Length);
             Uart2Com.Send(PingPacket, PingPacket.Length);
+        }
+
+        //*****************************************************************************************************************
+        //************************************************** Restart Computer **************************************************//
+
+        private void ComputerRestart_Handle(double Hour)
+        {
+            if (Hour < 0 || Hour > 24) return;
+            try
+            {
+                var t = new System.Threading.Timer(TimerRestart_Callback);
+
+                // Figure how much time until 2:00 AM
+                DateTime now = DateTime.Now;
+                DateTime fourOClock = DateTime.Today.AddHours(Hour);
+
+                // If it's already past 2:00, wait until 2:00 tomorrow    
+                if (now > fourOClock)
+                {
+                    fourOClock = fourOClock.AddDays(1.0);
+                }
+
+                int msUntilFour = (int)((fourOClock - now).TotalMilliseconds);
+
+                // Set the timer to elapse only once, at 2:00.
+                t.Change(msUntilFour, System.Threading.Timeout.Infinite);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "ComputerRestart");
+            }
+        }
+        private void TimerRestart_Callback(object state)
+        {
+            if (CheckMessage_Available() == true)
+            {
+                Timer t = (Timer)state;
+                t.Stop();
+                t.Dispose();
+                return;
+            }
+            else
+            {
+                // Computer Restart
+                System.Diagnostics.Process.Start("shutdown.exe", "-r -t 0");
+            }
+        }
+
+        private bool CheckMessage_Available()
+        {
+            if (CurrentForm == DEFAULT_FORM)
+            {
+                return defaultForm.CheckMessage_Available();
+            }
+            else if (CurrentForm == CUSTOM_FORM)
+            {
+                return customForm.CheckMessage_Available();
+            }
+            else if (CurrentForm == STREAM_FORM)
+            {
+                return true;
+            }
+            return false;
         }
     }
 

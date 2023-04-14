@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Display
@@ -18,6 +12,8 @@ namespace Display
         System.Windows.Forms.Timer tmrDelay_TextRun;
         int locationY, speed, height, maxPosition;
         bool enableScrollPanel = false;
+
+        private bool _isStop_WaitTextRun = false;
 
         public PanelEx()
         {
@@ -79,6 +75,8 @@ namespace Display
             enableScrollPanel = true;
             maxPosition = Length_Text_Inside;
 
+            _isStop_WaitTextRun = false;
+
             if (maxPosition < height)
             {
                 SetSpeed = 0;
@@ -128,6 +126,13 @@ namespace Display
                 }
 
                 State = STOPPED;
+            }
+        }
+        public void Stop_WaitTextRun()
+        {
+            if (State == RUNNING)
+            {
+                _isStop_WaitTextRun = true;
             }
         }
         private void Thread_Start()
@@ -194,6 +199,11 @@ namespace Display
                     // Running on the UI thread
                     if (this.Location.Y < -maxPosition)
                     {
+                        if (_isStop_WaitTextRun == true)
+                        {
+                            Stop();
+                            return;
+                        }
                         this.Size = new Size(Width, height);
                         this.Location = new Point(this.Location.X, height);
                     }

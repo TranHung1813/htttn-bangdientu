@@ -189,7 +189,7 @@ namespace Display
             }
             return TimesList_Return;
         }
-        private async Task<int> Duration_Calculate(string url)
+        private async Task<Task<int>> Duration_Calculate(string url)
         {
             int Duration = 0;
             Core.Initialize();
@@ -213,9 +213,7 @@ namespace Display
                 Log.Error(ex, "Duration_Calculate: {A}", url);
             }
 
-            //await Task.Delay(5000);
-
-            return tcs.Task.Result;
+            return tcs.Task;
         }
         private void NotifyPlay(ScheduleMsg_Type message)
         {
@@ -299,14 +297,34 @@ namespace Display
 
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
-
-        private void ValidTime_Handle(ScheduleMsg_Type message)
+        static async Task<T> DelayedTimeoutExceptionTask<T>(TimeSpan delay)
+        {
+            await Task.Delay(delay);
+            throw new TimeoutException();
+        }
+        static async Task<T> TaskWithTimeoutAndException<T>( Task<T> task, TimeSpan timeout)
+        {
+            return await await Task.WhenAny(
+                task, DelayedTimeoutExceptionTask<T>(timeout));
+        }
+        private async void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo && message.msg.Duration == 0)
             {
-                message.msg.Duration = Duration_Calculate(message.msg.Songs[0]).Result;
+                int timeout = 5000;
+                Task<int> task = Duration_Calculate(message.msg.Songs[0]).Result;
+                if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
+                {
+                    // task completed within timeout
+                    message.msg.Duration = task.Result;
+                }
+                else
+                {
+                    // timeout logic
+                    Log.Error("Get Video Duration Timeout: {A}ms", timeout);
+                }
             }
 
             if (message.msg.From <= CurrentTime)
@@ -334,7 +352,7 @@ namespace Display
                         if ((CurrentTime - message.msg.From) < message.msg.Duration)
                         {
                             // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
-                            int Duration = (int)(CurrentTime - message.msg.From);
+                            int Duration = message.msg.Duration - (int)(CurrentTime - message.msg.From);
                             OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
                                                message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
                         }

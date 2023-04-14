@@ -1,14 +1,14 @@
 ﻿
 namespace Display
 {
-    partial class Page_Text
+    partial class Form_Text
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -21,60 +21,33 @@ namespace Display
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #region Windows Form Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.panelContainer = new System.Windows.Forms.Panel();
             this.panel_TextRun = new Display.PanelEx();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lb_Content = new Display.GrowLabel();
             this.lb_Title = new Display.GrowLabel();
-            this.panelContainer.SuspendLayout();
             this.panel_TextRun.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // panelContainer
-            // 
-            this.panelContainer.BackColor = System.Drawing.Color.MistyRose;
-            this.panelContainer.Controls.Add(this.panel_TextRun);
-            this.panelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelContainer.Location = new System.Drawing.Point(0, 0);
-            this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(920, 420);
-            this.panelContainer.TabIndex = 1;
             // 
             // panel_TextRun
             // 
-            this.panel_TextRun.Controls.Add(this.pictureBox1);
             this.panel_TextRun.Controls.Add(this.lb_Content);
             this.panel_TextRun.Controls.Add(this.lb_Title);
             this.panel_TextRun.Location = new System.Drawing.Point(0, 0);
             this.panel_TextRun.Name = "panel_TextRun";
             this.panel_TextRun.SetSpeed = 0;
             this.panel_TextRun.Size = new System.Drawing.Size(920, 420);
-            this.panel_TextRun.TabIndex = 3;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(120, 70);
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Visible = false;
+            this.panel_TextRun.TabIndex = 4;
             // 
             // lb_Content
             // 
-            this.lb_Content.BackColor = System.Drawing.Color.Transparent;
+            this.lb_Content.BackColor = System.Drawing.Color.MistyRose;
             this.lb_Content.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.lb_Content.ForeColor = System.Drawing.Color.Navy;
             this.lb_Content.Location = new System.Drawing.Point(3, 93);
@@ -87,7 +60,7 @@ namespace Display
             // 
             // lb_Title
             // 
-            this.lb_Title.BackColor = System.Drawing.Color.Transparent;
+            this.lb_Title.BackColor = System.Drawing.Color.MistyRose;
             this.lb_Title.Dock = System.Windows.Forms.DockStyle.Top;
             this.lb_Title.Font = new System.Drawing.Font("Times New Roman", 20F, System.Drawing.FontStyle.Bold);
             this.lb_Title.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -99,28 +72,24 @@ namespace Display
     " trung đông người trên địa bàn thị trấn Bến Lức\" Để chủ động kiểm soát, ngăn chặ" +
     "n dịch bệnh Covid-19 gây ra.";
             this.lb_Title.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.lb_Title.SizeChanged += new System.EventHandler(this.lb_Title_SizeChanged);
-            this.lb_Title.TextChanged += new System.EventHandler(this.lb_Title_TextChanged);
             // 
-            // Page_Text
+            // Form_Text
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.Black;
-            this.Controls.Add(this.panelContainer);
-            this.Name = "Page_Text";
-            this.Size = new System.Drawing.Size(920, 420);
-            this.panelContainer.ResumeLayout(false);
+            this.BackColor = System.Drawing.Color.MistyRose;
+            this.ClientSize = new System.Drawing.Size(920, 420);
+            this.Controls.Add(this.panel_TextRun);
+            this.Name = "Form_Text";
+            this.Text = "Form_Text";
             this.panel_TextRun.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private System.Windows.Forms.Panel panelContainer;
-        private GrowLabel lb_Title;
-        private GrowLabel lb_Content;
+
         private PanelEx panel_TextRun;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private GrowLabel lb_Content;
+        private GrowLabel lb_Title;
     }
 }

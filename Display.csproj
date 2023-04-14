@@ -229,6 +229,12 @@
     <Compile Include="TextOverlay\Frm_TextOverlay.Designer.cs">
       <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Form_Text.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserControls\Form_Text.Designer.cs">
+      <DependentUpon>Form_Text.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Page_Image.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -260,6 +266,9 @@
     <EmbeddedResource Include="Options_MainForm\LiveStreamForm.resx">
       <DependentUpon>LiveStreamForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PerPixelAlphaForm.resx">
+      <DependentUpon>PerPixelAlphaForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TextOverlay\Transparent_BackGround.resx">
       <DependentUpon>Transparent_BackGround.cs</DependentUpon>
     </EmbeddedResource>
@@ -284,6 +293,9 @@
     </Compile>
     <EmbeddedResource Include="TextOverlay\Frm_TextOverlay.resx">
       <DependentUpon>Frm_TextOverlay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Form_Text.resx">
+      <DependentUpon>Form_Text.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Page_Image.resx">
       <DependentUpon>Page_Image.cs</DependentUpon>

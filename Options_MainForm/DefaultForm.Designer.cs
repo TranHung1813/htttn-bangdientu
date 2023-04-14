@@ -44,6 +44,7 @@ namespace Display
             this.label2 = new System.Windows.Forms.Label();
             this.Timer_AutoHideScreen = new System.Windows.Forms.Timer(this.components);
             this.panel3 = new System.Windows.Forms.Panel();
+            this.picBox_Image = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             this.panelThongBao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -52,6 +53,7 @@ namespace Display
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picBox_Image)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -177,11 +179,23 @@ namespace Display
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Black;
+            this.panel3.Controls.Add(this.picBox_Image);
             this.panel3.Controls.Add(this.videoView1);
             this.panel3.Location = new System.Drawing.Point(505, 139);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(531, 529);
             this.panel3.TabIndex = 9;
+            // 
+            // picBox_Image
+            // 
+            this.picBox_Image.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picBox_Image.Location = new System.Drawing.Point(0, 0);
+            this.picBox_Image.Name = "picBox_Image";
+            this.picBox_Image.Size = new System.Drawing.Size(531, 529);
+            this.picBox_Image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picBox_Image.TabIndex = 7;
+            this.picBox_Image.TabStop = false;
+            this.picBox_Image.Visible = false;
             // 
             // DefaultForm
             // 
@@ -203,6 +217,7 @@ namespace Display
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.picBox_Image)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -221,5 +236,6 @@ namespace Display
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Timer Timer_AutoHideScreen;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.PictureBox picBox_Image;
     }
 }

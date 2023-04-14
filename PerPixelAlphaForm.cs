@@ -23,7 +23,7 @@ namespace CSWinFormLayeredWindow
 
         void PerPixelAlphaForm_Load(object sender, EventArgs e)
         {
-            this.TopMost = true;
+            //this.TopMost = true;
         }
         protected override CreateParams CreateParams
         {
@@ -205,5 +205,18 @@ namespace CSWinFormLayeredWindow
         static extern bool DeleteObject(IntPtr hObject);
 
         #endregion
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // PerPixelAlphaForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "PerPixelAlphaForm";
+            this.TopMost = true;
+            this.ResumeLayout(false);
+
+        }
     }
 }

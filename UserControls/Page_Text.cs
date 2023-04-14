@@ -13,16 +13,29 @@ namespace Display
         //                      "- Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.";
         private const int MAXVALUE = 1000 * 1000 * 1000;
 
+        System.Timers.Timer Duration_VanBan_Tmr;
+
         private bool _is_ThongBaoAvailable = false;
         private bool _is_VanBanAvailable = false;
-        public int _Priority_VanBan = 1000;
-        public string ScheduleID_VanBan = "";
+
+        public Form_Text form_Text = new Form_Text();
+
         public Page_Text()
         {
             InitializeComponent();
             lb_Title.Text = "";
             lb_Content.Text = "";
             pictureBox1.Visible = false;
+
+            Duration_VanBan_Tmr = new System.Timers.Timer();
+            AutoHideScreen_Check();
+            this.Dock = DockStyle.None;
+            form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
+        }
+
+        private void Form_Text_NotifyEndProcess_TextRun(object sender, NotifyTextEndProcess e)
+        {
+            this.Visible = false;
         }
 
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
@@ -51,7 +64,7 @@ namespace Display
                 try
                 {
                     lb_Content.Text = Text;
-                    lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 6);
+                    lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 12);
                     if (ColorValue != "") lb_Content.ForeColor = ColorTranslator.FromHtml(ColorValue);
                 }
                 catch (Exception ex)
@@ -81,29 +94,11 @@ namespace Display
                 _is_VanBanAvailable = true;
             }
         }
-        public void ShowText(string Title, string Content, string ScheduleId, int Priority)
+        public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
-            if (lb_Content.Text == Content && lb_Title.Text == Title) return;
-            try
-            {
-                lb_Title.Text = Title.Trim().ToUpper() + "\n";
-                lb_Content.Text = Content;
-                lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 6);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
-            }
-
-            panel_TextRun.SetSpeed = 1;
-            int Text_Height = lb_Title.Height + lb_Content.Height;
-            panel_TextRun.Start(Text_Height, 10000);
-
-            _is_ThongBaoAvailable = true;
-            _is_VanBanAvailable = true;
-            _Priority_VanBan = Priority;
-            ScheduleID_VanBan = ScheduleId;
+            this.Visible = true;
+            form_Text.SetSpeed = 1;
+            form_Text.ShowText(Title, Content, ScheduleId, Priority, Duration);
         }
         public Bitmap ConvertTextToImage(Control control)
         {
@@ -123,8 +118,6 @@ namespace Display
                 graphics.Flush();
                 font.Dispose();
                 graphics.Dispose();
-
-
             }
             return bmp;
         }
@@ -198,6 +191,28 @@ namespace Display
             }
             return result.TrimEnd(new[] { '\n' });
         }
+        public static String Justify(String s, Int32 count)
+        {
+            if (count <= 0)
+                return s;
+
+            Int32 middle = s.Length / 2;
+            IDictionary<Int32, Int32> spaceOffsetsToParts = new Dictionary<Int32, Int32>();
+            String[] parts = s.Split(' ');
+            for (Int32 partIndex = 0, offset = 0; partIndex < parts.Length; partIndex++)
+            {
+                spaceOffsetsToParts.Add(offset, partIndex);
+                offset += parts[partIndex].Length + 1; // +1 to count space that was removed by Split
+            }
+            foreach (var pair in spaceOffsetsToParts.OrderBy(entry => Math.Abs(middle - entry.Key)))
+            {
+                count--;
+                if (count < 0)
+                    break;
+                parts[pair.Value] += ' ';
+            }
+            return String.Join(" ", parts);
+        }
         private string Justify(string text, Font font, int width)
         {
             char SpaceChar = (char)0x200A;
@@ -240,20 +255,23 @@ namespace Display
         {
             //lb_Title.Text = "";
             //lb_Content.Text = "";
-            panel_TextRun.Stop();
-            try
+            //panel_TextRun.Stop();
+            form_Text.CloseForm();
+
+            if (Duration_VanBan_Tmr != null)
             {
-                //timerDelayTextRun.Stop();
+                Duration_VanBan_Tmr.Stop();
+                Duration_VanBan_Tmr.Dispose();
             }
-            catch { }
 
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
-            _Priority_VanBan = 1000;
+            AutoHideScreen_Check();
         }
         public void PageText_FitToContainer(int Height, int Width)
         {
             Utility.FitUserControlToContainer(this, Height, Width);
+            form_Text.PageText_FitToContainer(Height, Width);
         }
 
         private void lb_Title_TextChanged(object sender, EventArgs e)
@@ -266,20 +284,16 @@ namespace Display
             lb_Content.Location = new Point(lb_Content.Location.X, lb_Title.Height);
         }
 
-        private void Timer_AutoHideScreen_Tick(object sender, EventArgs e)
-        {
-            if (_is_ThongBaoAvailable == false && _is_VanBanAvailable == false)
-            {
-                this.Visible = false;
-            }
-            else
-            {
-                this.Visible = true;
-            }
-        }
         public void Test()
         {
             //panel1.BackColor = Color.FromArgb(100, 0, 0, 0);
+        }
+        private void AutoHideScreen_Check()
+        {
+            if (_is_VanBanAvailable == false)
+            {
+                this.Visible = false;
+            }
         }
     }
     public class GrowLabel : Label

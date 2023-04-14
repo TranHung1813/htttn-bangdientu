@@ -74,6 +74,31 @@ namespace Display
 
             CloseTextOverlay();
         }
+
+        public bool CheckMessage_Available()
+        {
+            bool returnValue = true;
+            switch (TabPageID)
+            {
+                case PAGE_IMAGE:
+                    returnValue = page_Image._is_ImageAvailable;
+                    break;
+
+                case PAGE_TEXT:
+                    returnValue =  page_Text.form_Text._is_VanBanAvailable;
+                    break;
+
+                case PAGE_VIDEO:
+                    returnValue = page_VideoScreen._is_VideoAvailable;
+                    break;
+
+                case PAGE_MULTI_IMAGE:
+                    returnValue = false;
+                    break;
+            }
+
+            return returnValue;
+        }
         private void CloseTextOverlay()
         {
             if (frm_TextOverlay != null)
@@ -118,7 +143,7 @@ namespace Display
 
                 case PAGE_TEXT:
                     //guna2Transition1.HideSync(panel_Text);
-                    if(panel != panel_Text) page_Text.Close();
+                    page_Text.Close();
                     panel_Text.Visible = false;
 
                     break;
@@ -171,13 +196,13 @@ namespace Display
             page_Text.ShowText(ScheduleType, Text, ColorValue);
             TabPageID = PAGE_TEXT;
         }
-        public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0)
+        public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             panel_Text.Visible = false;
 
             page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
             ShowPanel(panel_Text, page_Text);
-            page_Text.ShowText(Title, Content, ScheduleId, Priority);
+            page_Text.ShowText(Title, Content, ScheduleId, Priority, Duration);
             TabPageID = PAGE_TEXT;
         }
         public void ShowImage(string ImageURL, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
@@ -276,7 +301,7 @@ namespace Display
 
                 case PAGE_TEXT:
                     //guna2Transition1.HideSync(panel_Text);
-                    if(page_Text.ScheduleID_VanBan == ScheduleId)
+                    if(page_Text.form_Text.ScheduleID_VanBan == ScheduleId)
                     {
                         Log.Information("Ban tin Van Ban het thoi gian Valid!");
                         page_Text.Close();
@@ -312,7 +337,7 @@ namespace Display
                     break;
 
                 case PAGE_TEXT:
-                    if (page_Text._Priority_VanBan < Priority)
+                    if (page_Text.form_Text._Priority_VanBan < Priority)
                     {
                         return false;
                     }
