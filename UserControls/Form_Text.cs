@@ -126,6 +126,11 @@ namespace Display
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
 
+            this.Show();
+            this.Activate();
+            this.BringToFront();
+            this.Focus();
+
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {
@@ -299,8 +304,8 @@ namespace Display
         }
         public void CloseForm()
         {
-            //lb_Title.Text = "";
-            //lb_Content.Text = "";
+            lb_Title.Text = "";
+            lb_Content.Text = "";
             panel_TextRun.Stop();
 
             if (Duration_VanBan_Tmr != null)

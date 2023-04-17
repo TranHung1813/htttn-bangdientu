@@ -297,16 +297,7 @@ namespace Display
 
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
-        static async Task<T> DelayedTimeoutExceptionTask<T>(TimeSpan delay)
-        {
-            await Task.Delay(delay);
-            throw new TimeoutException();
-        }
-        static async Task<T> TaskWithTimeoutAndException<T>( Task<T> task, TimeSpan timeout)
-        {
-            return await await Task.WhenAny(
-                task, DelayedTimeoutExceptionTask<T>(timeout));
-        }
+
         private async void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

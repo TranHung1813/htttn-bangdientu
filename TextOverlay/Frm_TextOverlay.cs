@@ -21,6 +21,19 @@ namespace Display
         private const int MAXVALUE = 1000 * 1000 * 1000;
 
         private int MaxPosition = 0;
+        //protected override CreateParams CreateParams
+        //{
+        //    get
+        //    {
+        //        CreateParams baseParams = base.CreateParams;
+
+        //        const int WS_EX_NOACTIVATE = 0x08000000;
+        //        const int WS_EX_TOOLWINDOW = 0x00000080;
+        //        baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
+
+        //        return baseParams;
+        //    }
+        //}
         public Frm_TextOverlay()
         {
             InitializeComponent();

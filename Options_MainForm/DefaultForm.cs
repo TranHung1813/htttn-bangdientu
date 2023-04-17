@@ -142,7 +142,9 @@ namespace Display
             _is_VideoAvailable = true;
             _ScheduleID_Video = ScheduleID;
             _Priority_Video = Priority;
-            if (picBox_Image.Visible == true) picBox_Image.Visible = false;
+
+            picBox_Image.Visible = false;
+            videoView1.Visible = true;
             this.Visible = true;
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
@@ -285,12 +287,14 @@ namespace Display
             }
             return true;
         }
-        public void Close()
+        public void CloseForm()
         {
             try
             {
                 txtThongBao.Text = "";
                 txtVanBan.Text = "";
+                pictureBox1.Visible = false;
+                pictureBox2.Visible = false;
                 panelThongBao.Stop();
                 panelVanBan.Stop();
 
@@ -402,6 +406,7 @@ namespace Display
                 {
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
+                    pictureBox1.Visible = false;
 
                     if (Duration_ThongBao_Tmr != null)
                     {
@@ -422,6 +427,7 @@ namespace Display
                 {
                     panelVanBan.Stop();
                     txtVanBan.Text = "";
+                    pictureBox2.Visible = false;
 
                     if (Duration_VanBan_Tmr != null)
                     {
@@ -449,11 +455,22 @@ namespace Display
             {
                 if (_Priority_ThongBao < Priority) return;
                 if (txtThongBao.Text == Content) return;
+
                 try
                 {
                     txtThongBao.Text = Content.Trim().ToUpper();
                     if (ColorValue != "") txtThongBao.ForeColor = ColorTranslator.FromHtml(ColorValue);
-                    //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
+                    txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
+
+
+                    //string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
+                    Font font = new Font(txtThongBao.Font.Name, txtThongBao.Font.Size);
+                    pictureBox1.Width = panel1.Width;
+                    pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(txtThongBao.Text, font, panel1.Width).Height * 1.3);
+                    //pictureBox1.Image = ConvertTextToImage(txtThongBao.Text, font, panel1.BackColor, txtThongBao.ForeColor, pictureBox1.Width, pictureBox1.Height);
+                    pictureBox1.Image = ConvertTextToImage(txtThongBao);
+                    txtThongBao.Visible = false;
+                    pictureBox1.Visible = true;
                 }
                 catch (Exception ex)
                 {
@@ -466,6 +483,7 @@ namespace Display
                     // Stop Media
                     panelThongBao.Stop_WaitTextRun();
                     txtThongBao.Text = "";
+                    pictureBox1.Visible = false;
                     _is_ThongBaoAvailable = false;
                     AutoHideScreen_Check();
                     _Priority_ThongBao = 1000;
@@ -491,6 +509,15 @@ namespace Display
                     txtVanBan.Text = Content;
                     txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panelVanBan.Width - 6);
                     if (ColorValue != "") txtVanBan.ForeColor = ColorTranslator.FromHtml(ColorValue);
+
+                    //string _Text2 = "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).";
+                    Font font2 = new Font(txtVanBan.Font.Name, txtVanBan.Font.Size);
+                    pictureBox2.Width = panel2.Width;
+                    pictureBox2.Height = (int)(this.CreateGraphics().MeasureString(txtVanBan.Text, font2, panel2.Width).Height * 1.3);
+                    //pictureBox2.Image = ConvertTextToImage(txtVanBan.Text, font2, panel2.BackColor, txtVanBan.ForeColor, pictureBox2.Width, pictureBox2.Height);
+                    pictureBox2.Image = ConvertTextToImage(txtVanBan);
+                    pictureBox2.Visible = true;
+                    txtVanBan.Visible = false;
                 }
                 catch (Exception ex)
                 {
@@ -503,6 +530,7 @@ namespace Display
                     // Stop Media
                     panelVanBan.Stop_WaitTextRun();
                     txtVanBan.Text = "";
+                    pictureBox2.Visible = false;
                     _is_VanBanAvailable = false;
                     AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
@@ -520,10 +548,7 @@ namespace Display
                 this.Visible = true;
             }
 
-            pictureBox1.Visible = false;
-            pictureBox2.Visible = false;
-
-            ////string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
+            //string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
             //Font font = new Font(txtThongBao.Font.Name, txtThongBao.Font.Size);
             //pictureBox1.Width = panel1.Width;
             //pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(txtThongBao.Text, font, panel1.Width).Height * 1.3);
@@ -547,6 +572,9 @@ namespace Display
             _Priority_Image = Priority;
             picBox_Image.Image = null;
             picBox_Image.Visible = true;
+            videoView1.Visible = false;
+
+
             DownloadAsync_Image(Url, ScheduleId);
 
             // Duration Handle
@@ -659,10 +687,13 @@ namespace Display
             if (WordsList.Capacity < 2)
                 return text;
 
-            int NumberOfWords = WordsList.Capacity - 1;
-            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width;
-            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[0] + SpaceChar, font).Width
-                               - TextRenderer.MeasureText(WordsList[0], font).Width;
+            // First space handle
+            int NumberFirstSpace = text.TakeWhile(c => char.IsWhiteSpace(c)).Count();
+
+            int NumberOfWords = WordsList.Capacity - 1 - NumberFirstSpace;
+            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[NumberFirstSpace] + SpaceChar, font).Width
+                               - TextRenderer.MeasureText(WordsList[NumberFirstSpace], font).Width;
+            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width + NumberFirstSpace * SpaceCharWidth * 4;
 
             //Calculate the average spacing between each word minus the last one 
             int AverageSpace = ((width - WordsWidth) / NumberOfWords) / SpaceCharWidth;
@@ -679,12 +710,19 @@ namespace Display
 
                 foreach (string Word in WordsList)
                 {
-                    AdjustedWords += Word + Spaces;
-                    //Adjust the spacing if there's a reminder
-                    if (AdjustSpace > 0)
+                    if (Word == "")
                     {
-                        AdjustedWords += SpaceChar;
-                        AdjustSpace -= SpaceCharWidth;
+                        AdjustedWords += Word + SpaceChar + SpaceChar + SpaceChar + SpaceChar;
+                    }
+                    else
+                    {
+                        AdjustedWords += Word + Spaces;
+                        //Adjust the spacing if there's a reminder
+                        if (AdjustSpace > 0)
+                        {
+                            AdjustedWords += SpaceChar;
+                            AdjustSpace -= SpaceCharWidth;
+                        }
                     }
                 }
                 return AdjustedWords.TrimEnd();
