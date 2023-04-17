@@ -289,7 +289,7 @@ namespace Display
                     // Chuyển sang Form Default
                     if (CurrentForm != DEFAULT_FORM)
                     {
-                        customForm.Close();
+                        customForm.CloseForm();
                         Add_UserControl(defaultForm);
                         CurrentForm = DEFAULT_FORM;
                     }
@@ -299,7 +299,7 @@ namespace Display
                     // Chuyển sang Form Custom
                     if (CurrentForm != CUSTOM_FORM)
                     {
-                        defaultForm.Close();
+                        defaultForm.CloseForm();
                         Add_UserControl(customForm);
                         CurrentForm = CUSTOM_FORM;
                         //customForm.ShowText(_TxtThongBao, _TxtVanBan);
@@ -458,7 +458,8 @@ namespace Display
                 // Chuyển sang Form Default
                 if (CurrentForm != DEFAULT_FORM)
                 {
-                    customForm.Close();
+                    //defaultForm.CloseForm();
+                    customForm.CloseForm();
                     Add_UserControl(defaultForm);
                     CurrentForm = DEFAULT_FORM;
                 }
@@ -483,7 +484,7 @@ namespace Display
                 // Chuyển sang Form Custom
                 if (CurrentForm != CUSTOM_FORM)
                 {
-                    defaultForm.Close();
+                    defaultForm.CloseForm();
                     Add_UserControl(customForm);
                     CurrentForm = CUSTOM_FORM;
                 }
@@ -751,7 +752,7 @@ namespace Display
                             // Chuyển sang Form Default
                             if (CurrentForm != DEFAULT_FORM)
                             {
-                                customForm.Close();
+                                customForm.CloseForm();
                                 Add_UserControl(defaultForm);
                                 CurrentForm = DEFAULT_FORM;
                             }
@@ -856,7 +857,7 @@ namespace Display
                                 {
                                     if (CurrentForm == STREAM_FORM)
                                     {
-                                        streamForm.Close();
+                                        streamForm.CloseForm();
                                         panelContainer.Controls.Clear();
 
                                         CurrentForm = 0;
@@ -877,15 +878,15 @@ namespace Display
         {
             if (CurrentForm == DEFAULT_FORM)
             {
-                defaultForm.Close();
+                defaultForm.CloseForm();
             }
             else if (CurrentForm == CUSTOM_FORM)
             {
-                customForm.Close();
+                customForm.CloseForm();
             }
             else if (CurrentForm == STREAM_FORM)
             {
-                streamForm.Close();
+                streamForm.CloseForm();
             }
         }
 

@@ -45,7 +45,7 @@ namespace Display
             panel_Image = new PanelContainer(this);
             panel_Multi_Image = new PanelContainer(this);
         }
-        public void Close()
+        public void CloseForm()
         {
             switch (TabPageID)
             {
