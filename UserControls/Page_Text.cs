@@ -18,9 +18,7 @@ namespace Display
         private bool _is_ThongBaoAvailable = false;
         private bool _is_VanBanAvailable = false;
 
-        private int ContainerHeight, ContainerWidth;
-
-        public Form_Text form_Text;
+        public Form_Text form_Text = new Form_Text();
 
         public Page_Text()
         {
@@ -32,6 +30,7 @@ namespace Display
             Duration_VanBan_Tmr = new System.Timers.Timer();
             AutoHideScreen_Check();
             this.Dock = DockStyle.None;
+            form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
         }
 
         private void Form_Text_NotifyEndProcess_TextRun(object sender, NotifyTextEndProcess e)
@@ -98,10 +97,6 @@ namespace Display
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             this.Visible = true;
-
-            form_Text = new Form_Text();
-            form_Text.PageText_FitToContainer(ContainerHeight, ContainerWidth);
-            form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
             form_Text.SetSpeed = 1;
             form_Text.ShowText(Title, Content, ScheduleId, Priority, Duration);
         }
@@ -261,12 +256,7 @@ namespace Display
             //lb_Title.Text = "";
             //lb_Content.Text = "";
             //panel_TextRun.Stop();
-            if (form_Text != null)
-            {
-                form_Text.CloseForm();
-                form_Text.NotifyEndProcess_TextRun -= Form_Text_NotifyEndProcess_TextRun;
-                form_Text.Close();
-            }
+            form_Text.CloseForm();
 
             if (Duration_VanBan_Tmr != null)
             {
@@ -281,8 +271,7 @@ namespace Display
         public void PageText_FitToContainer(int Height, int Width)
         {
             Utility.FitUserControlToContainer(this, Height, Width);
-            ContainerHeight = Height;
-            ContainerWidth = Width;
+            form_Text.PageText_FitToContainer(Height, Width);
         }
 
         private void lb_Title_TextChanged(object sender, EventArgs e)

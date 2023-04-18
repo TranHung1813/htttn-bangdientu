@@ -194,7 +194,7 @@ namespace Display
                 Thread.Sleep(40);
                 if (!enableScrollPanel) continue;
 
-                try
+                this.Invoke((MethodInvoker)delegate
                 {
                     // Running on the UI thread
                     if (this.Location.Y < -maxPosition)
@@ -212,8 +212,7 @@ namespace Display
                     Height += speed;
                     //position -= speed;
                     Invalidate();
-                }
-                catch { }
+                });
             }
         }
 

@@ -121,7 +121,7 @@ namespace Display
             Volume = _mp.Volume;
         }
 
-        public void CloseForm()
+        public void Close()
         {
             Task.Run(() =>
             {

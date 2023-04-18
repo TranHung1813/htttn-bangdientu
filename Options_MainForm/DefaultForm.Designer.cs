@@ -33,8 +33,8 @@ namespace Display
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panelThongBao = new Display.PanelEx();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.txtThongBao = new Display.GrowLabel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelVanBan = new Display.PanelEx();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -77,6 +77,17 @@ namespace Display
             this.panelThongBao.Size = new System.Drawing.Size(1030, 121);
             this.panelThongBao.TabIndex = 2;
             // 
+            // txtThongBao
+            // 
+            this.txtThongBao.Font = new System.Drawing.Font("Times New Roman", 28.5F, System.Drawing.FontStyle.Bold);
+            this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
+            this.txtThongBao.Location = new System.Drawing.Point(0, 3);
+            this.txtThongBao.Name = "txtThongBao";
+            this.txtThongBao.Size = new System.Drawing.Size(1030, 215);
+            this.txtThongBao.TabIndex = 4;
+            this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
+            this.txtThongBao.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -88,18 +99,6 @@ namespace Display
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Visible = false;
-            // 
-            // txtThongBao
-            // 
-            this.txtThongBao.Font = new System.Drawing.Font("Times New Roman", 28.5F, System.Drawing.FontStyle.Bold);
-            this.txtThongBao.ForeColor = System.Drawing.Color.DarkRed;
-            this.txtThongBao.Location = new System.Drawing.Point(0, 3);
-            this.txtThongBao.Name = "txtThongBao";
-            this.txtThongBao.Size = new System.Drawing.Size(1030, 215);
-            this.txtThongBao.TabIndex = 4;
-            this.txtThongBao.Text = resources.GetString("txtThongBao.Text");
-            this.txtThongBao.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.txtThongBao.Visible = false;
             // 
             // panel2
             // 
@@ -145,7 +144,6 @@ namespace Display
             this.txtVanBan.Size = new System.Drawing.Size(476, 836);
             this.txtVanBan.TabIndex = 4;
             this.txtVanBan.Text = resources.GetString("txtVanBan.Text");
-            this.txtVanBan.Visible = false;
             // 
             // videoView1
             // 

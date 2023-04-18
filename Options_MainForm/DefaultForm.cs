@@ -287,7 +287,7 @@ namespace Display
             }
             return true;
         }
-        public void CloseForm()
+        public void Close()
         {
             try
             {
@@ -455,13 +455,11 @@ namespace Display
             {
                 if (_Priority_ThongBao < Priority) return;
                 if (txtThongBao.Text == Content) return;
-
                 try
                 {
                     txtThongBao.Text = Content.Trim().ToUpper();
                     if (ColorValue != "") txtThongBao.ForeColor = ColorTranslator.FromHtml(ColorValue);
                     //txtThongBao.Text = JustifyParagraph(txtThongBao.Text, txtThongBao.Font, panelThongBao.Width - 10);
-
 
                     //string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
                     Font font = new Font(txtThongBao.Font.Name, txtThongBao.Font.Size);
@@ -548,7 +546,7 @@ namespace Display
                 this.Visible = true;
             }
 
-            //string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
+            ////string _Text = "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.";
             //Font font = new Font(txtThongBao.Font.Name, txtThongBao.Font.Size);
             //pictureBox1.Width = panel1.Width;
             //pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(txtThongBao.Text, font, panel1.Width).Height * 1.3);
@@ -572,9 +570,6 @@ namespace Display
             _Priority_Image = Priority;
             picBox_Image.Image = null;
             picBox_Image.Visible = true;
-            videoView1.Visible = false;
-
-
             DownloadAsync_Image(Url, ScheduleId);
 
             // Duration Handle
