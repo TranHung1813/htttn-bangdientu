@@ -45,6 +45,7 @@ namespace Display
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Moving_Tmr.Interval = 30;
+            if (_is_VanBanAvailable != true) return;
             if (this.Location.Y < - MaxPosition)
             {
                 if (isValid == false)
@@ -315,6 +316,7 @@ namespace Display
             }
             if (Moving_Tmr != null)
             {
+                Moving_Tmr.Enabled = false;
                 Moving_Tmr.Stop();
             }
             isValid = false;

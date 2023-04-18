@@ -49,7 +49,7 @@ namespace Display
                     if (messages.Count > 1)
                     {
                         messages.RemoveAt(index);
-                        int Id = 0;
+                        int Id = 1;
                         foreach (var msg in messages)
                         {
                             DataUser_ScheduleMessage info_Save = new DataUser_ScheduleMessage();
