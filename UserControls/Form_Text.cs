@@ -44,30 +44,34 @@ namespace Display
 
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Moving_Tmr.Interval = 30;
-            if (_is_VanBanAvailable != true) return;
-            if (this.Location.Y < - MaxPosition)
+            if(Moving_Tmr.Interval != 30) Moving_Tmr.Interval = 30;
+            try
             {
-                if (isValid == false)
+                if (this.Location.Y < -MaxPosition)
                 {
-                    _is_VanBanAvailable = false;
-                    AutoHideScreen_Check();
-                    _Priority_VanBan = 1000;
-                    Log.Information("BanTinVanBan Stop!");
-                    this.BackColor = Color.Black;
-                    OnNotifyEndProcess_TextRun();
+                    if (isValid == false)
+                    {
+                        _is_VanBanAvailable = false;
+                        AutoHideScreen_Check();
+                        _Priority_VanBan = 1000;
+                        Log.Information("BanTinVanBan Stop!");
+                        this.BackColor = Color.Black;
+                        OnNotifyEndProcess_TextRun();
 
-                    Moving_Tmr.Stop();
-                    return;
+                        Moving_Tmr.Stop();
+                        return;
+                    }
+                    this.Location = new Point(this.Location.X, (int)Screen.PrimaryScreen.Bounds.Size.Height);
                 }
-                this.Location = new Point(this.Location.X, (int)Screen.PrimaryScreen.Bounds.Size.Height);
+                this.Location = new Point(this.Location.X, this.Location.Y - speed);
             }
-            this.Location = new Point(this.Location.X, this.Location.Y - speed);
+            catch 
+            { }
         }
 
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            this.Location = new Point(0, 0);
+            this.Location = new Point(0, 3);
             Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
             if (lb_Content.Text == Content && lb_Title.Text == Title) return;
             try
@@ -98,7 +102,10 @@ namespace Display
             }
             else
             {
-                Moving_Tmr.Stop();
+                Moving_Tmr.Dispose();
+                Moving_Tmr = null;
+                Moving_Tmr = new System.Timers.Timer();
+                Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
                 Moving_Tmr.Interval = 10000;
                 Moving_Tmr.Start();
             }
@@ -127,10 +134,10 @@ namespace Display
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
 
-            this.Show();
-            this.Activate();
-            this.BringToFront();
-            this.Focus();
+            //this.Show();
+            //this.Activate();
+            //this.BringToFront();
+            //this.Focus();
 
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
@@ -256,7 +263,7 @@ namespace Display
             return result.TrimEnd(new[] { '\n' });
         }
         private string Justify(string text, Font font, int width)
-        {
+        { 
             char SpaceChar = (char)0x200A;
             List<string> WordsList = text.Split((char)32).ToList();
             if (WordsList.Capacity < 2)
@@ -305,19 +312,20 @@ namespace Display
         }
         public void CloseForm()
         {
+            speed = 0;
+            if (Moving_Tmr != null)
+            {
+                Moving_Tmr.Stop();
+                Moving_Tmr.Close();
+            }
             lb_Title.Text = "";
             lb_Content.Text = "";
-            panel_TextRun.Stop();
+            //panel_TextRun.Stop();
 
             if (Duration_VanBan_Tmr != null)
             {
                 Duration_VanBan_Tmr.Stop();
                 Duration_VanBan_Tmr.Dispose();
-            }
-            if (Moving_Tmr != null)
-            {
-                Moving_Tmr.Enabled = false;
-                Moving_Tmr.Stop();
             }
             isValid = false;
             _is_ThongBaoAvailable = false;

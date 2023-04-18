@@ -189,12 +189,12 @@ namespace Display
         }
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
         {
-            panel_Text.Visible = false;
+            //panel_Text.Visible = false;
 
-            page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
-            ShowPanel(panel_Text, page_Text);
-            page_Text.ShowText(ScheduleType, Text, ColorValue);
-            TabPageID = PAGE_TEXT;
+            //page_Text.PageText_FitToContainer(panel_Text.Height, panel_Text.Width);
+            //ShowPanel(panel_Text, page_Text);
+            //page_Text.ShowText(ScheduleType, Text, ColorValue);
+            //TabPageID = PAGE_TEXT;
         }
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
