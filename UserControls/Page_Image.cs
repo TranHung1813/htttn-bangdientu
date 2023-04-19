@@ -54,12 +54,45 @@ namespace Display
                 _Priority_Image = 1000;
                 _is_ImageAvailable = false;
             });
-            //var result = GetImageAsync(_ImageURL);
-            //result.ContinueWith(task =>
-            //{
-            //    pictureBox1.Image = task.Result;
-            //    pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            //});
+            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+
+            if (SavedFiles != null)
+            {
+                // Kiem tra xem File da download chua, neu roi thi Play
+                int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleId) && (s.Link == Url));
+                if (index != -1)
+                {
+                    if (File.Exists(SavedFiles[index].PathLocation))
+                    {
+                        Task.Run(() =>
+                        {
+                            try
+                            {
+                                pictureBox1.Load(SavedFiles[index].PathLocation);
+                                _is_ImageAvailable = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, "ShowImage");
+                            }
+                        });
+                    }
+                    else
+                    {
+                        DownloadAsync_Image(Url, ScheduleId);
+                    }
+                }
+                else
+                {
+                    // Neu chua download thi play link nhu binh thuong
+                    DownloadAsync_Image(Url, ScheduleId);
+                }
+            }
+            else
+            {
+                // Neu chua download thi play link nhu binh thuong
+                DownloadAsync_Image(Url, ScheduleId);
+            }
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {
@@ -103,15 +136,18 @@ namespace Display
             webClient.DownloadFileCompleted += (sender, e) =>
             {
                 Log.Information("DownloadImageCompleted: {A}", Url);
-                try
+                Task.Run(() =>
                 {
-                    pictureBox1.Load(_ImageName);
-                    _is_ImageAvailable = true;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "DownloadAsync_Image_Completed");
-                }
+                    try
+                    {
+                        pictureBox1.Load(_ImageName);
+                        _is_ImageAvailable = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "DownloadAsync_Image_Completed");
+                    }
+                });
 
                 // Save to Database
                 SavedFile_Type videoFile = new SavedFile_Type();
