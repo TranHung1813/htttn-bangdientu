@@ -173,6 +173,24 @@
     <Compile Include="Comport.cs" />
     <Compile Include="DataUser.cs" />
     <Compile Include="DefineMessage.cs" />
+    <Compile Include="Options_MainForm\DefaultForm\DefaultFormShow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options_MainForm\DefaultForm\DefaultFormShow.Designer.cs">
+      <DependentUpon>DefaultFormShow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Options_MainForm\DefaultForm\Fom_VanBan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options_MainForm\DefaultForm\Fom_VanBan.Designer.cs">
+      <DependentUpon>Fom_VanBan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Options_MainForm\DefaultForm\Form_ThongBao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options_MainForm\DefaultForm\Form_ThongBao.Designer.cs">
+      <DependentUpon>Form_ThongBao.cs</DependentUpon>
+    </Compile>
     <Compile Include="Options_MainForm\LiveStreamForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -197,16 +215,16 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Message.cs" />
-    <Compile Include="Options_MainForm\CustomForm.cs">
+    <Compile Include="Options_MainForm\CustomForm\CustomForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Options_MainForm\CustomForm.Designer.cs">
+    <Compile Include="Options_MainForm\CustomForm\CustomForm.Designer.cs">
       <DependentUpon>CustomForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Options_MainForm\DefaultForm.cs">
+    <Compile Include="Options_MainForm\DefaultForm\DefaultForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Options_MainForm\DefaultForm.Designer.cs">
+    <Compile Include="Options_MainForm\DefaultForm\DefaultForm.Designer.cs">
       <DependentUpon>DefaultForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -263,6 +281,15 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="Options_MainForm\DefaultForm\DefaultFormShow.resx">
+      <DependentUpon>DefaultFormShow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options_MainForm\DefaultForm\Fom_VanBan.resx">
+      <DependentUpon>Fom_VanBan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options_MainForm\DefaultForm\Form_ThongBao.resx">
+      <DependentUpon>Form_ThongBao.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Options_MainForm\LiveStreamForm.resx">
       <DependentUpon>LiveStreamForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -275,10 +302,10 @@
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Options_MainForm\CustomForm.resx">
+    <EmbeddedResource Include="Options_MainForm\CustomForm\CustomForm.resx">
       <DependentUpon>CustomForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Options_MainForm\DefaultForm.resx">
+    <EmbeddedResource Include="Options_MainForm\DefaultForm\DefaultForm.resx">
       <DependentUpon>DefaultForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

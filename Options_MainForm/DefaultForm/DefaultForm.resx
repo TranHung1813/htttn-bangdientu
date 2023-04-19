@@ -117,10 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="Timer_FindComPort.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>23, 18</value>
+  <data name="txtThongBao.Text" xml:space="preserve">
+    <value>HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.</value>
+  </data>
+  <data name="txtVanBan.Text" xml:space="preserve">
+    <value>Triển khai thực hiện động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Cthông tin; Bộ Thông tin và cấp tỉnh và hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo.
+Triển khai ttin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ thông tin; Bộ Thông tin và Truyền thông ban ương, Hệ thống thông tin nguồn cấp tỉnh và hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).
+</value>
+  </data>
+  <metadata name="Timer_AutoHideScreen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>51</value>
+    <value>60</value>
   </metadata>
 </root>

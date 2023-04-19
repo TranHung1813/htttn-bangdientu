@@ -5,6 +5,7 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Management;
@@ -26,6 +27,8 @@ namespace Display
         string GUID_Value = "";
 
         private const int DEFAULT_LENGTH_GUID = 15;
+        private const int MQTT_PUBLISH_INTERVAL = 60000;
+        private const int MQTT_SUBCRIBE_INTERVAL = 1000;
 
         private byte[] PingPacket = { 0x03, 0x01 };
         private byte[] PongPacket = { 0x03, 0x01, 0x02, 0x03 };
@@ -46,12 +49,14 @@ namespace Display
         private string _TxtVanBan = "";
 
         System.Timers.Timer Timer_SendPing;
+        Timer Timer_Publish;
+        Timer Timer_Subcribe;
 
         private static int MAX_BUFFER_SIZE = 1024;
         ComPort Uart2Com = new ComPort(115200, MAX_BUFFER_SIZE, false);
 
         private CustomForm customForm = new CustomForm();
-        private DefaultForm defaultForm = new DefaultForm();
+        private DefaultFormShow defaultForm = new DefaultFormShow();
         private LiveStreamForm streamForm = new LiveStreamForm();
 
         private const int DEFAULT_FORM = 1;
@@ -133,6 +138,7 @@ namespace Display
             this.KeyPreview = true;
             this.KeyUp += FrmMain_KeyUp;
             this.Shown += FrmMain_Shown;
+            //this.TransparencyKey == Color.m;
 
             Uart2Com.NotifySendPacket += Notify_SendPacket;
             Uart2Com.NotifyRecvPacket += Notify_RecvPacket;
@@ -160,6 +166,7 @@ namespace Display
                 // Handle when database = null
             }
         }
+
         private void GUID_Handle()
         {
             //opening the subkey  
@@ -287,7 +294,8 @@ namespace Display
                     if (CurrentForm != DEFAULT_FORM)
                     {
                         customForm.Close();
-                        Add_UserControl(defaultForm);
+                        //Add_UserControl(defaultForm);
+                        defaultForm.Show();
                         CurrentForm = DEFAULT_FORM;
                     }
                     break;
@@ -371,11 +379,12 @@ namespace Display
                 case Keys.S:
                     if (CurrentForm != DEFAULT_FORM)
                     {
-                        Add_UserControl(defaultForm);
+                        //Add_UserControl(defaultForm);
+                        defaultForm.Show();
                         CurrentForm = DEFAULT_FORM;
                     }
                     defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", 0);
-                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", 0);
+                    defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", "   Bộ Thông tin và Truyền thông vừa ban hành Công văn số 1273/BTTTT-TTCS về việc hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin (HTTT) nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0.\n\n   Theo đó, Bộ Thông tin và Truyền thông đề nghị Ủy ban nhân dân các tỉnh, thành phố trực thuộc Trung ương chỉ đạo, giao Sở Thông tin và Truyền thông chủ trì tham mưu, xây dựng Hệ thống thông tin nguồn cấp tỉnh để quản lý tập trung các đài truyền thanh cấp xã ứng dụng công nghệ thông tin - viễn thông, bảng tin điện tử công cộng và các phương tiện thông tin cơ sở khác trên địa bàn.\n\n    Hướng dẫn cụ thể về chức năng, tính năng kỹ thuật, HTTT nguồn trung ương và HTTT nguồn cấp tỉnh hoạt động gắn kết chặt chẽ và đồng bộ với nhau trong việc sử dụng, chia sẻ dữ liệu và quản lý hoạt động TTCS xuyên suốt từ Trung ương, cấp tỉnh, cấp huyện đến cơ sở. HTTT nguồn trung ương do Bộ Thông tin và Truyền thông quản lý bao gồm thành phần phục vụ công tác quản lý tại Trung ương và thành phần phục vụ kết nối, chia sẻ dữ liệu với HTTT nguồn cấp tỉnh. Mỗi tỉnh, thành phố trực thuộc Trung ương xây dựng một HTTT nguồn cấp tỉnh do Sở Thông tin và Truyền thông quản lý để tổ chức hoạt động thông tin cơ sở ở cả 3 cấp tỉnh, huyện và xã.\n\n    HTTT nguồn trung ương và HTTT nguồn cấp tỉnh kết nối và chia sẻ dữ liệu với nhau thông qua nền tảng tích hợp, chia sẻ dữ liệu quốc gia (NGSP) và nền tảng tích hợp, chia sẻ dữ liệu cấp bộ, cấp tỉnh (LGSP) của tỉnh, thành phố. Trong đó, HTTT nguồn trung ương được kết nối trực tiếp với hệ thống NGSP. Tùy theo nhu cầu của tỉnh, thành phố, HTTT nguồn cấp tỉnh có thể kết nối trực tiếp với hệ thống NGSP hoặc thông qua hệ thống LGSP của tỉnh, thành phố.\n\n    Yêu cầu chung đối với HTTT nguồn trung ương và HTTT nguồn cấp tỉnh là phải đảm bảo tuân thủ các quy định tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Thông tư số 39/2020/TT-BTTTT ngày 24/11/2020 của Bộ trưởng Bộ TTTT Quy định về quản lý đài truyền thanh cấp xã ứng dụng CNTT-VT.\n\n    Đối với HTTT nguồn trung ương phải xây dựng được ứng dụng trên thiết bị di động thông minh (điện thoại di động, máy tính bảng…). Thông qua ứng dụng người dân có thể tiếp nhận thông tin về đường lối, chủ trương của Đảng, chính sách, pháp luật của Nhà nước; thông tin chỉ đạo, điều hành của cấp ủy, chính quyền cơ sở; các thông tin khẩn cấp về thiên tai, hỏa hoạn, dịch bệnh… trên địa bàn; kiến thức về khoa học, kỹ thuật…; gửi ý kiến phản ánh, kiến nghị và đóng góp ý kiến về hiệu quả thực thi chính sách, pháp luật ở cơ sở.\n\n    Đối với HTTT nguồn cấp tỉnh được dùng chung cho cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã trên địa bàn tỉnh, thành phố để thực hiện các hoạt động TTCS. Thông qua HTTT nguồn cấp tỉnh, đội ngũ cán bộ làm công tác TTCS thực hiện tổ chức biên soạn bản tin phát thanh trên đài truyền thanh ứng dụng CNTT-VT, bản tin đăng tải trên bảng tin điện tử công cộng và các phương tiện TTCS khác. Ngoài ra HTTT nguồn cấp tỉnh còn có các chức năng quản lý các cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác trên địa bàn tỉnh, thành phố; thực hiện tổng hợp, thống kê để đưa ra các báo cáo phục vụ công tác đánh giá hiệu quả hoạt động TTCS trên địa bàn, chia sẻ dữ liệu với HTTT nguồn trung ương. Cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác được kết nối với HTTT nguồn cấp tỉnh thông qua Internet/Intranet, sim 3G/4G hoặc wifi.", 0);
                     defaultForm.ShowVideo(@"https://live.hungyentv.vn/hytvlive/tv1live.m3u8", "", 0);
                     //defaultForm.ShowVideo(@"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", Duration: 120 * 1000, loopNum: 0);
                     //defaultForm.ShowImage("https://images.unsplash.com/photo-1608229191360-7064b0afa639?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=800&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NzIyMjk2Ng&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1900");
@@ -388,41 +397,89 @@ namespace Display
                     break;
 
                 case Keys.P:
-                //ScheduleHandle abc = new ScheduleHandle();
-                //abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
+                    //ScheduleHandle abc = new ScheduleHandle();
+                    //abc.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
 
-                //Schedule msg = new Schedule();
-                //msg.id = "001";
-                //msg.from = 1679892014;
-                //msg.to = 1680491799;
-                //msg.isActive = true;
-                //msg.isDaily = true;
-                //msg.days = new List<int> { 4, 5, 3, 1, 6 };
-                //msg.times = new List<int> { 42060, 42180, 42240 };
-                //msg.idleTime = 1;
-                //msg.loops = 0;
-                //msg.duration = 50 * 1000;
-                //msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
-                //abc.Schedule(msg);
+                    //Schedule msg = new Schedule();
+                    //msg.id = "001";
+                    //msg.from = 1679892014;
+                    //msg.to = 1680491799;
+                    //msg.isActive = true;
+                    //msg.isDaily = true;
+                    //msg.days = new List<int> { 4, 5, 3, 1, 6 };
+                    //msg.times = new List<int> { 42060, 42180, 42240 };
+                    //msg.idleTime = 1;
+                    //msg.loops = 0;
+                    //msg.duration = 50 * 1000;
+                    //msg.songs = new List<string> { "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "Triển khai thực hiện nhiệm vụ “Xây dựng hệ thống thông tin nguồn và thu thập, tổng hợp, phân tích, quản lý dữ liệu, đánh giá hiệu quả hoạt động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Bộ Thông tin và Truyền thông ban hành Hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).", @"https://live.hungyentv.vn/hytvlive/tv1live.m3u8" };
+                    //abc.Schedule(msg);
 
-                //Schedule msg2 = new Schedule();
-                //msg2.id = "002";
-                //msg2.from = 1679892014;
-                //msg2.to = 1680491799;
-                //msg2.isActive = true;
-                //msg2.isDaily = false;
-                //msg2.times = new List<int> { 42120, 35940, 42210 };
-                //msg2.idleTime = 2;
-                //msg2.loops = 5;
-                //msg2.duration = 500 * 1000;
-                //msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
-                //abc.Schedule(msg2);
+                    //Schedule msg2 = new Schedule();
+                    //msg2.id = "002";
+                    //msg2.from = 1679892014;
+                    //msg2.to = 1680491799;
+                    //msg2.isActive = true;
+                    //msg2.isDaily = false;
+                    //msg2.times = new List<int> { 42120, 35940, 42210 };
+                    //msg2.idleTime = 2;
+                    //msg2.loops = 5;
+                    //msg2.duration = 500 * 1000;
+                    //msg2.songs = new List<string> { "HTTT nguồn cấp tỉnh là hệ thống dùng chung phục vụ hoạt động TTCS ở cả 3 cấp tỉnh, huyện và xã. Cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã được cấp tài khoản để sử dụng các chức năng trên HTTT nguồn cấp tỉnh thực hiện công tác TTCS.", "“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" };
+                    //abc.Schedule(msg2);
 
-                //Schedule msg3 = new Schedule();
-                //msg3.id = "002";
-                //msg3.isActive = false;
-                //abc.Schedule(msg3);
-                //break;
+                    //Schedule msg3 = new Schedule();
+                    //msg3.id = "002";
+                    //msg3.isActive = false;
+                    //abc.Schedule(msg3);
+                    //break;
+                    //TimerRestart_Callback(null);
+                    DefaultFormShow defaultFormShow = new DefaultFormShow();
+                    //defaultFormShow.Owner = form_Text;
+                    Utility.fitFormToScreen(defaultFormShow, 768, 1366);
+
+                    Point TB_Location = new Point();
+                    Size TB_Size = new Size();
+                    Point VB_Location = new Point();
+                    Size VB_Size = new Size();
+                    defaultFormShow.GetInfo_ThongBao(ref TB_Location, ref TB_Size);
+                    defaultFormShow.GetInfo_VanBan(ref VB_Location, ref VB_Size);
+                    defaultFormShow.ShowInTaskbar = false;
+
+                    //Form background_TB = new Form();
+                    //background_TB.FormBorderStyle = FormBorderStyle.None;
+                    //background_TB.BackColor = Color.MistyRose;
+                    //background_TB.StartPosition = FormStartPosition.Manual;
+                    //background_TB.Size = new Size(TB_Size.Width + 2, TB_Size.Height + 2);
+                    //background_TB.Location = TB_Location;
+                    //background_TB.ShowInTaskbar = false;
+
+                    //Form_ThongBao form_TB = new Form_ThongBao();
+                    //form_TB.Owner = background_TB;
+                    //form_TB.PageText_FitToContainer(TB_Size.Height, TB_Size.Width);
+                    //form_TB.SetLocation_ThongBao(TB_Location);
+                    //form_TB.StartPosition = FormStartPosition.Manual;
+                    //form_TB.ShowText("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ" + "\n “NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "");
+
+                    Form background_VB = new Form();
+                    background_VB.FormBorderStyle = FormBorderStyle.None;
+                    background_VB.BackColor = Color.MistyRose;
+                    background_VB.StartPosition = FormStartPosition.Manual;
+                    background_VB.Size = new Size(VB_Size.Width + 2, VB_Size.Height + 2);
+                    background_VB.Location = VB_Location;
+                    background_VB.ShowInTaskbar = false;
+
+                    Form_VanBan form_VB = new Form_VanBan();
+                    form_VB.Owner = background_VB;
+                    form_VB.PageText_FitToContainer(VB_Size.Height, VB_Size.Width);
+                    form_VB.SetLocation_VanBan(VB_Location);
+                    form_VB.StartPosition = FormStartPosition.Manual;
+                    form_VB.SetSpeed = 1;
+                    form_VB.ShowText("   Bộ Thông tin và Truyền thông vừa ban hành Công văn số 1273/BTTTT-TTCS về việc hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin (HTTT) nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0.\n\n   Theo đó, Bộ Thông tin và Truyền thông đề nghị Ủy ban nhân dân các tỉnh, thành phố trực thuộc Trung ương chỉ đạo, giao Sở Thông tin và Truyền thông chủ trì tham mưu, xây dựng Hệ thống thông tin nguồn cấp tỉnh để quản lý tập trung các đài truyền thanh cấp xã ứng dụng công nghệ thông tin - viễn thông, bảng tin điện tử công cộng và các phương tiện thông tin cơ sở khác trên địa bàn.\n\n    Hướng dẫn cụ thể về chức năng, tính năng kỹ thuật, HTTT nguồn trung ương và HTTT nguồn cấp tỉnh hoạt động gắn kết chặt chẽ và đồng bộ với nhau trong việc sử dụng, chia sẻ dữ liệu và quản lý hoạt động TTCS xuyên suốt từ Trung ương, cấp tỉnh, cấp huyện đến cơ sở. HTTT nguồn trung ương do Bộ Thông tin và Truyền thông quản lý bao gồm thành phần phục vụ công tác quản lý tại Trung ương và thành phần phục vụ kết nối, chia sẻ dữ liệu với HTTT nguồn cấp tỉnh. Mỗi tỉnh, thành phố trực thuộc Trung ương xây dựng một HTTT nguồn cấp tỉnh do Sở Thông tin và Truyền thông quản lý để tổ chức hoạt động thông tin cơ sở ở cả 3 cấp tỉnh, huyện và xã.\n\n    HTTT nguồn trung ương và HTTT nguồn cấp tỉnh kết nối và chia sẻ dữ liệu với nhau thông qua nền tảng tích hợp, chia sẻ dữ liệu quốc gia (NGSP) và nền tảng tích hợp, chia sẻ dữ liệu cấp bộ, cấp tỉnh (LGSP) của tỉnh, thành phố. Trong đó, HTTT nguồn trung ương được kết nối trực tiếp với hệ thống NGSP. Tùy theo nhu cầu của tỉnh, thành phố, HTTT nguồn cấp tỉnh có thể kết nối trực tiếp với hệ thống NGSP hoặc thông qua hệ thống LGSP của tỉnh, thành phố.\n\n    Yêu cầu chung đối với HTTT nguồn trung ương và HTTT nguồn cấp tỉnh là phải đảm bảo tuân thủ các quy định tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Thông tư số 39/2020/TT-BTTTT ngày 24/11/2020 của Bộ trưởng Bộ TTTT Quy định về quản lý đài truyền thanh cấp xã ứng dụng CNTT-VT.\n\n    Đối với HTTT nguồn trung ương phải xây dựng được ứng dụng trên thiết bị di động thông minh (điện thoại di động, máy tính bảng…). Thông qua ứng dụng người dân có thể tiếp nhận thông tin về đường lối, chủ trương của Đảng, chính sách, pháp luật của Nhà nước; thông tin chỉ đạo, điều hành của cấp ủy, chính quyền cơ sở; các thông tin khẩn cấp về thiên tai, hỏa hoạn, dịch bệnh… trên địa bàn; kiến thức về khoa học, kỹ thuật…; gửi ý kiến phản ánh, kiến nghị và đóng góp ý kiến về hiệu quả thực thi chính sách, pháp luật ở cơ sở.\n\n    Đối với HTTT nguồn cấp tỉnh được dùng chung cho cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã trên địa bàn tỉnh, thành phố để thực hiện các hoạt động TTCS. Thông qua HTTT nguồn cấp tỉnh, đội ngũ cán bộ làm công tác TTCS thực hiện tổ chức biên soạn bản tin phát thanh trên đài truyền thanh ứng dụng CNTT-VT, bản tin đăng tải trên bảng tin điện tử công cộng và các phương tiện TTCS khác. Ngoài ra HTTT nguồn cấp tỉnh còn có các chức năng quản lý các cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác trên địa bàn tỉnh, thành phố; thực hiện tổng hợp, thống kê để đưa ra các báo cáo phục vụ công tác đánh giá hiệu quả hoạt động TTCS trên địa bàn, chia sẻ dữ liệu với HTTT nguồn trung ương. Cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác được kết nối với HTTT nguồn cấp tỉnh thông qua Internet/Intranet, sim 3G/4G hoặc wifi.", "");
+
+                    background_VB.Show();
+                    //background_TB.Show();
+                    defaultFormShow.Show();
+                    break;
                 case Keys.C:
                     //Test Crash
                     Uri uri = new Uri(null);
@@ -456,13 +513,17 @@ namespace Display
                 if (CurrentForm != DEFAULT_FORM)
                 {
                     customForm.Close();
-                    Add_UserControl(defaultForm);
+                    //Add_UserControl(defaultForm);
+                    defaultForm.Show();
                     CurrentForm = DEFAULT_FORM;
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
                     Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
                     defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority, Duration: e.Duration * 1000);
+
+                    panelContainer.Controls.Clear();
+                    panelContainer.BackColor = Color.MistyRose;
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
@@ -612,6 +673,16 @@ namespace Display
             Load_Groups_Info();
             mqttMessage = new Message(Properties.Settings.Default.MqttAddress, Properties.Settings.Default.MqttPort,
                     Properties.Settings.Default.MqttUserName, Properties.Settings.Default.MqttPassword, GUID_Value);
+
+            Timer_Publish = new Timer();
+            Timer_Publish.Interval = MQTT_PUBLISH_INTERVAL;
+            Timer_Publish.Tick += Timer_Publish_Elapsed;
+            Timer_Publish.Start();
+
+            Timer_Subcribe = new Timer();
+            Timer_Subcribe.Interval = MQTT_SUBCRIBE_INTERVAL;
+            Timer_Subcribe.Tick += Timer_Subcribe_Elapsed;
+            Timer_Subcribe.Start();
         }
 
         private void Load_Groups_Info()
@@ -651,11 +722,11 @@ namespace Display
                     .CreateLogger();
         }
 
-        private void tick_Tick(object sender, EventArgs e)
+        private void Timer_Subcribe_Elapsed(object sender, EventArgs e)
         {
             ProcessNewMessage();
         }
-        private void MQTTPing_Timer_Tick(object sender, EventArgs e)
+        private void Timer_Publish_Elapsed(object sender, EventArgs e)
         {
             SendHeartBeatTick();
         }
@@ -749,7 +820,8 @@ namespace Display
                             if (CurrentForm != DEFAULT_FORM)
                             {
                                 customForm.Close();
-                                Add_UserControl(defaultForm);
+                                //Add_UserControl(defaultForm);
+                                defaultForm.Show();
                                 CurrentForm = DEFAULT_FORM;
                             }
                             defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", _TxtThongBao);
@@ -935,13 +1007,10 @@ namespace Display
             customForm.CustomForm_FitToContainer(panelContainer.Height, panelContainer.Width);
             streamForm.LiveStreamForm_FitToContainer(panelContainer.Height, panelContainer.Width);
 
-            Timer_MQTT.Start();
-
             ComputerRestart_Handle(2.0);
             ComputerRestart_Handle(3.0);
             ComputerRestart_Handle(4.0);
         }
-
         private void FrmMain_Shown(object sender, EventArgs e)
         {
             scheduleHandle.Load_ScheduleMessageInfo();
@@ -1044,7 +1113,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ComputerRestart");
+                Log.Error(ex, "ComputerRestart_Handle");
             }
         }
         private void TimerRestart_Callback(object state)

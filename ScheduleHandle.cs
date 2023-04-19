@@ -297,6 +297,7 @@ namespace Display
 
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
+
         private async void ValidTime_Handle(ScheduleMsg_Type message)
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

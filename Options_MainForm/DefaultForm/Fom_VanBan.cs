@@ -1,35 +1,40 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Display
 {
-    public partial class Form_Text : CSWinFormLayeredWindow.PerPixelAlphaForm
+    public partial class Form_VanBan : CSWinFormLayeredWindow.PerPixelAlphaForm
     {
-        System.Timers.Timer Moving_Tmr;
-
         private const int MAXVALUE = 1000 * 1000 * 1000;
+        private int MaxPosition = 0;
 
         System.Timers.Timer Duration_VanBan_Tmr;
+        System.Timers.Timer Moving_Tmr;
 
-        private bool _is_ThongBaoAvailable = false;
         public bool _is_VanBanAvailable = false;
         public int _Priority_VanBan = 1000;
         public string ScheduleID_VanBan = "";
         public bool isValid = false;
         int speed = 0;
+        private int ContainerHeight = 0;
+        public int ContainerHeight_OldValue = 0;
 
-        private int MaxPosition = 0;
+        private Point Default_Location = new Point();
+
         public int SetSpeed
         {
             get { return speed; }
             set { speed = value; Invalidate(); }
         }
-        public Form_Text()
+        public Form_VanBan()
         {
             InitializeComponent();
 
@@ -38,14 +43,12 @@ namespace Display
             Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
 
             Duration_VanBan_Tmr = new System.Timers.Timer();
-
-            this.Activate();
         }
 
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Moving_Tmr.Interval = 30;
-            if (this.Location.Y < - MaxPosition)
+            if (Moving_Tmr.Interval != 40) Moving_Tmr.Interval = 40;
+            if (this.Location.Y < (Default_Location.Y - MaxPosition))
             {
                 if (isValid == false)
                 {
@@ -54,44 +57,44 @@ namespace Display
                     _Priority_VanBan = 1000;
                     Log.Information("BanTinVanBan Stop!");
                     this.BackColor = Color.Black;
-                    OnNotifyEndProcess_TextRun();
+                    //OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
                     return;
                 }
-                this.Location = new Point(this.Location.X, (int)Screen.PrimaryScreen.Bounds.Size.Height);
+                this.Location = new Point(this.Location.X, Default_Location.Y + ContainerHeight);
             }
             this.Location = new Point(this.Location.X, this.Location.Y - speed);
         }
 
-        public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
+        public void SetLocation_VanBan(Point TB_Location)
         {
-            this.Location = new Point(0, 0);
-            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
-            if (lb_Content.Text == Content && lb_Title.Text == Title) return;
+            Default_Location = new Point(TB_Location.X + 3, TB_Location.Y);
+        }
+
+        public void ShowText(string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
+        {
+            this.Location = Default_Location;
+            Log.Information("ShowText: Văn bản: {A}", Content);
+            if (_Priority_VanBan < Priority) return;
+            //if (txtVanBan.Text == Content) return;
             try
             {
-                lb_Title.Text = Title.Trim().ToUpper() + "\n";
-                lb_Content.Text = Content;
-                lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 10);
+                txtVanBan.Text = Content;
+                txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panel_TextRun.Width - 6);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
+                Log.Error(ex, "ShowText: Văn bản: {A}", Content);
             }
 
             this.Visible = true;
-            //panel_TextRun.SetSpeed = 1;
-            //int Text_Height = lb_Title.Height + lb_Content.Height;
-            //panel_TextRun.Start(Text_Height, 10000);
+            MaxPosition = txtVanBan.Height;
+            Bitmap bmTitle = ConvertTextToImage(txtVanBan);
 
-            MaxPosition = lb_Title.Height + lb_Content.Height;
-            Bitmap bmContent = ConvertTextToImage(lb_Content);
-            Bitmap bmTitle = ConvertTextToImage(lb_Title);
+            this.SelectBitmap(bmTitle);
 
-            this.SelectBitmap(MergeImages(bmTitle, bmContent));
-            //this.Location = new Point(this.Location.X + 3, this.Location.Y);
-            if (MaxPosition < (int)Screen.PrimaryScreen.Bounds.Size.Height)
+            if (MaxPosition < ContainerHeight)
             {
                 speed = 0;
             }
@@ -112,25 +115,17 @@ namespace Display
                     AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
                     Log.Information("BanTinVanBan Stop!");
-                    OnNotifyEndProcess_TextRun();
+                    //OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
                     return;
                 }
-                //this.Visible = false;
             });
             isValid = true;
 
-            _is_ThongBaoAvailable = true;
             _is_VanBanAvailable = true;
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
-
-            this.Show();
-            this.Activate();
-            this.BringToFront();
-            this.Focus();
-
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {
@@ -154,7 +149,6 @@ namespace Display
 
             return_tmr = tmr;
         }
-
         public Bitmap ConvertTextToImage(Control control)
         {
             var bitmap = new Bitmap(control.Width, control.Height);
@@ -163,54 +157,6 @@ namespace Display
             return bitmap;
         }
 
-        public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor, int width, int Height)
-        {
-            Bitmap bmp = new Bitmap(width, Height);
-            using (Graphics graphics = Graphics.FromImage(bmp))
-            {
-                graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                Rectangle rectF1 = new Rectangle(0, 0, width, Height);
-                graphics.FillRectangle(new SolidBrush(bgcolor), 0, 0, bmp.Width, bmp.Height);
-                graphics.DrawString(txt, font, new SolidBrush(fcolor), rectF1);
-                graphics.Flush();
-                font.Dispose();
-                graphics.Dispose();
-            }
-            return bmp;
-        }
-        public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor, int width, int Height, StringFormat sf)
-        {
-            Bitmap bmp = new Bitmap(width, Height);
-            using (Graphics graphics = Graphics.FromImage(bmp))
-            {
-                graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                Rectangle rectF1 = new Rectangle(0, 0, width, Height);
-                graphics.FillRectangle(new SolidBrush(bgcolor), 0, 0, bmp.Width, bmp.Height);
-                graphics.DrawString(txt, font, new SolidBrush(fcolor), rectF1, sf);
-                graphics.Flush();
-                font.Dispose();
-                graphics.Dispose();
-
-
-            }
-            return bmp;
-        }
-
-        private Bitmap MergeImages(Image image1, Image image2)
-        {
-            Bitmap bitmap = new Bitmap(Math.Max(image1.Width, image2.Width), image1.Height + image2.Height);
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                g.DrawImage(image1, 0, 3);
-                g.DrawImage(image2, 4, image1.Height);
-            }
-
-            return bitmap;
-        }
         public string JustifyParagraph(string text, Font font, int ControlWidth)
         {
             string result = string.Empty;
@@ -254,6 +200,7 @@ namespace Display
             }
             return result.TrimEnd(new[] { '\n' });
         }
+
         private string Justify(string text, Font font, int width)
         {
             char SpaceChar = (char)0x200A;
@@ -302,11 +249,21 @@ namespace Display
                 return AdjustedWords.TrimEnd();
             }))();
         }
+
+        private void AutoHideScreen_Check()
+        {
+            if (_is_VanBanAvailable == false)
+            {
+                this.Visible = false;
+            }
+        }
+
         public void CloseForm()
         {
-            lb_Title.Text = "";
-            lb_Content.Text = "";
-            panel_TextRun.Stop();
+            speed = 0;
+            txtVanBan.Text = "";
+            this.Visible = false;
+            //panel_TextRun.Stop();
 
             if (Duration_VanBan_Tmr != null)
             {
@@ -318,60 +275,22 @@ namespace Display
                 Moving_Tmr.Stop();
             }
             isValid = false;
-            _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
             AutoHideScreen_Check();
             _Priority_VanBan = 1000;
 
-            this.Location = new Point(0, 0);
+            this.Location = Default_Location;
         }
+
         public void PageText_FitToContainer(int Height, int Width)
         {
-            Utility.fitFormToContainer(this, this.Height, this.Width, Height, Width);
-        }
+            ContainerHeight = Height;
+            Utility.fitFormToContainer(this, Height, this.Width, Height, Width);
 
-        private void lb_Title_TextChanged(object sender, EventArgs e)
-        {
-            lb_Content.Location = new Point(lb_Content.Location.X, lb_Title.Height);
-        }
+            if(ContainerHeight_OldValue != 0)
+                txtVanBan.Font = new Font(txtVanBan.Font.FontFamily, (float)(txtVanBan.Font.Size * ((float)Height / (float)ContainerHeight_OldValue)), txtVanBan.Font.Style);
 
-        private void lb_Title_SizeChanged(object sender, EventArgs e)
-        {
-            lb_Content.Location = new Point(lb_Content.Location.X, lb_Title.Height);
-        }
-
-        private void AutoHideScreen_Check()
-        {
-            if (_is_VanBanAvailable == false)
-            {
-                this.Visible = false;
-            }
-        }
-        private event EventHandler<NotifyTextEndProcess> _NotifyEndProcess_TextRun;
-        public event EventHandler<NotifyTextEndProcess> NotifyEndProcess_TextRun
-        {
-            add
-            {
-                _NotifyEndProcess_TextRun += value;
-            }
-            remove
-            {
-                _NotifyEndProcess_TextRun -= value;
-            }
-        }
-        protected virtual void OnNotifyEndProcess_TextRun()
-        {
-            if (_NotifyEndProcess_TextRun != null)
-            {
-                _NotifyEndProcess_TextRun(this, new NotifyTextEndProcess());
-            }
-        }
-    }
-    public class NotifyTextEndProcess : EventArgs
-    {
-        public NotifyTextEndProcess()
-        {
-
+            txtVanBan.MaximumSize = new Size(panel_TextRun.Width, 0);
         }
     }
 }

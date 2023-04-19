@@ -117,10 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="Timer_FindComPort.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>23, 18</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>51</value>
-  </metadata>
+  <data name="txtVanBan.Text" xml:space="preserve">
+    <value>Triển khai thực hiện động thông tin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Cthông tin; Bộ Thông tin và cấp tỉnh và hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo.
+Triển khai ttin cơ sở” tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ thông tin; Bộ Thông tin và Truyền thông ban ương, Hệ thống thông tin nguồn cấp tỉnh và hệ thống thông tin - Phiên bản 1.0 (gửi kèm theo văn bản này).
+</value>
+  </data>
 </root>
