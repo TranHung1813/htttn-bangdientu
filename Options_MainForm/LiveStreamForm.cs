@@ -94,6 +94,7 @@ namespace Display
 
         public void GetStreamInfo(ref string MasterImei, ref string StreamUrl, ref int StreamState, ref bool IsSpkOn, ref int Volume)
         {
+            if (_mp == null) return;
             MasterImei = _masterImei;
             StreamUrl = _VideoUrl;
             switch (_mp.State)
@@ -119,6 +120,19 @@ namespace Display
             }
             IsSpkOn = !_mp.Mute;
             Volume = _mp.Volume;
+        }
+
+        public void SetVolume(int value)
+        {
+            if (_mp == null) return;
+            try
+            {
+                _mp.Volume = value;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "SetVolume");
+            }
         }
 
         public void Close()

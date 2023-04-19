@@ -43,6 +43,8 @@ namespace Display
             Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
 
             Duration_VanBan_Tmr = new System.Timers.Timer();
+
+            txtVanBan.Text = "";
         }
 
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -57,7 +59,7 @@ namespace Display
                     _Priority_VanBan = 1000;
                     Log.Information("BanTinVanBan Stop!");
                     this.BackColor = Color.Black;
-                    //OnNotifyEndProcess_TextRun();
+                    OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
                     return;
@@ -115,7 +117,7 @@ namespace Display
                     AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
                     Log.Information("BanTinVanBan Stop!");
-                    //OnNotifyEndProcess_TextRun();
+                    OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
                     return;
@@ -291,6 +293,26 @@ namespace Display
                 txtVanBan.Font = new Font(txtVanBan.Font.FontFamily, (float)(txtVanBan.Font.Size * ((float)Height / (float)ContainerHeight_OldValue)), txtVanBan.Font.Style);
 
             txtVanBan.MaximumSize = new Size(panel_TextRun.Width, 0);
+        }
+
+        private event EventHandler<NotifyTextEndProcess> _NotifyEndProcess_TextRun;
+        public event EventHandler<NotifyTextEndProcess> NotifyEndProcess_TextRun
+        {
+            add
+            {
+                _NotifyEndProcess_TextRun += value;
+            }
+            remove
+            {
+                _NotifyEndProcess_TextRun -= value;
+            }
+        }
+        protected virtual void OnNotifyEndProcess_TextRun()
+        {
+            if (_NotifyEndProcess_TextRun != null)
+            {
+                _NotifyEndProcess_TextRun(this, new NotifyTextEndProcess());
+            }
         }
     }
 }

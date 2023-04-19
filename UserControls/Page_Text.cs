@@ -30,12 +30,12 @@ namespace Display
             Duration_VanBan_Tmr = new System.Timers.Timer();
             AutoHideScreen_Check();
             this.Dock = DockStyle.None;
-            form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
         }
 
         private void Form_Text_NotifyEndProcess_TextRun(object sender, NotifyTextEndProcess e)
         {
             this.Visible = false;
+            form_Text.NotifyEndProcess_TextRun -= Form_Text_NotifyEndProcess_TextRun;
         }
 
         public void ShowText(DisplayScheduleType ScheduleType, string Text, string ColorValue = "")
@@ -97,6 +97,21 @@ namespace Display
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             this.Visible = true;
+            if (form_Text != null)
+            {
+                try
+                {
+                    form_Text.CloseForm();
+                    form_Text.Dispose();
+                }
+                catch { }
+            }
+
+            form_Text = new Form_Text();
+
+            form_Text.PageText_FitToContainer(Height, Width);
+
+            form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
             form_Text.SetSpeed = 1;
             form_Text.ShowText(Title, Content, ScheduleId, Priority, Duration);
         }
@@ -256,7 +271,15 @@ namespace Display
             //lb_Title.Text = "";
             //lb_Content.Text = "";
             //panel_TextRun.Stop();
-            form_Text.CloseForm();
+            if (form_Text != null)
+            {
+                try
+                {
+                    form_Text.CloseForm();
+                    form_Text.Dispose();
+                }
+                catch { }
+            }
 
             if (Duration_VanBan_Tmr != null)
             {
@@ -271,7 +294,6 @@ namespace Display
         public void PageText_FitToContainer(int Height, int Width)
         {
             Utility.FitUserControlToContainer(this, Height, Width);
-            form_Text.PageText_FitToContainer(Height, Width);
         }
 
         private void lb_Title_TextChanged(object sender, EventArgs e)

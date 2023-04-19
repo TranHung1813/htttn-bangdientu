@@ -96,6 +96,19 @@ namespace Display
         public int Priority;
         public List<Group> Groups;
     }
+
+    public class SetConfigMessage
+    {
+        public string Cmd;  //nội dung bản tin config dạng string (SET,x,(abc)...)
+        public List<ParamConfig> Obj;
+    }
+    public class ParamConfig
+    {
+        public int C;
+        public string V;
+    }
+
+
     public class Group
     {
         public string Id;

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
+using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -25,6 +26,8 @@ namespace Display
         private Message mqttMessage;
         string password = "bytech@2020";  // Khóa để mã hóa
         string GUID_Value = "";
+
+        public const int MSG_ID_SET_CFG = 1;
 
         private const int DEFAULT_LENGTH_GUID = 15;
         private const int MQTT_PUBLISH_INTERVAL = 60000;
@@ -146,6 +149,8 @@ namespace Display
 
             scheduleHandle.NotifyTime2Play += ScheduleHandle_NotifyTime2Play;
             scheduleHandle.NotifyTime2Delete += ScheduleHandle_NotifyTime2Delete;
+
+            defaultForm.NotifyEndProcess_TextRun += DefaultForm_NotifyEndProcess;
 
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
@@ -501,6 +506,14 @@ namespace Display
         }
         private void ScheduleHandle_NotifyTime2Play(object sender, NotifyTime2Play e)
         {
+            this.Invoke((MethodInvoker)delegate
+            {
+                NotifyPlay_Handle(sender, e);
+            });
+        }
+
+        private void NotifyPlay_Handle(object sender, NotifyTime2Play e)
+        {
             if (CurrentForm == STREAM_FORM) return;
             if (PrioritySchedule_Check(e.Priority) == false)
             {
@@ -514,6 +527,7 @@ namespace Display
                 {
                     customForm.Close();
                     //Add_UserControl(defaultForm);
+                    panelContainer.Controls.Clear();
                     defaultForm.Show();
                     CurrentForm = DEFAULT_FORM;
                 }
@@ -522,8 +536,10 @@ namespace Display
                     Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
                     defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority, Duration: e.Duration * 1000);
 
-                    panelContainer.Controls.Clear();
-                    panelContainer.BackColor = Color.MistyRose;
+                    if (e.ScheduleType == DisplayScheduleType.BanTinVanBan)
+                    {
+                        defaultForm.NotifyEndProcess_TextRun += DefaultForm_NotifyEndProcess;
+                    }
                 }
                 else if (e.ScheduleType == DisplayScheduleType.BanTinVideo)
                 {
@@ -535,6 +551,7 @@ namespace Display
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration, e.FullScreen);
                     defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                 }
+                panelContainer.BackColor = Color.MistyRose;
             }
             else
             {
@@ -565,6 +582,12 @@ namespace Display
                 }
             }
         }
+
+        private void DefaultForm_NotifyEndProcess(object sender, NotifyTextEndProcess e)
+        {
+            panelContainer.BackColor = Color.Black;
+        }
+
         private void ScheduleHandle_NotifyTime2Delete(object sender, NotifyTime2Delete e)
         {
             if (CurrentForm == STREAM_FORM) return;
@@ -888,8 +911,10 @@ namespace Display
                                                                                         newSchedule_msg.Id,
                                                                                         newSchedule_msg.IsActive.ToString(),
                                                                                         newSchedule_msg.ScheduleType);
-
-                            scheduleHandle.Schedule(newSchedule_msg, Priority);
+                            System.Threading.Tasks.Task.Run(() =>
+                            {
+                                scheduleHandle.Schedule(newSchedule_msg, Priority);
+                            });
                         }
                         // Stream Command
                         else if (payload.Message.StreamInfo != null)
@@ -930,6 +955,49 @@ namespace Display
 
                                         CurrentForm = 0;
                                     }
+                                }
+                            }
+                        }
+                        else if(payload.Id != null && payload.Id == MSG_ID_SET_CFG)
+                        {
+                            // MSG_SET_CFG
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            SetConfigMessage SetCfg_Msg = JsonConvert.DeserializeObject<SetConfigMessage>(s);
+                            Log.Information("Get_NewMessage: SetConfigMessage");
+                            int VolumeValue = -1;
+                            string VolumeCmd = "";
+                            if (SetCfg_Msg.Cmd != null)
+                            {
+                                List<string> List_Cmd = SetCfg_Msg.Cmd.Split(' ').OfType<string>().ToList();
+                                int index_VolumeCmd = List_Cmd.FindIndex(i => (i.Split(',').OfType<string>().ToList().Contains("96") ||
+                                                                               i.Split(',').OfType<string>().ToList().Contains("97")));
+                                if(index_VolumeCmd != -1)
+                                {
+                                    VolumeCmd = List_Cmd[index_VolumeCmd].Split(',')[2].Replace("(", "").Replace(")", "");
+                                }
+                            }
+                            else if (SetCfg_Msg.Obj != null)
+                            {
+                                int index_VolumeCmd = SetCfg_Msg.Obj.FindIndex(i => (i.C == 96 || i.C == 97));
+                                if (index_VolumeCmd != -1)
+                                {
+                                    VolumeCmd = SetCfg_Msg.Obj[index_VolumeCmd].V.ToString();
+                                }
+                            }
+                            if (Int32.TryParse(VolumeCmd, out VolumeValue))
+                            {
+                                if (VolumeValue < 0 && VolumeValue > 100) return;
+                                if (CurrentForm == DEFAULT_FORM)
+                                {
+                                    defaultForm.SetVolume(VolumeValue);
+                                }
+                                else if (CurrentForm == CUSTOM_FORM)
+                                {
+                                    customForm.SetVolume(VolumeValue);
+                                }
+                                else if (CurrentForm == STREAM_FORM)
+                                {
+                                    streamForm.SetVolume(VolumeValue);
                                 }
                             }
                         }

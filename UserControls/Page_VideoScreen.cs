@@ -106,6 +106,18 @@ namespace Display
             IsSpkOn = !_mp.Mute;
             Volume = _mp.Volume;
         }
+        public void SetVolume(int Value)
+        {
+            if (_mp == null) return;
+            try
+            {
+                _mp.Volume = Value;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "SetVolume");
+            }
+        }
         public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0)
         {
             _VideoUrl = url;

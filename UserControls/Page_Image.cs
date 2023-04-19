@@ -84,7 +84,7 @@ namespace Display
             return_tmr = tmr;
         }
 
-        private void DownloadAsync_Image(string Url, string ScheduleId)
+        private async void DownloadAsync_Image(string Url, string ScheduleId)
         {
             string fileExtension = "";
             Uri uri = new Uri(Url);

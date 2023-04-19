@@ -73,7 +73,7 @@ namespace Display
             {
                 lb_Title.Text = Title.Trim().ToUpper() + "\n";
                 lb_Content.Text = Content;
-                lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 10);
+                lb_Content.Text = JustifyParagraph(lb_Content.Text, lb_Content.Font, panel_TextRun.Width - 6);
             }
             catch (Exception ex)
             {
@@ -206,7 +206,7 @@ namespace Display
             using (Graphics g = Graphics.FromImage(bitmap))
             {
                 g.DrawImage(image1, 0, 3);
-                g.DrawImage(image2, 4, image1.Height);
+                g.DrawImage(image2, 5, image1.Height);
             }
 
             return bitmap;
@@ -227,13 +227,15 @@ namespace Display
                     //Get all paragraph words, add a normal space and calculate when their sum exceeds the constraints
                     string[] Words = Paragraph.Split(' ');
                     line = Words[0] + (char)32;
+                    int LineNumber = 0;
                     for (int x = 1; x < Words.Length; x++)
                     {
                         string tmpLine = line + (Words[x] + (char)32);
                         if (TextRenderer.MeasureText(tmpLine, font).Width > ControlWidth)
                         {
                             //Max lenght reached. Justify the line and step back
-                            result += Justify(line.TrimEnd(), font, ControlWidth) + "\n";
+                            result += Justify(line.TrimEnd(), font, ControlWidth, LineNumber) + "\n";
+                            LineNumber++;
                             line = string.Empty;
                             --x;
                         }
@@ -254,20 +256,35 @@ namespace Display
             }
             return result.TrimEnd(new[] { '\n' });
         }
-        private string Justify(string text, Font font, int width)
+        private string Justify(string text, Font font, int width, int LineNum)
         {
             char SpaceChar = (char)0x200A;
             List<string> WordsList = text.Split((char)32).ToList();
             if (WordsList.Capacity < 2)
                 return text;
 
-            // First space handle
-            int NumberFirstSpace = text.TakeWhile(c => char.IsWhiteSpace(c)).Count();
+            int LengthFirstSpace = 0;
+            string FirstSpace = "";
+            if (LineNum == 0)
+            {
+                // First space handle
+                int NumberFirstSpace = text.TakeWhile(c => !char.IsLetter(c)).Count();
+                if (NumberFirstSpace > 0)
+                {
+                    FirstSpace = text.Substring(0, NumberFirstSpace);
+                    text = text.Substring(NumberFirstSpace);
+                    LengthFirstSpace = TextRenderer.MeasureText(FirstSpace, font).Width;
+                    WordsList = text.Split((char)32).ToList();
+                    width -= LengthFirstSpace - 18;
+                }
+            }
 
-            int NumberOfWords = WordsList.Capacity - 1 - NumberFirstSpace;
-            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[NumberFirstSpace] + SpaceChar, font).Width
-                               - TextRenderer.MeasureText(WordsList[NumberFirstSpace], font).Width;
-            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width + NumberFirstSpace * SpaceCharWidth * 4;
+            // Usual handle
+            int NumberOfWords = WordsList.Count - 1;
+            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[0] + SpaceChar, font).Width
+                               - TextRenderer.MeasureText(WordsList[0], font).Width;
+            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width;
+            
 
             //Calculate the average spacing between each word minus the last one 
             int AverageSpace = ((width - WordsWidth) / NumberOfWords) / SpaceCharWidth;
@@ -286,20 +303,20 @@ namespace Display
                 {
                     if (Word == "")
                     {
-                        AdjustedWords += Word + SpaceChar + SpaceChar + SpaceChar + SpaceChar;
+                        AdjustedWords += Word + SpaceChar ;// + SpaceChar;// + SpaceChar;
                     }
                     else
                     {
                         AdjustedWords += Word + Spaces;
                         //Adjust the spacing if there's a reminder
-                        if (AdjustSpace > 0)
+                        if (AdjustSpace > SpaceCharWidth)
                         {
                             AdjustedWords += SpaceChar;
                             AdjustSpace -= SpaceCharWidth;
                         }
                     }
                 }
-                return AdjustedWords.TrimEnd();
+                return FirstSpace + AdjustedWords.TrimEnd();
             }))();
         }
         public void CloseForm()

@@ -129,6 +129,19 @@ namespace Display
             IsSpkOn = !_mp.Mute;
             Volume = _mp.Volume;
         }
+        public void SetVolume(int value)
+        {
+            if (_is_VideoAvailable == false) return;
+            try
+            {
+                _mp.Volume = value;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "SetVolume");
+            }
+        }
+
         public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0, int Duration = MAXVALUE)
         {
             if (_Priority_Video < Priority) return;
@@ -139,8 +152,13 @@ namespace Display
             _Priority_Video = Priority;
 
             picBox_Image.Visible = false;
+            picBox_Image.Image = null;
             videoView1.Visible = true;
             this.Visible = true;
+
+            this.Activate();
+            this.BringToFront();
+            this.Focus();
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -510,6 +528,10 @@ namespace Display
                 _Priority_ThongBao = Priority;
                 _ScheduleID_ThongBao = ScheduleID;
                 this.Visible = true;
+
+                this.Activate();
+                this.BringToFront();
+                this.Focus();
             }
             else if (ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
@@ -549,8 +571,15 @@ namespace Display
             form_VB.SetLocation_VanBan(panelVanBan.Location);
             form_VB.StartPosition = FormStartPosition.Manual;
 
+            form_VB.NotifyEndProcess_TextRun += Form_VB_NotifyEndProcess_TextRun;
             form_VB.SetSpeed = 1;
             form_VB.ShowText(Content, ScheduleID, Priority, Duration);
+        }
+
+        private void Form_VB_NotifyEndProcess_TextRun(object sender, NotifyTextEndProcess e)
+        {
+            AutoHideScreen_Check();
+            form_VB.NotifyEndProcess_TextRun -= Form_VB_NotifyEndProcess_TextRun;
         }
 
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
@@ -658,6 +687,10 @@ namespace Display
             _is_ImageAvailable = true;
             this.Visible = true;
 
+            this.Activate();
+            this.BringToFront();
+            this.Focus();
+
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
             if (SavedFiles != null)
@@ -686,6 +719,26 @@ namespace Display
                 // Neu chua download thi play link nhu binh thuong
                 DownloadAsync_Image(Url, ScheduleId);
             }
+
+            Task.Run(() =>
+            {
+                //    // Tắt Video
+                if (_mp != null)
+                {
+                    try
+                    {
+                        videoView1.Visible = false;
+                        videoView1.MediaPlayer = null;
+                        _mp.Stop();
+                        _mp.EncounteredError -= _mp_EncounteredError;
+                        _mp.EndReached -= _mp_EndReached;
+                        _mp.Playing -= _mp_Playing;
+                        // _mp = null;
+                        //_mp.Dispose();
+                    }
+                    catch { }
+                }
+            });
         }
         private void DownloadAsync_Image(string Url, string ScheduleId)
         {
@@ -763,10 +816,31 @@ namespace Display
                 if (_is_VideoAvailable == false && _is_ThongBaoAvailable == false && form_VB._is_VanBanAvailable == false &&
                                                                                      _is_ImageAvailable == false)
                 {
+                    OnNotifyEndProcess();
                     this.Visible = false;
                 }
             }
             catch { }
+        }
+
+        private event EventHandler<NotifyTextEndProcess> _NotifyEndProcess_TextRun;
+        public event EventHandler<NotifyTextEndProcess> NotifyEndProcess_TextRun
+        {
+            add
+            {
+                _NotifyEndProcess_TextRun += value;
+            }
+            remove
+            {
+                _NotifyEndProcess_TextRun -= value;
+            }
+        }
+        protected virtual void OnNotifyEndProcess()
+        {
+            if (_NotifyEndProcess_TextRun != null)
+            {
+                _NotifyEndProcess_TextRun(this, new NotifyTextEndProcess());
+            }
         }
     }
 }

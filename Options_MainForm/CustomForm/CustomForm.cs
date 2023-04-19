@@ -282,6 +282,12 @@ namespace Display
 
             page_VideoScreen.GetScheduleInfo(ref ScheduleID, ref PlayingFile, ref PlayState, ref IsSpkOn, ref Volume);
         }
+        public void SetVolume(int Volume)
+        {
+            if (TabPageID != PAGE_VIDEO) return;
+
+            page_VideoScreen.SetVolume(Volume);
+        }
         public void Close_by_Id(string ScheduleId)
         {
             switch (TabPageID)
