@@ -150,4 +150,10 @@ namespace Display
         public long Clip_start_position_ms;
         public long Clip_end_position_ms;
     }
+    public class SavedFile_Type
+    {
+        public string ScheduleId;
+        public string PathLocation; /* Path File Downloaded */
+        public string Link;
+    }
 }

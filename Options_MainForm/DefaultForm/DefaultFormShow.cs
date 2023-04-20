@@ -57,7 +57,19 @@ namespace Display
             //Duration_VanBan_Tmr = new System.Timers.Timer();
             Duration_HinhAnh_Tmr = new System.Timers.Timer();
             Duration_Video_Tmr = new System.Timers.Timer();
-            AutoHideScreen_Check();
+            //AutoHideScreen_Check();
+
+            picBox_Image.LoadCompleted += PicBox_Image_LoadCompleted;
+        }
+
+        private void PicBox_Image_LoadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            this.Visible = true;
+            this.Activate();
+            this.BringToFront();
+            this.Focus();
+            picBox_Image.Visible = true;
+            OnNotifyStartProcess();
         }
 
         private void Init_VLC_Library()
@@ -152,13 +164,15 @@ namespace Display
             _Priority_Video = Priority;
 
             picBox_Image.Visible = false;
-            picBox_Image.Image = null;
+            if (picBox_Image.Image != null)
+            {
+                try
+                {
+                    picBox_Image.Image.Dispose();
+                }
+                catch { }
+            }
             videoView1.Visible = true;
-            this.Visible = true;
-
-            this.Activate();
-            this.BringToFront();
-            this.Focus();
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -189,13 +203,9 @@ namespace Display
                 PlayVideo(url, StartPos);
             }
 
-            // Duration Handle
-            //Duration_Handle(Duration_Video_Tmr, ref Duration_Video_Tmr, Duration, () =>
-            //{
-            //    // Stop Media
-            //    _is_VideoAvailable = false;
-            //    Log.Information("Het Video!");
-            //});
+            this.Activate();
+            this.BringToFront();
+            this.Focus();
         }
         private async void PlayVideo(string url, int StartPos = 0)
         {
@@ -232,6 +242,8 @@ namespace Display
 
         private void _mp_Playing(object sender, EventArgs e)
         {
+            this.Visible = true;
+            OnNotifyStartProcess();
             long VideoLength = _mp.Length;
             Log.Information("PlayMedia_Succeeded: {A}, length: {B}", _VideoUrl, VideoLength);
             if (VideoLength <= 0)
@@ -309,6 +321,14 @@ namespace Display
             {
                 txtThongBao.Text = "";
                 pictureBox1.Visible = false;
+                if (pictureBox1.Image != null)
+                {
+                    try
+                    {
+                        pictureBox1.Image.Dispose();
+                    }
+                    catch { }
+                }
                 //panelThongBao.Stop();
 
                 if (Duration_ThongBao_Tmr != null)
@@ -352,7 +372,14 @@ namespace Display
                 }
                 catch { }
             });
-            picBox_Image.Image = null;
+            if (picBox_Image.Image != null)
+            {
+                try
+                {
+                    picBox_Image.Image.Dispose();
+                }
+                catch { }
+            }
             picBox_Image.Visible = false;
 
             _is_VideoAvailable = false;
@@ -409,7 +436,14 @@ namespace Display
             {
                 Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
 
-                picBox_Image.Image = null;
+                if (picBox_Image.Image != null)
+                {
+                    try
+                    {
+                        picBox_Image.Image.Dispose();
+                    }
+                    catch { }
+                }
                 picBox_Image.Visible = false;
 
                 if (Duration_HinhAnh_Tmr != null)
@@ -430,6 +464,14 @@ namespace Display
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
                     pictureBox1.Visible = false;
+                    if (pictureBox1.Image != null)
+                    {
+                        try
+                        {
+                            pictureBox1.Image.Dispose();
+                        }
+                        catch { }
+                    }
 
                     if (Duration_ThongBao_Tmr != null)
                     {
@@ -496,6 +538,14 @@ namespace Display
                     pictureBox1.Width = panel1.Width;
                     pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(txtThongBao.Text, font, panel1.Width).Height * 1.3);
                     //pictureBox1.Image = ConvertTextToImage(txtThongBao.Text, font, panel1.BackColor, txtThongBao.ForeColor, pictureBox1.Width, pictureBox1.Height);
+                    if(pictureBox1.Image != null)
+                    {
+                        try
+                        {
+                            pictureBox1.Image.Dispose();
+                        }
+                        catch { }
+                    }
                     pictureBox1.Image = ConvertTextToImage(txtThongBao);
                     pictureBox1.Visible = true;
                     txtThongBao.Visible = false;
@@ -510,9 +560,17 @@ namespace Display
                 Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
                 {
                     // Stop Media
-                    panelThongBao.Stop_WaitTextRun();
+                    panelThongBao.Stop();
                     txtThongBao.Text = "";
                     pictureBox1.Visible = false;
+                    if (pictureBox1.Image != null)
+                    {
+                        try
+                        {
+                            pictureBox1.Image.Dispose();
+                        }
+                        catch { }
+                    }
                     _is_ThongBaoAvailable = false;
                     AutoHideScreen_Check();
                     _Priority_ThongBao = 1000;
@@ -528,6 +586,7 @@ namespace Display
                 _Priority_ThongBao = Priority;
                 _ScheduleID_ThongBao = ScheduleID;
                 this.Visible = true;
+                OnNotifyStartProcess();
 
                 this.Activate();
                 this.BringToFront();
@@ -537,6 +596,7 @@ namespace Display
             {
                 Show_VanBan(ScheduleID, Content, Priority, ColorValue, Duration);
                 this.Visible = true;
+                OnNotifyStartProcess();
 
                 this.Activate();
                 this.BringToFront();
@@ -667,16 +727,29 @@ namespace Display
             Log.Information("ShowImage: {A}", Url);
             _ScheduleID_Image = ScheduleId;
             _Priority_Image = Priority;
-            picBox_Image.Image = null;
+            if (picBox_Image.Image != null)
+            {
+                try
+                {
+                    picBox_Image.Image.Dispose();
+                }
+                catch { }
+            }
 
-            picBox_Image.Visible = true;
             videoView1.Visible = false;
 
             // Duration Handle
             Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
             {
                 // Stop Media
-                picBox_Image.Image = null;
+                if (picBox_Image.Image != null)
+                {
+                    try
+                    {
+                        picBox_Image.Image.Dispose();
+                    }
+                    catch { }
+                }
                 picBox_Image.Visible = false;
                 _is_ImageAvailable = false;
                 AutoHideScreen_Check();
@@ -685,11 +758,6 @@ namespace Display
             });
 
             _is_ImageAvailable = true;
-            this.Visible = true;
-
-            this.Activate();
-            this.BringToFront();
-            this.Focus();
 
             List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -701,7 +769,7 @@ namespace Display
                 {
                     if (File.Exists(SavedFiles[index].PathLocation))
                     {
-                        picBox_Image.Load(SavedFiles[index].PathLocation);
+                        picBox_Image.LoadAsync(SavedFiles[index].PathLocation);
                     }
                     else
                     {
@@ -761,7 +829,7 @@ namespace Display
                 Log.Information("DownloadImageCompleted: {A}, PathLocation: {B}", Url, _ImageName);
                 try
                 {
-                    picBox_Image.Load(_ImageName);
+                    picBox_Image.LoadAsync(_ImageName);
                 }
                 catch (Exception ex)
                 {
@@ -841,6 +909,32 @@ namespace Display
             {
                 _NotifyEndProcess_TextRun(this, new NotifyTextEndProcess());
             }
+        }
+        private event EventHandler<NotifyStartProcess> _NotifyStartProcess;
+        public event EventHandler<NotifyStartProcess> NotifyStartProcess
+        {
+            add
+            {
+                _NotifyStartProcess += value;
+            }
+            remove
+            {
+                _NotifyStartProcess -= value;
+            }
+        }
+        protected virtual void OnNotifyStartProcess()
+        {
+            if (_NotifyStartProcess != null)
+            {
+                _NotifyStartProcess(this, new NotifyStartProcess());
+            }
+        }
+    }
+    public class NotifyStartProcess : EventArgs
+    {
+        public NotifyStartProcess()
+        {
+
         }
     }
 }

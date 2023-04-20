@@ -1,12 +1,8 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Display
@@ -27,6 +23,10 @@ namespace Display
         private int ContainerHeight = 0;
         public int ContainerHeight_OldValue = 0;
 
+        List<Bitmap> BM_Content_List = new List<Bitmap>();
+        private const int MAXSIZE_IMAGE = Int16.MaxValue - 1000;
+        private int CountImage = 0;
+
         private Point Default_Location = new Point();
 
         public int SetSpeed
@@ -46,25 +46,55 @@ namespace Display
 
             txtVanBan.Text = "";
         }
+        private void Dispose_AllImage(List<Bitmap> list_imgs)
+        {
+            if (list_imgs == null) return;
+            foreach (Bitmap img in list_imgs)
+            {
+                try
+                {
+                    img.Dispose();
+                }
+                catch { }
+            }
+            list_imgs.Clear();
+        }
 
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (Moving_Tmr.Interval != 40) Moving_Tmr.Interval = 40;
             if (this.Location.Y < (Default_Location.Y - MaxPosition))
             {
-                if (isValid == false)
+                if (++CountImage >= BM_Content_List.Count)
                 {
-                    _is_VanBanAvailable = false;
-                    AutoHideScreen_Check();
-                    _Priority_VanBan = 1000;
-                    Log.Information("BanTinVanBan Stop!");
-                    this.BackColor = Color.Black;
-                    OnNotifyEndProcess_TextRun();
+                    CountImage = 0;
+                    if (isValid == false)
+                    {
+                        _is_VanBanAvailable = false;
+                        AutoHideScreen_Check();
+                        _Priority_VanBan = 1000;
+                        Log.Information("BanTinVanBan Stop!");
+                        this.BackColor = Color.Black;
+                        Dispose_AllImage(BM_Content_List);
+                        OnNotifyEndProcess_TextRun();
 
-                    Moving_Tmr.Stop();
-                    return;
+                        Moving_Tmr.Stop();
+                        return;
+                    }
+                    MaxPosition = BM_Content_List[0].Height - ContainerHeight;
+                    this.SelectBitmap(BM_Content_List[0]);
+                    this.Location = new Point(this.Location.X, Default_Location.Y + ContainerHeight);
                 }
-                this.Location = new Point(this.Location.X, Default_Location.Y + ContainerHeight);
+                else
+                {
+                    if (CountImage < BM_Content_List.Count - 1)
+                    {
+                        MaxPosition = BM_Content_List[CountImage].Height - ContainerHeight;
+                    }
+                    else MaxPosition = BM_Content_List[CountImage].Height;
+                    this.SelectBitmap(BM_Content_List[CountImage]);
+                    this.Location = new Point(this.Location.X, Default_Location.Y);
+                }
             }
             this.Location = new Point(this.Location.X, this.Location.Y - speed);
         }
@@ -91,10 +121,33 @@ namespace Display
             }
 
             this.Visible = true;
-            MaxPosition = txtVanBan.Height;
-            Bitmap bmTitle = ConvertTextToImage(txtVanBan);
 
-            this.SelectBitmap(bmTitle);
+            // Xử lý Bitmap
+            Bitmap bmContent = ConvertTextToImage(txtVanBan);
+            if (bmContent.Height > MAXSIZE_IMAGE)
+            {
+                if(BM_Content_List.Count > 0) foreach (var img in BM_Content_List) img.Dispose();
+                int NumImage = bmContent.Height / MAXSIZE_IMAGE + 1;
+                for (int CountImage = 0; CountImage < (NumImage - 1); CountImage++)
+                {
+                    try
+                    {
+                        BM_Content_List.Add(CropImage(bmContent, new Rectangle(new Point(0, CountImage * MAXSIZE_IMAGE),
+                                                                 new Size(bmContent.Width, MAXSIZE_IMAGE + ContainerHeight))));
+                    }
+                    catch { }
+                }
+                MaxPosition = MAXSIZE_IMAGE;
+                BM_Content_List.Add(CropImage(bmContent, new Rectangle(new Point(0, (NumImage - 1) * MAXSIZE_IMAGE),
+                                              new Size(bmContent.Width, bmContent.Height - (NumImage - 1) * MAXSIZE_IMAGE))));
+            }
+            else
+            {
+                MaxPosition = txtVanBan.Height;
+                BM_Content_List.Add(bmContent);
+            }
+
+            this.SelectBitmap(BM_Content_List[0]);
 
             if (MaxPosition < ContainerHeight)
             {
@@ -116,7 +169,9 @@ namespace Display
                     _is_VanBanAvailable = false;
                     AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
+                    CountImage = 0;
                     Log.Information("BanTinVanBan Stop!");
+                    Dispose_AllImage(BM_Content_List);
                     OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
@@ -128,6 +183,7 @@ namespace Display
             _is_VanBanAvailable = true;
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
+            CountImage = 0;
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {
@@ -280,8 +336,20 @@ namespace Display
             _is_VanBanAvailable = false;
             AutoHideScreen_Check();
             _Priority_VanBan = 1000;
+            Dispose_AllImage(BM_Content_List);
+            CountImage = 0;
 
             this.Location = Default_Location;
+        }
+
+        public Bitmap CropImage(Bitmap source, Rectangle section)
+        {
+            var bitmap = new Bitmap(section.Width, section.Height);
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                g.DrawImage(source, 0, 0, section, GraphicsUnit.Pixel);
+                return bitmap;
+            }
         }
 
         public void PageText_FitToContainer(int Height, int Width)
@@ -289,7 +357,7 @@ namespace Display
             ContainerHeight = Height;
             Utility.fitFormToContainer(this, Height, this.Width, Height, Width);
 
-            if(ContainerHeight_OldValue != 0)
+            if (ContainerHeight_OldValue != 0)
                 txtVanBan.Font = new Font(txtVanBan.Font.FontFamily, (float)(txtVanBan.Font.Size * ((float)Height / (float)ContainerHeight_OldValue)), txtVanBan.Font.Style);
 
             txtVanBan.MaximumSize = new Size(panel_TextRun.Width, 0);

@@ -151,6 +151,7 @@ namespace Display
             scheduleHandle.NotifyTime2Delete += ScheduleHandle_NotifyTime2Delete;
 
             defaultForm.NotifyEndProcess_TextRun += DefaultForm_NotifyEndProcess;
+            defaultForm.NotifyStartProcess += DefaultForm_NotifyStartProcess;
 
             Uart2Com.Setup_InfoComport(_Baudrate, _Databit, _StopBit, _parity);
             //Uart2Com.FindComPort(PingPacket, PingPacket.Length, PongPacket, PongPacket.Length, 1000, true);
@@ -170,6 +171,11 @@ namespace Display
             {
                 // Handle when database = null
             }
+        }
+
+        private void DefaultForm_NotifyStartProcess(object sender, NotifyStartProcess e)
+        {
+            panelContainer.BackColor = Color.MistyRose;
         }
 
         private void GUID_Handle()
@@ -528,7 +534,7 @@ namespace Display
                     customForm.Close();
                     //Add_UserControl(defaultForm);
                     panelContainer.Controls.Clear();
-                    defaultForm.Show();
+                    //defaultForm.Show();
                     CurrentForm = DEFAULT_FORM;
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
@@ -551,7 +557,6 @@ namespace Display
                     Log.Information("NotifyTime2Play: Hinh anh: {A}, Id : {id}, Duration: {B}, FullScreen: {C}", e.MediaUrl, e.ScheduleId, e.Duration, e.FullScreen);
                     defaultForm.ShowImage(e.MediaUrl[0], e.ScheduleId, e.Priority, e.Duration * 1000);
                 }
-                panelContainer.BackColor = Color.MistyRose;
             }
             else
             {

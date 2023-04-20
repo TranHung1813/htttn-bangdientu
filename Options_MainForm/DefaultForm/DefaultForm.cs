@@ -816,10 +816,4 @@ namespace Display
             }
         }
     }
-    public class SavedFile_Type
-    {
-        public string ScheduleId;
-        public string PathLocation; /* Path File Downloaded */
-        public string Link;
-    }
 }

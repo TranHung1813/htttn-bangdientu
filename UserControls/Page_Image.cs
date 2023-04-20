@@ -42,14 +42,31 @@ namespace Display
             Log.Information("ShowImage: {A}", Url);
             ScheduleID_Image = ScheduleId;
             _Priority_Image = Priority;
-            pictureBox1.Image = null;
+            if(pictureBox1.Image != null)
+            {
+                try
+                {
+                    pictureBox1.Image.Dispose();
+                    pictureBox1.Image = null;
+                    pictureBox1.Visible = false;
+                }
+                catch { }
+            }
             DownloadAsync_Image(Url, ScheduleId);
 
             // Duration Handle
             Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
             {
                 // Stop Media
-                pictureBox1.Image = null;
+                if (pictureBox1.Image != null)
+                {
+                    try
+                    {
+                        pictureBox1.Image.Dispose();
+                        pictureBox1.Image = null;
+                    }
+                    catch { }
+                }
                 Log.Information("Image Stop!");
                 _Priority_Image = 1000;
                 _is_ImageAvailable = false;
@@ -117,7 +134,7 @@ namespace Display
             return_tmr = tmr;
         }
 
-        private async void DownloadAsync_Image(string Url, string ScheduleId)
+        private void DownloadAsync_Image(string Url, string ScheduleId)
         {
             string fileExtension = "";
             Uri uri = new Uri(Url);
@@ -141,6 +158,7 @@ namespace Display
                     try
                     {
                         pictureBox1.Load(_ImageName);
+                        pictureBox1.Visible = true;
                         _is_ImageAvailable = true;
                     }
                     catch (Exception ex)
@@ -214,7 +232,15 @@ namespace Display
         {
             Duration_HinhAnh_Tmr.Stop();
             Duration_HinhAnh_Tmr.Dispose();
-            pictureBox1.Image = null;
+            if (pictureBox1.Image != null)
+            {
+                try
+                {
+                    pictureBox1.Image.Dispose();
+                    pictureBox1.Image = null;
+                }
+                catch { }
+            }
             _Priority_Image = 1000;
             _is_ImageAvailable = false;
         }
