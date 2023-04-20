@@ -143,7 +143,7 @@ namespace Display
             }
             else
             {
-                MaxPosition = txtVanBan.Height;
+                MaxPosition = bmContent.Height;
                 BM_Content_List.Add(bmContent);
             }
 
@@ -184,6 +184,7 @@ namespace Display
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
             CountImage = 0;
+            bmContent.Dispose();
         }
         private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
         {

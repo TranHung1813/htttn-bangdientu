@@ -329,7 +329,7 @@ namespace Display
                     }
                     catch { }
                 }
-                //panelThongBao.Stop();
+                panelThongBao.Stop();
 
                 if (Duration_ThongBao_Tmr != null)
                 {

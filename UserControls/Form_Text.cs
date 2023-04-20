@@ -23,6 +23,11 @@ namespace Display
         public bool isValid = false;
         int speed = 0;
 
+        private int ContainerHeight = 0;
+        List<Bitmap> BM_Content_List = new List<Bitmap>();
+        private const int MAXSIZE_IMAGE = Int16.MaxValue - 1000;
+        private int CountImage = 0;
+
         private int MaxPosition = 0;
         public int SetSpeed
         {
@@ -41,25 +46,54 @@ namespace Display
 
             this.Activate();
         }
-
+        private void Dispose_AllImage(List<Bitmap> list_imgs)
+        {
+            if (list_imgs == null) return;
+            foreach (Bitmap img in list_imgs)
+            {
+                try
+                {
+                    img.Dispose();
+                }
+                catch { }
+            }
+            list_imgs.Clear();
+        }
         private void Moving_Tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             Moving_Tmr.Interval = 30;
-            if (this.Location.Y < - MaxPosition)
+            if (this.Location.Y < -MaxPosition)
             {
-                if (isValid == false)
+                if (++CountImage >= BM_Content_List.Count)
                 {
-                    _is_VanBanAvailable = false;
-                    AutoHideScreen_Check();
-                    _Priority_VanBan = 1000;
-                    Log.Information("BanTinVanBan Stop!");
-                    this.BackColor = Color.Black;
-                    OnNotifyEndProcess_TextRun();
+                    CountImage = 0;
+                    if (isValid == false)
+                    {
+                        _is_VanBanAvailable = false;
+                        AutoHideScreen_Check();
+                        _Priority_VanBan = 1000;
+                        Log.Information("BanTinVanBan Stop!");
+                        Dispose_AllImage(BM_Content_List);
+                        this.BackColor = Color.Black;
+                        OnNotifyEndProcess_TextRun();
 
-                    Moving_Tmr.Stop();
-                    return;
+                        Moving_Tmr.Stop();
+                        return;
+                    }
+                    MaxPosition = BM_Content_List[0].Height - ContainerHeight;
+                    this.SelectBitmap(BM_Content_List[0]);
+                    this.Location = new Point(this.Location.X, ContainerHeight);
                 }
-                this.Location = new Point(this.Location.X, (int)Screen.PrimaryScreen.Bounds.Size.Height);
+                else
+                {
+                    if (CountImage < BM_Content_List.Count - 1)
+                    {
+                        MaxPosition = BM_Content_List[CountImage].Height - ContainerHeight;
+                    }
+                    else MaxPosition = BM_Content_List[CountImage].Height;
+                    this.SelectBitmap(BM_Content_List[CountImage]);
+                    this.Location = new Point(this.Location.X, 0);
+                }
             }
             this.Location = new Point(this.Location.X, this.Location.Y - speed);
         }
@@ -88,10 +122,35 @@ namespace Display
             MaxPosition = lb_Title.Height + lb_Content.Height;
             Bitmap bmContent = ConvertTextToImage(lb_Content);
             Bitmap bmTitle = ConvertTextToImage(lb_Title);
+            Bitmap bmMerge = MergeImages(bmTitle, bmContent);
 
-            this.SelectBitmap(MergeImages(bmTitle, bmContent));
+            if (bmMerge.Height > MAXSIZE_IMAGE)
+            {
+                if (BM_Content_List.Count > 0) foreach (var img in BM_Content_List) img.Dispose();
+                int NumImage = bmMerge.Height / MAXSIZE_IMAGE + 1;
+                for (int CountImage = 0; CountImage < (NumImage - 1); CountImage++)
+                {
+                    try
+                    {
+                        BM_Content_List.Add(CropImage(bmMerge, new Rectangle(new Point(0, CountImage * MAXSIZE_IMAGE),
+                                                                 new Size(bmMerge.Width, MAXSIZE_IMAGE + ContainerHeight))));
+                    }
+                    catch { }
+                }
+                MaxPosition = MAXSIZE_IMAGE;
+                BM_Content_List.Add(CropImage(bmMerge, new Rectangle(new Point(0, (NumImage - 1) * MAXSIZE_IMAGE),
+                                              new Size(bmMerge.Width, bmMerge.Height - (NumImage - 1) * MAXSIZE_IMAGE))));
+
+                this.SelectBitmap(BM_Content_List[0]);
+            }
+            else
+            {
+                MaxPosition = bmMerge.Height;
+                this.SelectBitmap(bmMerge);
+            }
+
             //this.Location = new Point(this.Location.X + 3, this.Location.Y);
-            if (MaxPosition < (int)Screen.PrimaryScreen.Bounds.Size.Height)
+            if (MaxPosition < ContainerHeight)
             {
                 speed = 0;
             }
@@ -112,6 +171,7 @@ namespace Display
                     AutoHideScreen_Check();
                     _Priority_VanBan = 1000;
                     Log.Information("BanTinVanBan Stop!");
+                    Dispose_AllImage(BM_Content_List);
                     OnNotifyEndProcess_TextRun();
 
                     Moving_Tmr.Stop();
@@ -125,6 +185,9 @@ namespace Display
             _is_VanBanAvailable = true;
             _Priority_VanBan = Priority;
             ScheduleID_VanBan = ScheduleId;
+            bmContent.Dispose();
+            bmTitle.Dispose();
+            bmMerge.Dispose();
 
             this.Show();
             this.Activate();
@@ -211,6 +274,15 @@ namespace Display
 
             return bitmap;
         }
+        public Bitmap CropImage(Bitmap source, Rectangle section)
+        {
+            var bitmap = new Bitmap(section.Width, section.Height);
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                g.DrawImage(source, 0, 0, section, GraphicsUnit.Pixel);
+                return bitmap;
+            }
+        }
         public string JustifyParagraph(string text, Font font, int ControlWidth)
         {
             string result = string.Empty;
@@ -284,7 +356,7 @@ namespace Display
             int SpaceCharWidth = TextRenderer.MeasureText(WordsList[0] + SpaceChar, font).Width
                                - TextRenderer.MeasureText(WordsList[0], font).Width;
             int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width;
-            
+
 
             //Calculate the average spacing between each word minus the last one 
             int AverageSpace = ((width - WordsWidth) / NumberOfWords) / SpaceCharWidth;
@@ -303,7 +375,7 @@ namespace Display
                 {
                     if (Word == "")
                     {
-                        AdjustedWords += Word + SpaceChar ;// + SpaceChar;// + SpaceChar;
+                        AdjustedWords += Word + SpaceChar;// + SpaceChar;// + SpaceChar;
                     }
                     else
                     {
@@ -340,10 +412,13 @@ namespace Display
             AutoHideScreen_Check();
             _Priority_VanBan = 1000;
 
+            Dispose_AllImage(BM_Content_List);
+
             this.Location = new Point(0, 0);
         }
         public void PageText_FitToContainer(int Height, int Width)
         {
+            ContainerHeight = Height;
             Utility.fitFormToContainer(this, this.Height, this.Width, Height, Width);
         }
 
