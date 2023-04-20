@@ -535,6 +535,7 @@ namespace Display
                     //Add_UserControl(defaultForm);
                     panelContainer.Controls.Clear();
                     //defaultForm.Show();
+                    panelContainer.BackColor = Color.Black;
                     CurrentForm = DEFAULT_FORM;
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)

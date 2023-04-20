@@ -39,7 +39,7 @@ namespace Display
             InitializeComponent();
 
             Moving_Tmr = new System.Timers.Timer();
-            Moving_Tmr.Interval = 10000;
+            Moving_Tmr.Interval = 20000;
             Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
 
             Duration_VanBan_Tmr = new System.Timers.Timer();
@@ -80,8 +80,11 @@ namespace Display
                         Moving_Tmr.Stop();
                         return;
                     }
-                    MaxPosition = BM_Content_List[0].Height - ContainerHeight;
-                    this.SelectBitmap(BM_Content_List[0]);
+                    if (BM_Content_List.Count > 0)
+                    {
+                        MaxPosition = BM_Content_List[0].Height - ContainerHeight;
+                        this.SelectBitmap(BM_Content_List[0]);
+                    }
                     this.Location = new Point(this.Location.X, ContainerHeight);
                 }
                 else
@@ -150,14 +153,14 @@ namespace Display
             }
 
             //this.Location = new Point(this.Location.X + 3, this.Location.Y);
-            if (MaxPosition < ContainerHeight)
+            if (MaxPosition < ContainerHeight + 5)
             {
                 speed = 0;
             }
             else
             {
                 Moving_Tmr.Stop();
-                Moving_Tmr.Interval = 10000;
+                Moving_Tmr.Interval = 20000;
                 Moving_Tmr.Start();
             }
 
@@ -257,8 +260,6 @@ namespace Display
                 graphics.Flush();
                 font.Dispose();
                 graphics.Dispose();
-
-
             }
             return bmp;
         }
@@ -268,7 +269,7 @@ namespace Display
             Bitmap bitmap = new Bitmap(Math.Max(image1.Width, image2.Width), image1.Height + image2.Height);
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                g.DrawImage(image1, 0, 3);
+                g.DrawImage(image1, 0, 5);
                 g.DrawImage(image2, 5, image1.Height);
             }
 

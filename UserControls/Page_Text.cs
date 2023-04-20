@@ -96,7 +96,6 @@ namespace Display
         }
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            this.Visible = true;
             if (form_Text != null)
             {
                 try
@@ -114,6 +113,7 @@ namespace Display
             form_Text.NotifyEndProcess_TextRun += Form_Text_NotifyEndProcess_TextRun;
             form_Text.SetSpeed = 1;
             form_Text.ShowText(Title, Content, ScheduleId, Priority, Duration);
+            this.Visible = true;
         }
         public Bitmap ConvertTextToImage(Control control)
         {

@@ -81,8 +81,11 @@ namespace Display
                         Moving_Tmr.Stop();
                         return;
                     }
-                    MaxPosition = BM_Content_List[0].Height - ContainerHeight;
-                    this.SelectBitmap(BM_Content_List[0]);
+                    if (BM_Content_List.Count > 0)
+                    {
+                        MaxPosition = BM_Content_List[0].Height - ContainerHeight;
+                        this.SelectBitmap(BM_Content_List[0]);
+                    }
                     this.Location = new Point(this.Location.X, Default_Location.Y + ContainerHeight);
                 }
                 else
@@ -140,14 +143,13 @@ namespace Display
                 MaxPosition = MAXSIZE_IMAGE;
                 BM_Content_List.Add(CropImage(bmContent, new Rectangle(new Point(0, (NumImage - 1) * MAXSIZE_IMAGE),
                                               new Size(bmContent.Width, bmContent.Height - (NumImage - 1) * MAXSIZE_IMAGE))));
+                this.SelectBitmap(BM_Content_List[0]);
             }
             else
             {
                 MaxPosition = bmContent.Height;
-                BM_Content_List.Add(bmContent);
+                this.SelectBitmap(bmContent);
             }
-
-            this.SelectBitmap(BM_Content_List[0]);
 
             if (MaxPosition < ContainerHeight)
             {

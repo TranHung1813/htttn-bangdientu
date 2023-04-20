@@ -86,6 +86,7 @@ namespace Display
                             try
                             {
                                 pictureBox1.Load(SavedFiles[index].PathLocation);
+                                pictureBox1.Visible = true;
                                 _is_ImageAvailable = true;
                             }
                             catch (Exception ex)

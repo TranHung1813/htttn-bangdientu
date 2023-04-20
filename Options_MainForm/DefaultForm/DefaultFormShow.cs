@@ -58,18 +58,6 @@ namespace Display
             Duration_HinhAnh_Tmr = new System.Timers.Timer();
             Duration_Video_Tmr = new System.Timers.Timer();
             //AutoHideScreen_Check();
-
-            picBox_Image.LoadCompleted += PicBox_Image_LoadCompleted;
-        }
-
-        private void PicBox_Image_LoadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            this.Visible = true;
-            this.Activate();
-            this.BringToFront();
-            this.Focus();
-            picBox_Image.Visible = true;
-            OnNotifyStartProcess();
         }
 
         private void Init_VLC_Library()
@@ -579,7 +567,7 @@ namespace Display
 
                 // Text Run
                 panelThongBao.SetSpeed = 1;
-                int Text_Height1 = txtThongBao.Height;
+                int Text_Height1 = txtThongBao.Height + pictureBox1.Location.Y;
                 panelThongBao.Start(Text_Height1, 10000);
 
                 _is_ThongBaoAvailable = true;
@@ -737,6 +725,7 @@ namespace Display
             }
 
             videoView1.Visible = false;
+            picBox_Image.Visible = false;
 
             // Duration Handle
             Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
@@ -769,7 +758,14 @@ namespace Display
                 {
                     if (File.Exists(SavedFiles[index].PathLocation))
                     {
-                        picBox_Image.LoadAsync(SavedFiles[index].PathLocation);
+                        picBox_Image.Load(SavedFiles[index].PathLocation);
+
+                        this.Visible = true;
+                        this.Activate();
+                        this.BringToFront();
+                        this.Focus();
+                        picBox_Image.Visible = true;
+                        OnNotifyStartProcess();
                     }
                     else
                     {
@@ -829,7 +825,14 @@ namespace Display
                 Log.Information("DownloadImageCompleted: {A}, PathLocation: {B}", Url, _ImageName);
                 try
                 {
-                    picBox_Image.LoadAsync(_ImageName);
+                    picBox_Image.Load(_ImageName);
+
+                    this.Visible = true;
+                    this.Activate();
+                    this.BringToFront();
+                    this.Focus();
+                    picBox_Image.Visible = true;
+                    OnNotifyStartProcess();
                 }
                 catch (Exception ex)
                 {
