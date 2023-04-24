@@ -29,6 +29,7 @@ namespace Display
         private int CountImage = 0;
 
         private int MaxPosition = 0;
+        private int ScaleValue = 18;
         public int SetSpeed
         {
             get { return speed; }
@@ -160,7 +161,7 @@ namespace Display
             else
             {
                 Moving_Tmr.Stop();
-                Moving_Tmr.Interval = 20000;
+                Moving_Tmr.Interval = 25000;
                 Moving_Tmr.Start();
             }
 
@@ -348,7 +349,7 @@ namespace Display
                     text = text.Substring(NumberFirstSpace);
                     LengthFirstSpace = TextRenderer.MeasureText(FirstSpace, font).Width;
                     WordsList = text.Split((char)32).ToList();
-                    width -= LengthFirstSpace - 18;
+                    width -= LengthFirstSpace - ScaleValue;
                 }
             }
 
@@ -420,6 +421,7 @@ namespace Display
         public void PageText_FitToContainer(int Height, int Width)
         {
             ContainerHeight = Height;
+            ScaleValue = (int)(ScaleValue * ((float)Height / (float)768));
             Utility.fitFormToContainer(this, this.Height, this.Width, Height, Width);
         }
 

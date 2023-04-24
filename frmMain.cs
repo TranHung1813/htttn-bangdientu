@@ -404,7 +404,6 @@ namespace Display
 
                 case Keys.F:
                     Copy2ClipBoard(GUID_Value);
-                    customForm.Test();
                     break;
 
                 case Keys.P:
@@ -444,52 +443,6 @@ namespace Display
                     //abc.Schedule(msg3);
                     //break;
                     //TimerRestart_Callback(null);
-                    DefaultFormShow defaultFormShow = new DefaultFormShow();
-                    //defaultFormShow.Owner = form_Text;
-                    Utility.fitFormToScreen(defaultFormShow, 768, 1366);
-
-                    Point TB_Location = new Point();
-                    Size TB_Size = new Size();
-                    Point VB_Location = new Point();
-                    Size VB_Size = new Size();
-                    defaultFormShow.GetInfo_ThongBao(ref TB_Location, ref TB_Size);
-                    defaultFormShow.GetInfo_VanBan(ref VB_Location, ref VB_Size);
-                    defaultFormShow.ShowInTaskbar = false;
-
-                    //Form background_TB = new Form();
-                    //background_TB.FormBorderStyle = FormBorderStyle.None;
-                    //background_TB.BackColor = Color.MistyRose;
-                    //background_TB.StartPosition = FormStartPosition.Manual;
-                    //background_TB.Size = new Size(TB_Size.Width + 2, TB_Size.Height + 2);
-                    //background_TB.Location = TB_Location;
-                    //background_TB.ShowInTaskbar = false;
-
-                    //Form_ThongBao form_TB = new Form_ThongBao();
-                    //form_TB.Owner = background_TB;
-                    //form_TB.PageText_FitToContainer(TB_Size.Height, TB_Size.Width);
-                    //form_TB.SetLocation_ThongBao(TB_Location);
-                    //form_TB.StartPosition = FormStartPosition.Manual;
-                    //form_TB.ShowText("“NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ" + "\n “NGÀY HỘI ĐẠI ĐOÀN KẾT TOÀN DÂN TỘC”: TĂNG CƯỜNG KHỐI ĐẠI ĐOÀN KẾT TỪ MỖI CỘNG ĐỒNG DÂN CƯ", "");
-
-                    Form background_VB = new Form();
-                    background_VB.FormBorderStyle = FormBorderStyle.None;
-                    background_VB.BackColor = Color.MistyRose;
-                    background_VB.StartPosition = FormStartPosition.Manual;
-                    background_VB.Size = new Size(VB_Size.Width + 2, VB_Size.Height + 2);
-                    background_VB.Location = VB_Location;
-                    background_VB.ShowInTaskbar = false;
-
-                    Form_VanBan form_VB = new Form_VanBan();
-                    form_VB.Owner = background_VB;
-                    form_VB.PageText_FitToContainer(VB_Size.Height, VB_Size.Width);
-                    form_VB.SetLocation_VanBan(VB_Location);
-                    form_VB.StartPosition = FormStartPosition.Manual;
-                    form_VB.SetSpeed = 1;
-                    form_VB.ShowText("   Bộ Thông tin và Truyền thông vừa ban hành Công văn số 1273/BTTTT-TTCS về việc hướng dẫn về chức năng, tính năng kỹ thuật của Hệ thống thông tin (HTTT) nguồn trung ương, Hệ thống thông tin nguồn cấp tỉnh và kết nối các hệ thống thông tin - Phiên bản 1.0.\n\n   Theo đó, Bộ Thông tin và Truyền thông đề nghị Ủy ban nhân dân các tỉnh, thành phố trực thuộc Trung ương chỉ đạo, giao Sở Thông tin và Truyền thông chủ trì tham mưu, xây dựng Hệ thống thông tin nguồn cấp tỉnh để quản lý tập trung các đài truyền thanh cấp xã ứng dụng công nghệ thông tin - viễn thông, bảng tin điện tử công cộng và các phương tiện thông tin cơ sở khác trên địa bàn.\n\n    Hướng dẫn cụ thể về chức năng, tính năng kỹ thuật, HTTT nguồn trung ương và HTTT nguồn cấp tỉnh hoạt động gắn kết chặt chẽ và đồng bộ với nhau trong việc sử dụng, chia sẻ dữ liệu và quản lý hoạt động TTCS xuyên suốt từ Trung ương, cấp tỉnh, cấp huyện đến cơ sở. HTTT nguồn trung ương do Bộ Thông tin và Truyền thông quản lý bao gồm thành phần phục vụ công tác quản lý tại Trung ương và thành phần phục vụ kết nối, chia sẻ dữ liệu với HTTT nguồn cấp tỉnh. Mỗi tỉnh, thành phố trực thuộc Trung ương xây dựng một HTTT nguồn cấp tỉnh do Sở Thông tin và Truyền thông quản lý để tổ chức hoạt động thông tin cơ sở ở cả 3 cấp tỉnh, huyện và xã.\n\n    HTTT nguồn trung ương và HTTT nguồn cấp tỉnh kết nối và chia sẻ dữ liệu với nhau thông qua nền tảng tích hợp, chia sẻ dữ liệu quốc gia (NGSP) và nền tảng tích hợp, chia sẻ dữ liệu cấp bộ, cấp tỉnh (LGSP) của tỉnh, thành phố. Trong đó, HTTT nguồn trung ương được kết nối trực tiếp với hệ thống NGSP. Tùy theo nhu cầu của tỉnh, thành phố, HTTT nguồn cấp tỉnh có thể kết nối trực tiếp với hệ thống NGSP hoặc thông qua hệ thống LGSP của tỉnh, thành phố.\n\n    Yêu cầu chung đối với HTTT nguồn trung ương và HTTT nguồn cấp tỉnh là phải đảm bảo tuân thủ các quy định tại Quyết định số 135/QĐ-TTg ngày 20/01/2020 của Thủ tướng Chính phủ phê duyệt Đề án nâng cao hiệu quả hoạt động thông tin cơ sở dựa trên ứng dụng công nghệ thông tin; Thông tư số 39/2020/TT-BTTTT ngày 24/11/2020 của Bộ trưởng Bộ TTTT Quy định về quản lý đài truyền thanh cấp xã ứng dụng CNTT-VT.\n\n    Đối với HTTT nguồn trung ương phải xây dựng được ứng dụng trên thiết bị di động thông minh (điện thoại di động, máy tính bảng…). Thông qua ứng dụng người dân có thể tiếp nhận thông tin về đường lối, chủ trương của Đảng, chính sách, pháp luật của Nhà nước; thông tin chỉ đạo, điều hành của cấp ủy, chính quyền cơ sở; các thông tin khẩn cấp về thiên tai, hỏa hoạn, dịch bệnh… trên địa bàn; kiến thức về khoa học, kỹ thuật…; gửi ý kiến phản ánh, kiến nghị và đóng góp ý kiến về hiệu quả thực thi chính sách, pháp luật ở cơ sở.\n\n    Đối với HTTT nguồn cấp tỉnh được dùng chung cho cán bộ làm công tác TTCS cấp tỉnh, cấp huyện và cấp xã trên địa bàn tỉnh, thành phố để thực hiện các hoạt động TTCS. Thông qua HTTT nguồn cấp tỉnh, đội ngũ cán bộ làm công tác TTCS thực hiện tổ chức biên soạn bản tin phát thanh trên đài truyền thanh ứng dụng CNTT-VT, bản tin đăng tải trên bảng tin điện tử công cộng và các phương tiện TTCS khác. Ngoài ra HTTT nguồn cấp tỉnh còn có các chức năng quản lý các cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác trên địa bàn tỉnh, thành phố; thực hiện tổng hợp, thống kê để đưa ra các báo cáo phục vụ công tác đánh giá hiệu quả hoạt động TTCS trên địa bàn, chia sẻ dữ liệu với HTTT nguồn trung ương. Cụm loa truyền thanh, bảng tin điện tử công cộng và các phương tiện TTCS khác được kết nối với HTTT nguồn cấp tỉnh thông qua Internet/Intranet, sim 3G/4G hoặc wifi.", "");
-
-                    background_VB.Show();
-                    //background_TB.Show();
-                    defaultFormShow.Show();
                     break;
                 case Keys.C:
                     //Test Crash
@@ -534,7 +487,8 @@ namespace Display
                     customForm.Close();
                     //Add_UserControl(defaultForm);
                     panelContainer.Controls.Clear();
-                    //defaultForm.Show();
+                    if (!CheckOpenForm("DefaultFormShow")) defaultForm.Show();
+                    defaultForm.Visible = false;
                     panelContainer.BackColor = Color.Black;
                     CurrentForm = DEFAULT_FORM;
                 }
@@ -587,6 +541,21 @@ namespace Display
                     customForm.ShowText(e.Title, e.Text, e.ScheduleId, e.Priority, Duration: e.Duration * 1000);
                 }
             }
+        }
+
+        private bool CheckOpenForm(string Name)
+        {
+            FormCollection fc = Application.OpenForms;
+
+            foreach (Form frm in fc)
+            {
+                //iterate through
+                if (frm.Name == Name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void DefaultForm_NotifyEndProcess(object sender, NotifyTextEndProcess e)
@@ -917,10 +886,11 @@ namespace Display
                                                                                         newSchedule_msg.Id,
                                                                                         newSchedule_msg.IsActive.ToString(),
                                                                                         newSchedule_msg.ScheduleType);
-                            System.Threading.Tasks.Task.Run(() =>
-                            {
-                                scheduleHandle.Schedule(newSchedule_msg, Priority);
-                            });
+                            //System.Threading.Tasks.Task.Run(() =>
+                            //{
+                            //    scheduleHandle.Schedule(newSchedule_msg, Priority);
+                            //});
+                            scheduleHandle.Schedule(newSchedule_msg, Priority);
                         }
                         // Stream Command
                         else if (payload.Message.StreamInfo != null)

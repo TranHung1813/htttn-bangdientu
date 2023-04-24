@@ -13,8 +13,6 @@ namespace Display
         //                      "- Phạt tiền từ 1.000.000 đồng đến 3.000.000 đồng đối với một trong các hành vi: Không thực hiện biện pháp bảo vệ cá nhân đối với người tham gia chống dịch và người có ngy cơ mắc bệnh dịch theo hướng dẫn của cơ quan y tế.";
         private const int MAXVALUE = 1000 * 1000 * 1000;
 
-        System.Timers.Timer Duration_VanBan_Tmr;
-
         private bool _is_ThongBaoAvailable = false;
         private bool _is_VanBanAvailable = false;
 
@@ -27,7 +25,6 @@ namespace Display
             lb_Content.Text = "";
             pictureBox1.Visible = false;
 
-            Duration_VanBan_Tmr = new System.Timers.Timer();
             AutoHideScreen_Check();
             this.Dock = DockStyle.None;
         }
@@ -206,28 +203,6 @@ namespace Display
             }
             return result.TrimEnd(new[] { '\n' });
         }
-        public static String Justify(String s, Int32 count)
-        {
-            if (count <= 0)
-                return s;
-
-            Int32 middle = s.Length / 2;
-            IDictionary<Int32, Int32> spaceOffsetsToParts = new Dictionary<Int32, Int32>();
-            String[] parts = s.Split(' ');
-            for (Int32 partIndex = 0, offset = 0; partIndex < parts.Length; partIndex++)
-            {
-                spaceOffsetsToParts.Add(offset, partIndex);
-                offset += parts[partIndex].Length + 1; // +1 to count space that was removed by Split
-            }
-            foreach (var pair in spaceOffsetsToParts.OrderBy(entry => Math.Abs(middle - entry.Key)))
-            {
-                count--;
-                if (count < 0)
-                    break;
-                parts[pair.Value] += ' ';
-            }
-            return String.Join(" ", parts);
-        }
         private string Justify(string text, Font font, int width)
         {
             char SpaceChar = (char)0x200A;
@@ -281,12 +256,6 @@ namespace Display
                 catch { }
             }
 
-            if (Duration_VanBan_Tmr != null)
-            {
-                Duration_VanBan_Tmr.Stop();
-                Duration_VanBan_Tmr.Dispose();
-            }
-
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;
             AutoHideScreen_Check();
@@ -304,11 +273,6 @@ namespace Display
         private void lb_Title_SizeChanged(object sender, EventArgs e)
         {
             lb_Content.Location = new Point(lb_Content.Location.X, lb_Title.Height);
-        }
-
-        public void Test()
-        {
-            //panel1.BackColor = Color.FromArgb(100, 0, 0, 0);
         }
         private void AutoHideScreen_Check()
         {

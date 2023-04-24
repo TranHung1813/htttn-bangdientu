@@ -81,7 +81,7 @@ namespace Display
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
-                    returnValue = page_Image._is_ImageAvailable;
+                    returnValue = page_Image.form_Image._is_ImageAvailable;
                     break;
 
                 case PAGE_TEXT:
@@ -294,7 +294,7 @@ namespace Display
             {
                 case PAGE_IMAGE:
                     //guna2Transition1.HideSync(panel_Image);
-                    if(page_Image.ScheduleID_Image == ScheduleId)
+                    if(page_Image.form_Image.ScheduleID_Image == ScheduleId)
                     {
                         Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
                         page_Image.Close();
@@ -336,7 +336,7 @@ namespace Display
             switch (TabPageID)
             {
                 case PAGE_IMAGE:
-                    if (page_Image._Priority_Image < Priority)
+                    if (page_Image.form_Image._Priority_Image < Priority)
                     {
                         return false;
                     }
@@ -357,11 +357,6 @@ namespace Display
                     break;
             }
             return true;
-        }
-        public void Test()
-        {
-            page_Text.Test();
-            //panel1.BackColor = System.Drawing.Color.FromArgb(100, 0, 0, 0);
         }
 
         //-----------------------------------------------------------------------------------------------------//

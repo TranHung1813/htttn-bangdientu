@@ -29,6 +29,8 @@ namespace Display
 
         private Point Default_Location = new Point();
 
+        private int ScaleValue = 20;
+
         public int SetSpeed
         {
             get { return speed; }
@@ -39,7 +41,7 @@ namespace Display
             InitializeComponent();
 
             Moving_Tmr = new System.Timers.Timer();
-            Moving_Tmr.Interval = 10000;
+            Moving_Tmr.Interval = 15000;
             Moving_Tmr.Elapsed += Moving_Tmr_Elapsed;
 
             Duration_VanBan_Tmr = new System.Timers.Timer();
@@ -104,23 +106,23 @@ namespace Display
 
         public void SetLocation_VanBan(Point TB_Location)
         {
-            Default_Location = new Point(TB_Location.X + 3, TB_Location.Y);
+            Default_Location = new Point(TB_Location.X + 2, TB_Location.Y);
         }
 
         public void ShowText(string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             this.Location = Default_Location;
-            Log.Information("ShowText: Văn bản: {A}", Content);
+            Log.Information("ShowText: Văn bản: {A}", Content.Substring(0, Content.Length / 5));
             if (_Priority_VanBan < Priority) return;
             //if (txtVanBan.Text == Content) return;
             try
             {
                 txtVanBan.Text = Content;
-                txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panel_TextRun.Width - 6);
+                txtVanBan.Text = JustifyParagraph(txtVanBan.Text, txtVanBan.Font, panel_TextRun.Width);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Văn bản: {A}", Content);
+                Log.Error(ex, "ShowText: Văn bản: {A}", Content.Substring(0, Content.Length / 5));
             }
 
             this.Visible = true;
@@ -158,7 +160,7 @@ namespace Display
             else
             {
                 Moving_Tmr.Stop();
-                Moving_Tmr.Interval = 10000;
+                Moving_Tmr.Interval = 15000;
                 Moving_Tmr.Start();
             }
 
@@ -234,13 +236,15 @@ namespace Display
                     //Get all paragraph words, add a normal space and calculate when their sum exceeds the constraints
                     string[] Words = Paragraph.Split(' ');
                     line = Words[0] + (char)32;
+                    int LineNumber = 0;
                     for (int x = 1; x < Words.Length; x++)
                     {
                         string tmpLine = line + (Words[x] + (char)32);
                         if (TextRenderer.MeasureText(tmpLine, font).Width > ControlWidth)
                         {
                             //Max lenght reached. Justify the line and step back
-                            result += Justify(line.TrimEnd(), font, ControlWidth) + "\n";
+                            result += Justify(line.TrimEnd(), font, ControlWidth, LineNumber) + "\n";
+                            LineNumber++;
                             line = string.Empty;
                             --x;
                         }
@@ -262,20 +266,35 @@ namespace Display
             return result.TrimEnd(new[] { '\n' });
         }
 
-        private string Justify(string text, Font font, int width)
+        private string Justify(string text, Font font, int width, int LineNum)
         {
             char SpaceChar = (char)0x200A;
             List<string> WordsList = text.Split((char)32).ToList();
             if (WordsList.Capacity < 2)
                 return text;
 
-            // First space handle
-            int NumberFirstSpace = text.TakeWhile(c => char.IsWhiteSpace(c)).Count();
+            int LengthFirstSpace = 0;
+            string FirstSpace = "";
+            if (LineNum == 0)
+            {
+                // First space handle
+                int NumberFirstSpace = text.TakeWhile(c => !char.IsLetter(c)).Count();
+                if (NumberFirstSpace > 0)
+                {
+                    FirstSpace = text.Substring(0, NumberFirstSpace);
+                    text = text.Substring(NumberFirstSpace);
+                    LengthFirstSpace = TextRenderer.MeasureText(FirstSpace, font).Width;
+                    WordsList = text.Split((char)32).ToList();
+                    width -= LengthFirstSpace - ScaleValue;
+                }
+            }
 
-            int NumberOfWords = WordsList.Capacity - 1 - NumberFirstSpace;
-            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[NumberFirstSpace] + SpaceChar, font).Width
-                               - TextRenderer.MeasureText(WordsList[NumberFirstSpace], font).Width;
-            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width + NumberFirstSpace * SpaceCharWidth * 4;
+            // Usual handle
+            int NumberOfWords = WordsList.Count - 1;
+            int SpaceCharWidth = TextRenderer.MeasureText(WordsList[0] + SpaceChar, font).Width
+                               - TextRenderer.MeasureText(WordsList[0], font).Width;
+            int WordsWidth = TextRenderer.MeasureText(text.Replace(" ", ""), font).Width;
+
 
             //Calculate the average spacing between each word minus the last one 
             int AverageSpace = ((width - WordsWidth) / NumberOfWords) / SpaceCharWidth;
@@ -294,20 +313,20 @@ namespace Display
                 {
                     if (Word == "")
                     {
-                        AdjustedWords += Word + SpaceChar + SpaceChar + SpaceChar + SpaceChar;
+                        AdjustedWords += Word + SpaceChar + SpaceChar;// + SpaceChar;
                     }
                     else
                     {
                         AdjustedWords += Word + Spaces;
                         //Adjust the spacing if there's a reminder
-                        if (AdjustSpace > 0)
+                        if (AdjustSpace > SpaceCharWidth)
                         {
                             AdjustedWords += SpaceChar;
                             AdjustSpace -= SpaceCharWidth;
                         }
                     }
                 }
-                return AdjustedWords.TrimEnd();
+                return FirstSpace + AdjustedWords.TrimEnd();
             }))();
         }
 
@@ -362,7 +381,7 @@ namespace Display
 
             if (ContainerHeight_OldValue != 0)
                 txtVanBan.Font = new Font(txtVanBan.Font.FontFamily, (float)(txtVanBan.Font.Size * ((float)Height / (float)ContainerHeight_OldValue)), txtVanBan.Font.Style);
-
+            ScaleValue = (int)(ScaleValue * ((float)(int)Screen.PrimaryScreen.Bounds.Size.Height / (float)768));
             txtVanBan.MaximumSize = new Size(panel_TextRun.Width, 0);
         }
 

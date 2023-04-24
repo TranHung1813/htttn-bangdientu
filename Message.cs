@@ -107,7 +107,12 @@ namespace Display
                         Log.Error(ex, "Subcribe2Groups");
                     }
                 }
-
+                try
+                {
+                    mqttClient.ApplicationMessageReceivedAsync -= ApplicationMessageReceivedHandler;
+                    mqttClient.DisconnectedAsync -= MqttDisconnectedEvent;
+                }
+                catch { }
                 mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
                 mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
             }
@@ -169,6 +174,12 @@ namespace Display
                 }
             }
 
+            try
+            {
+                mqttClient.ApplicationMessageReceivedAsync -= ApplicationMessageReceivedHandler;
+                mqttClient.DisconnectedAsync -= MqttDisconnectedEvent;
+            }
+            catch { }
             mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
             mqttClient.DisconnectedAsync += MqttDisconnectedEvent;
         }

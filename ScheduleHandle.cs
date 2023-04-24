@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using WMPLib;
 
 namespace Display
 {
@@ -74,7 +73,7 @@ namespace Display
         {
             if (message.IsActive != true)
             {
-                DeleteMessage_by_Id(message.Id);
+                DeleteMessage_by_Id(message.Id, "isActive = False");
                 OnNotify_Time2Delete(message.Id, true);
 
                 return;
@@ -84,7 +83,7 @@ namespace Display
             int index = _schedule_msg_List.FindIndex(s => s.msg.Id == message.Id);
             if (index != -1)
             {
-                DeleteMessage_by_Id(message.Id);
+                DeleteMessage_by_Id(message.Id, "Trùng ScheduleId với bản tin trong DB");
                 OnNotify_Time2Delete(message.Id, false);
             }
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
@@ -106,21 +105,54 @@ namespace Display
             // Tinh lai Times theo từng loại bản tin (Times của Server chưa chuẩn)
             List<int> NewTimes = Caculate_TimeList(message.msg);
             // Chuyển các mốc thời gian trong tuần về dạng giây (số giây trôi qua từ 0h00 T2)
+            int NearestTime = 0;
             List<int> TimeList_perWeek = new List<int>();
-            if(message.msg.IsDaily == true)
+            if (message.msg.IsDaily == true)
             {
                 // Daily
-                for(int CountDay = 0; CountDay < message.msg.Days.Count; CountDay++)
+                for (int CountDay = 0; CountDay < message.msg.Days.Count; CountDay++)
                 {
                     TimeList_perWeek.AddRange(NewTimes.Select(x => x + 24 * 3600 * (message.msg.Days[CountDay] - 1)).ToList());
                 }
-                TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList);
+                TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref message.WeeklyTimeList, ref NearestTime);
             }
             else
             {
                 // Today
                 TimeList_perWeek.AddRange(NewTimes);
-                TimeList_Handle(TimeList_perWeek, ref message.TimeList);
+                TimeList_Handle(TimeList_perWeek, ref message.TimeList, ref NearestTime);
+
+                // Check xem Current Time có chung ngày với FromTime không?
+                long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                DateTime FromTime = UnixTimeStampToDateTime(message.msg.From);
+                if (DateTime.Now.DayOfWeek != FromTime.DayOfWeek) return;
+            }
+
+            // Còn Time Valid && Đang chạy dở => Chạy tiếp
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+            {
+                if ((-NearestTime) < message.msg.Duration && NearestTime <= 0)
+                {
+                    // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
+                    int StartPosition = (int)(-NearestTime);
+                    if (StartPosition <= 3) StartPosition = 0;
+                    int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds;
+                    int Duration = (int)((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops - (CurrentSecond - NewTimes[0]) - message.msg.IdleTime);
+                    OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                       message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, StartPosition);
+                }
+            }
+            else if (message.msg.ScheduleType == DisplayScheduleType.BanTinThongBao ||
+                     message.msg.ScheduleType == DisplayScheduleType.BanTinVanBan   ||
+                     message.msg.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
+            {
+                if ((-NearestTime) < message.msg.Duration && NearestTime <= 0)
+                {
+                    // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
+                    int Duration = message.msg.Duration - (int)(-NearestTime);
+                    OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
+                                       message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
+                }
             }
 
             // Init Timer
@@ -197,7 +229,7 @@ namespace Display
 
             LibVLC _libVLC = new LibVLC();
             MediaPlayer _mp = new MediaPlayer(_libVLC);
-                
+
             try
             {
                 _mp.Play(new Media(_libVLC, new Uri(url)));
@@ -222,7 +254,7 @@ namespace Display
                                message.msg.IdleTime, message.msg.Loops, message.msg.Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
         }
 
-        private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList)
+        private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int[] WeeklyTimeList, ref int NearestValue)
         {
             if (TimeList.Count <= 0) return;
 
@@ -245,6 +277,10 @@ namespace Display
 
             // This week Time List Handle
             TimeList = TimeList.Select(x => x - CurrentSecond).ToList();
+
+            // Lấy giá trị gần giá trị hiện tại nhất
+            int index = TimeList.FindLastIndex(i => i <= 0);
+            NearestValue = TimeList[index];
 
             if (TimeList[TimeList.Count - 1] < 0)
             {
@@ -269,7 +305,7 @@ namespace Display
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
 
-        private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList)
+        private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int NearestValue)
         {
             if (TimeList.Count <= 0) return;
 
@@ -280,6 +316,11 @@ namespace Display
 
             // This week Time List Handle
             TimeList = TimeList.Select(x => x - CurrentSecond).ToList();
+
+            // Lấy giá trị gần giá trị hiện tại nhất
+            int index = TimeList.FindLastIndex(i => i <= 0);
+            if (index == -1) NearestValue = 1;
+            else NearestValue = TimeList[index];
             // Xoa het gia tri < 0 tương đương với lịch đã quá hạn
             TimeList.RemoveAll(x => x <= 0);
 
@@ -302,6 +343,7 @@ namespace Display
         {
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
+            // Tính Duration cho video nếu server chưa có
             if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo && message.msg.Duration == 0)
             {
                 int timeout = 5000;
@@ -320,56 +362,32 @@ namespace Display
 
             if (message.msg.From <= CurrentTime)
             {
-                // Check xem Current Time có chung ngày với FromTime không?
-                DateTime FromTime = UnixTimeStampToDateTime(message.msg.From);
-                if (DateTime.Now.DayOfWeek == FromTime.DayOfWeek)
+                // Hết Time valid => Không xử lý
+                if ((CurrentTime >= message.msg.To) && (message.msg.To != 0))
                 {
-                    // Đang chạy dở => Chạy tiếp
-                    if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
-                    {
-                        if ((CurrentTime - message.msg.From) < ((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops))
-                        {
-                            // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
-                            int StartPosition = (int)(CurrentTime - message.msg.From) % (message.msg.Duration + message.msg.IdleTime);
-                            int Duration = (int)((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops - (CurrentTime - message.msg.From) - message.msg.IdleTime);
-                            OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                                               message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, StartPosition);
-                        }
-                    }
-                    else if (message.msg.ScheduleType == DisplayScheduleType.BanTinThongBao ||
-                             message.msg.ScheduleType == DisplayScheduleType.BanTinVanBan   ||
-                             message.msg.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
-                    {
-                        if ((CurrentTime - message.msg.From) < message.msg.Duration)
-                        {
-                            // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
-                            int Duration = message.msg.Duration - (int)(CurrentTime - message.msg.From);
-                            OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
-                                               message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, 0);
-                        }
-                    }
-                    // Nếu FromTime chung ngày với CurrentTime => Xử lý bình thường
-                    // Nếu không chung ngày => Skip bản tin (không cần xóa, việc xóa của Server)
-                    if (message.msg.To == 0)
-                    {
-                        // Nếu toTime = 0 => Không cần tạo Timer chạy đến toTime
-                    }
-                    else if (CurrentTime < message.msg.To)
-                    {
-                        // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
-                        message.ValidHandle_Timer = new Timer();
-                        message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
-                        message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
-                        {
-                            DeleteMessage_by_Id(message.msg.Id);
-                            OnNotify_Time2Delete(message.msg.Id, true);
-
-                            message.ValidHandle_Timer.Stop();
-                        };
-                        message.ValidHandle_Timer.Start();
-                    }
-                    MessageHandle(message);
+                    DeleteMessage_by_Id(message.msg.Id, "Hết thời gian Valid");
+                    OnNotify_Time2Delete(message.msg.Id, true);
+                    return;
                 }
+                else if (message.msg.To == 0)
+                {
+                    // Nếu toTime = 0 => Không cần tạo Timer chạy đến toTime
+                }
+                else if (CurrentTime < message.msg.To)
+                {
+                    // Nếu bản tin đã Valid => tạo Timer chạy đến toTime để xóa bản tin
+                    message.ValidHandle_Timer = new Timer();
+                    message.ValidHandle_Timer.Interval = (int)(message.msg.To - CurrentTime) * 1000 + 1000;
+                    message.ValidHandle_Timer.Tick += delegate (object sender, EventArgs e)
+                    {
+                        DeleteMessage_by_Id(message.msg.Id, "Hết thời gian Valid");
+                        OnNotify_Time2Delete(message.msg.Id, true);
+
+                        message.ValidHandle_Timer.Stop();
+                    };
+                    message.ValidHandle_Timer.Start();
+                }
+                MessageHandle(message);
             }
             else if (message.msg.From > CurrentTime)
             {
@@ -381,22 +399,22 @@ namespace Display
                     long Time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                     if (Time >= message.msg.To && message.msg.To != 0)
                     {
-                        DeleteMessage_by_Id(message.msg.Id);
+                        DeleteMessage_by_Id(message.msg.Id, "Hết thời gian Valid");
                         OnNotify_Time2Delete(message.msg.Id, true);
 
                         message.ValidHandle_Timer.Stop();
                     }
                     else if (Time >= message.msg.From && Time < message.msg.To)
                     {
-                        // Notify First Time to Play
-                        NotifyPlay(message);
+                        //Notify First Time to Play
+                        //NotifyPlay(message);
                         message.ValidHandle_Timer.Interval = (int)(message.msg.To - Time) * 1000 + 1000;
                         MessageHandle(message);
                     }
-                    else if(Time >= message.msg.From && message.msg.To == 0)
+                    else if (Time >= message.msg.From && message.msg.To == 0)
                     {
-                        // Notify First Time to Play
-                        NotifyPlay(message);
+                        //Notify First Time to Play
+                        //NotifyPlay(message);
                         MessageHandle(message);
 
                         message.ValidHandle_Timer.Stop();
@@ -432,12 +450,12 @@ namespace Display
             _schedule_msg_List.Add(message);
         }
 
-        public void DeleteMessage_by_Id(string messageId)
+        public void DeleteMessage_by_Id(string messageId, string Reason = "")
         {
-            Log.Information("DeleteMessage_by_Id: {A}", messageId);
-            foreach(var schedule_msg in _schedule_msg_List)
+            Log.Information("DeleteMessage_by_Id: {A}, reason: {B}", messageId, Reason);
+            foreach (var schedule_msg in _schedule_msg_List)
             {
-                if(schedule_msg.msg.Id == messageId)
+                if (schedule_msg.msg.Id == messageId)
                 {
                     try
                     {

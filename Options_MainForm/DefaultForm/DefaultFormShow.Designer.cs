@@ -31,7 +31,6 @@ namespace Display
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefaultFormShow));
             this.panel3 = new System.Windows.Forms.Panel();
-            this.picBox_Image = new System.Windows.Forms.PictureBox();
             this.videoView1 = new LibVLCSharp.WinForms.VideoView();
             this.panelVanBan = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -41,7 +40,6 @@ namespace Display
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.txtThongBao = new Display.GrowLabel();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBox_Image)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panelThongBao.SuspendLayout();
@@ -51,23 +49,11 @@ namespace Display
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Black;
-            this.panel3.Controls.Add(this.picBox_Image);
             this.panel3.Controls.Add(this.videoView1);
             this.panel3.Location = new System.Drawing.Point(505, 139);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(531, 529);
             this.panel3.TabIndex = 10;
-            // 
-            // picBox_Image
-            // 
-            this.picBox_Image.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picBox_Image.Location = new System.Drawing.Point(0, 0);
-            this.picBox_Image.Name = "picBox_Image";
-            this.picBox_Image.Size = new System.Drawing.Size(531, 529);
-            this.picBox_Image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picBox_Image.TabIndex = 7;
-            this.picBox_Image.TabStop = false;
-            this.picBox_Image.Visible = false;
             // 
             // videoView1
             // 
@@ -161,9 +147,8 @@ namespace Display
             this.Controls.Add(this.panel3);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "DefaultFormShow";
-            this.Text = "CustomFormShow";
+            this.Text = "DefaultFormShow";
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picBox_Image)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.videoView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panelThongBao.ResumeLayout(false);
@@ -175,7 +160,6 @@ namespace Display
         #endregion
 
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.PictureBox picBox_Image;
         private LibVLCSharp.WinForms.VideoView videoView1;
         private System.Windows.Forms.Panel panelVanBan;
         private System.Windows.Forms.Label label1;

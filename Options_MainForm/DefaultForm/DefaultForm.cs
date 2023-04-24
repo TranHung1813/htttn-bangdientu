@@ -475,7 +475,7 @@ namespace Display
                 // Text Run
                 panelThongBao.SetSpeed = 1;
                 int Text_Height1 = txtThongBao.Height;
-                panelThongBao.Start(Text_Height1, 10000);
+                panelThongBao.Start(Text_Height1, 15000);
 
                 _is_ThongBaoAvailable = true;
                 _Priority_ThongBao = Priority;
@@ -512,7 +512,7 @@ namespace Display
                 // Text Run
                 panelVanBan.SetSpeed = 1;
                 int Text_Height2 = txtVanBan.Height;
-                panelVanBan.Start(Text_Height2, 10000);
+                panelVanBan.Start(Text_Height2, 15000);
 
                 _is_VanBanAvailable = true;
                 _Priority_VanBan = Priority;
