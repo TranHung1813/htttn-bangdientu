@@ -173,6 +173,7 @@
     <Compile Include="Comport.cs" />
     <Compile Include="DataUser.cs" />
     <Compile Include="DefineMessage.cs" />
+    <Compile Include="DownloadFile.cs" />
     <Compile Include="Options_MainForm\DefaultForm\DefaultFormShow.cs">
       <SubType>Form</SubType>
     </Compile>

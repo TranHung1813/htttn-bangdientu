@@ -70,7 +70,9 @@ namespace Display
 
         private void _mp_EndReached(object sender, EventArgs e)
         {
+            Log.Information("Video EndReached, Id: {A}", ScheduleID_Video);
             videoView1.Visible = false;
+            _is_VideoAvailable = false;
         }
 
         private void _mp_EncounteredError(object sender, EventArgs e)
@@ -111,6 +113,7 @@ namespace Display
             if (_mp == null) return;
             try
             {
+                Log.Information("Set Volume: {A}", Value);
                 _mp.Volume = Value;
             }
             catch (Exception ex)
@@ -157,6 +160,7 @@ namespace Display
 
         private async void PlayVideo(string url, int StartPos = 0)
         {
+            Log.Information("PlayVideo: {A}, StartPosition: {B} seconds", url, StartPos);
             string[] @params = new string[] { "input-repeat=0" , "start-time=" + StartPos.ToString() };//, "run-time=5" };
             //string[] mediaOptions = { };
 
@@ -168,8 +172,6 @@ namespace Display
                     Init_VLC_Library();
                     _mp.Play(new Media(_libVLC, new Uri(url), @params));
                     _mp.Playing += _mp_Playing;
-
-                    Log.Information("ShowVideo: {A}", url);
 
                 }
                 catch (Exception ex)
@@ -194,7 +196,7 @@ namespace Display
         private void _mp_Playing(object sender, EventArgs e)
         {
             long VideoLength = _mp.Length;
-            Log.Information("PlayMedia_Succeeded: {A}, length: {B}", _VideoUrl, VideoLength);
+            Log.Information("PlayMedia_Succeeded: {A}, length: {B} ms", _VideoUrl, VideoLength);
             if (VideoLength <= 0)
             {
                 // Video Stream co length = 0;
@@ -218,19 +220,19 @@ namespace Display
                         else
                         {
                             // Neu chua download thi Download
-                            DownloadAsync(_VideoUrl, ScheduleID_Video);
+                            //DownloadAsync(_VideoUrl, ScheduleID_Video);
                         }
                     }
                     else
                     {
                         // Neu chua download thi Download
-                        DownloadAsync(_VideoUrl, ScheduleID_Video);
+                        //DownloadAsync(_VideoUrl, ScheduleID_Video);
                     }
                 }
                 else
                 {
                     // Neu chua download thi Download
-                    DownloadAsync(_VideoUrl, ScheduleID_Video);
+                    //DownloadAsync(_VideoUrl, ScheduleID_Video);
                 }
             }
 
@@ -253,54 +255,8 @@ namespace Display
                 Log.Error(ex, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
-
-            WebClient webClient = new WebClient();
-            webClient.DownloadFileAsync(uri, _FileName);
-            webClient.DownloadFileCompleted += (sender, e) =>
-            {
-                Log.Information("DownloadVideoCompleted: {A}", Url);
-
-                // Save to List
-                SavedFile_Type videoFile = new SavedFile_Type();
-                videoFile.PathLocation = _FileName;
-                videoFile.ScheduleId = ScheduleId;
-                videoFile.Link = Url;
-
-                SaveFileDownloaded(videoFile);
-
-                webClient.Dispose();
-            };
         }
-        private void SaveFileDownloaded(SavedFile_Type file)
-        {
-            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
-            DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
-            if (SavedFiles != null)
-            {
-                int index = SavedFiles.FindIndex(s => s.ScheduleId == file.ScheduleId);
-                if (index == -1)
-                {
-                    info_Save.Id = SavedFiles.Count + 1;
-                }
-                else
-                {
-                    info_Save.Id = index + 1;
-                }
-            }
-            else
-            {
-                info_Save.Id = 1;
-            }
-            info_Save.ScheduleId = file.ScheduleId;
-            info_Save.PathLocation = file.PathLocation;
-            info_Save.Link = file.Link;
-
-            SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
-        }
-        private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            Log.Information("DownloadFileCompleted: {A}", _VideoUrl);
-        }
+        
         public void StopVideo()
         {
             Task.Run(() =>

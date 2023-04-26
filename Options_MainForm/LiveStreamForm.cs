@@ -127,6 +127,7 @@ namespace Display
             if (_mp == null) return;
             try
             {
+                Log.Information("Set Volume: {A}", value);
                 _mp.Volume = value;
             }
             catch (Exception ex)

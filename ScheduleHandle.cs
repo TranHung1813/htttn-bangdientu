@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
@@ -12,6 +14,9 @@ namespace Display
 {
     public class ScheduleHandle
     {
+        private string PathFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Files");
+        private string _FileName = "";
+
         List<ScheduleMsg_Type> _schedule_msg_List = new List<ScheduleMsg_Type>();
         public ScheduleHandle()
         {
@@ -143,7 +148,7 @@ namespace Display
                 }
             }
             else if (message.msg.ScheduleType == DisplayScheduleType.BanTinThongBao ||
-                     message.msg.ScheduleType == DisplayScheduleType.BanTinVanBan   ||
+                     message.msg.ScheduleType == DisplayScheduleType.BanTinVanBan ||
                      message.msg.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
             {
                 if ((-NearestTime) < message.msg.Duration && NearestTime <= 0)
@@ -280,7 +285,8 @@ namespace Display
 
             // Lấy giá trị gần giá trị hiện tại nhất
             int index = TimeList.FindLastIndex(i => i <= 0);
-            NearestValue = TimeList[index];
+            if (index == -1) NearestValue = 1;
+            else NearestValue = TimeList[index];
 
             if (TimeList[TimeList.Count - 1] < 0)
             {
@@ -356,7 +362,7 @@ namespace Display
                 else
                 {
                     // timeout logic
-                    Log.Error("Get Video Duration Timeout: {A}ms", timeout);
+                    Log.Error("Get Video Duration Timeout: {A} ms", timeout);
                 }
             }
 
@@ -423,6 +429,41 @@ namespace Display
                 message.ValidHandle_Timer.Start();
             }
 
+            // Download Hinh anh hoac Video
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+            {
+                List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
+
+                if (SavedFiles != null)
+                {
+                    // Kiem tra xem File da download chua, neu roi thi khong can Download
+                    int index = SavedFiles.FindIndex(s => (s.ScheduleId == message.msg.Id) && (s.Link == message.msg.Songs[0]));
+                    if (index != -1)
+                    {
+                        // Da Download
+                        if (File.Exists(SavedFiles[index].PathLocation))
+                        {
+
+                        }
+                        else
+                        {
+                            // Neu chua download thi Download
+                            message = DownloadAsync(message);
+                        }
+                    }
+                    else
+                    {
+                        // Neu chua download thi Download
+                        message = DownloadAsync(message);
+                    }
+                }
+                else
+                {
+                    // Neu chua download thi Download
+                    message = DownloadAsync(message);
+                }
+            }
+
             // Add message to Schedule List (replace if message ID is already existed)
             List<DataUser_ScheduleMessage> Messages = SqLiteDataAccess.Load_ScheduleMessage_Info();
             DataUser_ScheduleMessage info_Save = new DataUser_ScheduleMessage();
@@ -469,12 +510,38 @@ namespace Display
                             schedule_msg.ValidHandle_Timer.Stop();
                             schedule_msg.ValidHandle_Timer.Dispose();
                         }
+
+                        if (schedule_msg.dlf != null) schedule_msg.dlf.StopDownLoad();
                     }
                     catch { }
                 }
             }
             _schedule_msg_List.RemoveAll(r => r.msg.Id == messageId);
             Delete_ScheduleMessage_inDB(messageId);
+        }
+
+        private ScheduleMsg_Type DownloadAsync(ScheduleMsg_Type message)
+        {
+            if (message.msg.Duration == 0) return message;
+            string Url = message.msg.Songs[0];
+            string ScheduleId = message.msg.Id;
+            string fileExtension = "";
+            Uri uri = new Uri(Url);
+            try
+            {
+                fileExtension = Path.GetExtension(uri.LocalPath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+            }
+            _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
+
+            if (message.dlf != null) message.dlf.StopDownLoad();
+            message.dlf = new DownloadFile(Url, _FileName, ScheduleId);
+            message.dlf.DownloadAsync();
+
+            return message;
         }
 
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
@@ -534,6 +601,7 @@ namespace Display
         public Timer Schedule_Timer;
         public Timer ValidHandle_Timer;
         int? countTime;
+        public DownloadFile dlf;
         public int CountTime { get { return countTime ?? 0; } set { countTime = value; } }
     }
     public class NotifyTime2Play : EventArgs

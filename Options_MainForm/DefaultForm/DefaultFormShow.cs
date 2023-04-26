@@ -93,6 +93,7 @@ namespace Display
             Log.Information("Video EndReached, Id: {A}", _ScheduleID_Video);
             videoView1.Visible = false;
             _is_VideoAvailable = false;
+
             AutoHideScreen_Check();
         }
 
@@ -136,6 +137,7 @@ namespace Display
             if (_is_VideoAvailable == false) return;
             try
             {
+                Log.Information("Set Volume: {A}", value);
                 _mp.Volume = value;
             }
             catch (Exception ex)
@@ -197,11 +199,13 @@ namespace Display
                 PlayVideo(url, StartPos);
             }
 
+            OnNotifyStartProcess();
+            this.Visible = true;
             SetPositionForm();
         }
         private async void PlayVideo(string url, int StartPos = 0)
         {
-            Log.Information("PlayVideo: {A}", url);
+            Log.Information("PlayVideo: {A}, StartPosition: {B} seconds", url, StartPos);
             string[] @params = new string[] { "input-repeat=0", "start-time=" + StartPos.ToString() };//, "run-time=5" };
             //string[] mediaOptions = { };
 
@@ -235,47 +239,11 @@ namespace Display
 
         private void _mp_Playing(object sender, EventArgs e)
         {
-            this.Visible = true;
-            OnNotifyStartProcess();
             long VideoLength = _mp.Length;
-            Log.Information("PlayMedia_Succeeded: {A}, length: {B}", _VideoUrl, VideoLength);
+            Log.Information("PlayMedia_Succeeded: {A}, length: {B} ms", _VideoUrl, VideoLength);
             if (VideoLength <= 0)
             {
                 // Video Stream co length = 0;
-            }
-            else
-            {
-                // Link Video khong Stream co length > 0
-                List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
-
-                if (SavedFiles != null)
-                {
-                    // Kiem tra xem File da download chua, neu roi thi khong can Download
-                    int index = SavedFiles.FindIndex(s => (s.ScheduleId == _ScheduleID_Video) && (s.Link == _VideoUrl));
-                    if (index != -1)
-                    {
-                        // Da Download
-                        if (File.Exists(SavedFiles[index].PathLocation))
-                        {
-
-                        }
-                        else
-                        {
-                            // Neu chua download thi Download
-                            DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
-                        }
-                    }
-                    else
-                    {
-                        // Neu chua download thi Download
-                        DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
-                    }
-                }
-                else
-                {
-                    // Neu chua download thi Download
-                    DownloadAsync_Video(_VideoUrl, _ScheduleID_Video);
-                }
             }
 
             try
@@ -390,16 +358,26 @@ namespace Display
             //_Priority_Image = 1000;
         }
 
-        public async void Close_by_Id(string ScheduleId)
+        public void Close_by_Id(string ScheduleId)
         {
             if (_ScheduleID_Video == ScheduleId)
             {
                 Log.Information("Ban tin Video het thoi gian Valid!");
-                await Task.Run(() =>
+                Task.Run(() =>
                 {
-                    videoView1.Visible = false;
-                    _mp.Stop();
-                    videoView1.Visible = true;
+                    try
+                    {
+                        //videoView1.Visible = false;
+                        videoView1.MediaPlayer = null;
+                        if (_mp != null)
+                        {
+                            _mp.Stop();
+                            _mp.EncounteredError -= _mp_EncounteredError;
+                            _mp.EndReached -= _mp_EndReached;
+                            _mp.Playing -= _mp_Playing;
+                        }
+                    }
+                    catch { }
                 });
 
                 if (Duration_Video_Tmr != null)
@@ -639,7 +617,7 @@ namespace Display
             form_VB.StartPosition = FormStartPosition.Manual;
 
             form_VB.NotifyEndProcess_TextRun += Form_VB_NotifyEndProcess_TextRun;
-            form_VB.SetSpeed = 3;
+            form_VB.SetSpeed = 1;
             form_VB.ShowText(Content, ScheduleID, Priority, Duration);
         }
 
@@ -682,51 +660,9 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Video_GetExtension: {Url}", Url);
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
-
-            WebClient webClient = new WebClient();
-            webClient.DownloadFileAsync(uri, _FileName);
-            webClient.DownloadFileCompleted += (sender, e) =>
-            {
-                Log.Information("DownloadVideoCompleted: {A}", Url);
-
-                // Save to Database
-                SavedFile_Type videoFile = new SavedFile_Type();
-                videoFile.PathLocation = _FileName;
-                videoFile.ScheduleId = ScheduleId;
-                videoFile.Link = Url;
-                SaveFileDownloaded(videoFile);
-
-                webClient.Dispose();
-            };
-        }
-        private void SaveFileDownloaded(SavedFile_Type file)
-        {
-            List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
-            DataUser_SavedFiles info_Save = new DataUser_SavedFiles();
-            if (SavedFiles != null)
-            {
-                int index = SavedFiles.FindIndex(s => s.ScheduleId == file.ScheduleId);
-                if (index == -1)
-                {
-                    info_Save.Id = SavedFiles.Count + 1;
-                }
-                else
-                {
-                    info_Save.Id = index + 1;
-                }
-            }
-            else
-            {
-                info_Save.Id = 1;
-            }
-            info_Save.ScheduleId = file.ScheduleId;
-            info_Save.PathLocation = file.PathLocation;
-            info_Save.Link = file.Link;
-
-            SqLiteDataAccess.SaveInfo_SavedFiles(info_Save);
         }
         public void ShowImage(string Url, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {

@@ -587,17 +587,7 @@ namespace Display
                 int index = SavedFiles.FindIndex(s => (s.ScheduleId == ScheduleId));
                 if (index != -1)
                 {
-                    try
-                    {
-                        if (File.Exists(SavedFiles[index].PathLocation))
-                        {
-                            File.Delete(SavedFiles[index].PathLocation);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "ScheduleHandle_NotifyTime2Delete");
-                    }
+                    DeleteFile(SavedFiles[index].PathLocation);
 
                     // Save lai
                     SqLiteDataAccess.DeleteAll_SavedFiles();
@@ -627,6 +617,60 @@ namespace Display
             else
             {
                 // Do nothing
+            }
+        }
+        private async void DeleteFile(string Path)
+        {
+            int MaxTimeRetry = 5;
+            int CountTimeRetry = 0;
+            bool isFileLocked = false;
+            if (File.Exists(Path))
+            {
+                try
+                {
+                    using (File.Open(Path, FileMode.Open))
+                    {
+                        isFileLocked = false;
+                    }
+                }
+                catch
+                {
+                    // file locked
+                    isFileLocked = true;
+                }
+
+                if (isFileLocked == true)
+                {
+                    while (++CountTimeRetry < MaxTimeRetry)
+                    {
+                        await System.Threading.Tasks.Task.Delay(10000);
+                        try
+                        {
+                            File.Delete(Path);
+                            Log.Information("DeleteFile: {A}", Path);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, "DeleteFile");
+                        }
+                        if (File.Exists(Path) == false)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        File.Delete(Path);
+                        Log.Information("DeleteFile: {A}", Path);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "DeleteFile");
+                    }
+                }
             }
         }
         private void Close_Relay()
@@ -934,7 +978,7 @@ namespace Display
                                 }
                             }
                         }
-                        else if(payload.Id != null && payload.Id == MSG_ID_SET_CFG)
+                        else if (payload.Id != null && payload.Id == MSG_ID_SET_CFG)
                         {
                             // MSG_SET_CFG
                             string s = JsonConvert.SerializeObject(payload.Message);
@@ -947,7 +991,7 @@ namespace Display
                                 List<string> List_Cmd = SetCfg_Msg.Cmd.Split(' ').OfType<string>().ToList();
                                 int index_VolumeCmd = List_Cmd.FindIndex(i => (i.Split(',').OfType<string>().ToList().Contains("96") ||
                                                                                i.Split(',').OfType<string>().ToList().Contains("97")));
-                                if(index_VolumeCmd != -1)
+                                if (index_VolumeCmd != -1)
                                 {
                                     VolumeCmd = List_Cmd[index_VolumeCmd].Split(',')[2].Replace("(", "").Replace(")", "");
                                 }
@@ -1164,6 +1208,8 @@ namespace Display
         {
             if (CheckMessage_Available() == true)
             {
+                // Computer Restart
+                Log.Information("Computer Can Not Restart, reason: Message available");
                 try
                 {
                     System.Threading.Timer t = (System.Threading.Timer)state;
