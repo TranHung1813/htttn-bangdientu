@@ -126,6 +126,7 @@ namespace Display
                     byte[] downBuffer = new byte[iBufferSize];
                     Log.Information("Start Download {A} Bytes, Exist Size: {B} Bytes", totalSizeBytes.ToString("N0"), iExistLen.ToString("N0"));
 
+                    smRespStream.ReadTimeout = 180000;
                     try
                     {
                         while ((iByteSize = smRespStream.Read(downBuffer, 0, downBuffer.Length)) > 0)

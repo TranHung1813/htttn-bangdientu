@@ -430,7 +430,7 @@ namespace Display
             }
 
             // Download Hinh anh hoac Video
-            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo)
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo || message.msg.ScheduleType == DisplayScheduleType.BanTinHinhAnh)
             {
                 List<DataUser_SavedFiles> SavedFiles = SqLiteDataAccess.Load_SavedFiles_Info();
 
@@ -522,7 +522,7 @@ namespace Display
 
         private ScheduleMsg_Type DownloadAsync(ScheduleMsg_Type message)
         {
-            if (message.msg.Duration == 0) return message;
+            if (message.msg.Duration == 0 && message.msg.ScheduleType == DisplayScheduleType.BanTinVideo) return message;
             string Url = message.msg.Songs[0];
             string ScheduleId = message.msg.Id;
             string fileExtension = "";

@@ -64,8 +64,8 @@ namespace Display
                             Task tsk = Task.Run(() =>
                             {
                                 Bitmap bm = new Bitmap(SavedFiles[index].PathLocation);
-                                bm = new Bitmap(bm, new Size(this.Width, this.Height));
-                                Bitmap clone = new Bitmap(bm.Width, bm.Height, PixelFormat.Format32bppArgb);
+                                Bitmap clone = new Bitmap(bm, new Size(this.Width, this.Height));
+                                clone = new Bitmap(clone.Width, clone.Height, PixelFormat.Format32bppArgb);
 
                                 using (Graphics gr = Graphics.FromImage(clone))
                                 {
@@ -89,19 +89,19 @@ namespace Display
                     }
                     else
                     {
-                        DownloadAsync_Image(Url, ScheduleId);
+                        LoadImage_Async(Url, ScheduleId);
                     }
                 }
                 else
                 {
                     // Neu chua download thi play link nhu binh thuong
-                    DownloadAsync_Image(Url, ScheduleId);
+                    LoadImage_Async(Url, ScheduleId);
                 }
             }
             else
             {
                 // Neu chua download thi play link nhu binh thuong
-                DownloadAsync_Image(Url, ScheduleId);
+                LoadImage_Async(Url, ScheduleId);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Display
             return_tmr = tmr;
         }
 
-        private void DownloadAsync_Image(string Url, string ScheduleId)
+        private void LoadImage_Async(string Url, string ScheduleId)
         {
             string fileExtension = "";
             Uri uri = new Uri(Url);
@@ -140,7 +140,7 @@ namespace Display
             {
                 Log.Error(ex, "Image_GetExtension: {Url}", Url);
             }
-            _ImageName = Path.Combine(PathFile, "SaveImage-" + ScheduleId + fileExtension);
+            _ImageName = Path.Combine(PathFile, "SaveImage--" + ScheduleId + fileExtension);
 
             WebClient webClient = new WebClient();
             webClient.DownloadFileAsync(uri, _ImageName);
@@ -152,8 +152,8 @@ namespace Display
                     Task tsk = Task.Run(() =>
                     {
                         Bitmap bm = new Bitmap(_ImageName);
-                        bm = new Bitmap(bm, new Size(this.Width, this.Height));
-                        Bitmap clone = new Bitmap(bm.Width, bm.Height, PixelFormat.Format32bppArgb);
+                        Bitmap clone = new Bitmap(bm, new Size(this.Width, this.Height)); //resize
+                        clone = new Bitmap(clone.Width, clone.Height, PixelFormat.Format32bppArgb); // convert to Format32bppArgb
 
                         using (Graphics gr = Graphics.FromImage(clone))
                         {
@@ -163,6 +163,12 @@ namespace Display
 
                         bm.Dispose();
                         clone.Dispose();
+
+                        if (File.Exists(_ImageName))
+                        {
+                            File.Delete(_ImageName);
+                            _ImageName = "";
+                        }
                     });
 
                     this.Visible = true;
@@ -174,15 +180,6 @@ namespace Display
                 {
                     Log.Error(ex, "DownloadAsync_Image_Completed");
                 }
-
-                // Save to Database
-                SavedFile_Type videoFile = new SavedFile_Type();
-                videoFile.PathLocation = _ImageName;
-                videoFile.ScheduleId = ScheduleId;
-                videoFile.Link = Url;
-                SaveFileDownloaded(videoFile);
-
-                webClient.Dispose();
             };
         }
 
