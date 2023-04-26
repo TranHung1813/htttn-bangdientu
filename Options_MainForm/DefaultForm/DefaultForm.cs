@@ -199,7 +199,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
+                    Log.Error(ex.Message, "PlayMedia_Fail: {A}", url);
                 }
             });
 
@@ -457,7 +457,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Set_Infomation_BanTinThongBao");
+                    Log.Error(ex.Message, "Set_Infomation_BanTinThongBao");
                 }
 
                 // Duration Handle
@@ -494,7 +494,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Set_Infomation_BanTinVanBan");
+                    Log.Error(ex.Message, "Set_Infomation_BanTinVanBan");
                 }
 
                 // Duration Handle
@@ -710,7 +710,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Video_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Video_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
 
@@ -766,7 +766,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Image_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Image_GetExtension: {Url}", Url);
             }
             _ImageName = Path.Combine(PathFile, "SaveImage-" + ScheduleId + fileExtension);
 
@@ -781,7 +781,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "DownloadAsync_Image_Completed");
+                    Log.Error(ex.Message, "DownloadAsync_Image_Completed");
                 }
 
                 // Save to Database

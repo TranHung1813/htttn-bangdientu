@@ -101,7 +101,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ValidTime_Handle");
+                Log.Error(ex.Message, "ValidTime_Handle");
             }
         }
 
@@ -247,7 +247,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Duration_Calculate: {A}", url);
+                Log.Error(ex.Message, "Duration_Calculate: {A}", url);
             }
 
             return tcs.Task;
@@ -533,7 +533,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
 

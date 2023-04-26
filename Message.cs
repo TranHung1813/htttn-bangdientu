@@ -40,7 +40,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "PublishMessage");
+                    Log.Error(ex.Message, "PublishMessage");
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace Display
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Subcribe2Groups");
+                        Log.Error(ex.Message, "Subcribe2Groups");
                     }
                 }
                 try
@@ -142,7 +142,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Subcribe2Groups");
+                Log.Error(ex.Message, "Subcribe2Groups");
             }
             mqttClient.ApplicationMessageReceivedAsync -= ApplicationMessageReceivedHandler;
             mqttClient.ApplicationMessageReceivedAsync += ApplicationMessageReceivedHandler;
@@ -170,7 +170,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Subcribe2Groups");
+                    Log.Error(ex.Message, "Subcribe2Groups");
                 }
             }
 
@@ -192,7 +192,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "MQTT AddNewMessage");
+                Log.Error(ex.Message, "MQTT AddNewMessage");
             }
         }
 
@@ -211,7 +211,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, " PublishMessage");
+                Log.Error(ex.Message, " PublishMessage");
             }
 
         }

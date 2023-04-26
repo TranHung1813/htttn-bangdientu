@@ -142,7 +142,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "SetVolume");
+                Log.Error(ex.Message, "SetVolume");
             }
         }
 
@@ -220,7 +220,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
+                    Log.Error(ex.Message, "PlayMedia_Fail: {A}", url);
                 }
             });
 
@@ -526,7 +526,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Set_Infomation_BanTinThongBao");
+                    Log.Error(ex.Message, "Set_Infomation_BanTinThongBao");
                 }
 
 
@@ -660,7 +660,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
         }

@@ -86,7 +86,7 @@ namespace Display
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, "LoadImage");
+                            Log.Error(ex.Message, "LoadImage");
                         }
                     }
                     else
@@ -138,7 +138,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Image_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Image_GetExtension: {Url}", Url);
             }
             _ImageName = Path.Combine(PathFile, "SaveImage--" + ScheduleId + fileExtension);
 
@@ -175,7 +175,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "DownloadAsync_Image_Completed");
+                    Log.Error(ex.Message, "DownloadAsync_Image_Completed");
                 }
             };
         }

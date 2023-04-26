@@ -115,7 +115,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
+                Log.Error(ex.Message, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
             }
 
             this.Visible = true;

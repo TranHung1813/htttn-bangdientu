@@ -81,7 +81,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}", Title);
+                Log.Error(ex.Message, "ShowText: Tiêu đề: {A}", Title);
             }
 
             this.Visible = true;

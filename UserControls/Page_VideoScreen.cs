@@ -118,7 +118,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "SetVolume");
+                Log.Error(ex.Message, "SetVolume");
             }
         }
         public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0)
@@ -176,7 +176,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
+                    Log.Error(ex.Message, "PlayMedia_Fail: {A}", url);
                 }
             });
 
@@ -252,7 +252,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
         }

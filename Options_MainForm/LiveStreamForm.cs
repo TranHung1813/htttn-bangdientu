@@ -58,7 +58,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Set Volume LiveStream");
+                Log.Error(ex.Message, "Set Volume LiveStream");
             }
 
             Task PlayVideo = Task.Run(() =>
@@ -75,7 +75,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "PlayLiveStream_Fail: {A}", url);
+                    Log.Error(ex.Message, "PlayLiveStream_Fail: {A}", url);
                 }
             });
 
@@ -132,7 +132,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "SetVolume");
+                Log.Error(ex.Message, "SetVolume");
             }
         }
 

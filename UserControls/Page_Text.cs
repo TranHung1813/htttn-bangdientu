@@ -47,7 +47,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "ShowText: {A}", ScheduleType);
+                    Log.Error(ex.Message, "ShowText: {A}", ScheduleType);
                 }
 
                 panel_TextRun.SetSpeed = 1;
@@ -66,7 +66,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "ShowText: {A}", ScheduleType);
+                    Log.Error(ex.Message, "ShowText: {A}", ScheduleType);
                 }
 
                 //pictureBox1.Width = lb_Content.Width;

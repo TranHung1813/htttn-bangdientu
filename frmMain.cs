@@ -225,7 +225,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "CopyGUID_to_ClipBoard");
+                Log.Error(ex.Message, "CopyGUID_to_ClipBoard");
             }
         }
         private void Generate_NewKey()
@@ -245,7 +245,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Generate_NewKey");
+                Log.Error(ex.Message, "Generate_NewKey");
             }
         }
         public string GetNewGUID()
@@ -651,7 +651,7 @@ namespace Display
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, "DeleteFile");
+                            Log.Error(ex.Message, "DeleteFile");
                         }
                         if (File.Exists(Path) == false)
                         {
@@ -668,7 +668,7 @@ namespace Display
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "DeleteFile");
+                        Log.Error(ex.Message, "DeleteFile");
                     }
                 }
             }
@@ -757,10 +757,11 @@ namespace Display
             string LocalPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(LocalPath + @"\Log\Info-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(LocalPath + @"\Log\Debug-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(LocalPath + @"\Log\Warning-.txt", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(LocalPath + @"\Log\Error-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(LocalPath + @"\Log\Info-.log", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(LocalPath + @"\Log\Debug-.log", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(LocalPath + @"\Log\Warning-.log", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(LocalPath + @"\Log\Error-.log", rollingInterval: RollingInterval.Day))
+                        .WriteTo.File(LocalPath + @"\Log\All-.log", rollingInterval: RollingInterval.Day)
                     .CreateLogger();
         }
 
@@ -1026,7 +1027,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ProcessNewMessage");
+                Log.Error(ex.Message, "ProcessNewMessage");
             }
         }
 
@@ -1131,7 +1132,7 @@ namespace Display
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Uart2Com.SetupComPort");
+                        Log.Error(ex.Message, "Uart2Com.SetupComPort");
                     }
                     if (ret == ComPort.E_OK)
                     {
@@ -1160,7 +1161,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Timer_SendPing.Stop");
+                Log.Error(ex.Message, "Timer_SendPing.Stop");
             }
             Timer_SendPing = new System.Timers.Timer();
             Timer_SendPing.Interval = Interval;
@@ -1201,7 +1202,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ComputerRestart_Handle");
+                Log.Error(ex.Message, "ComputerRestart_Handle");
             }
         }
         private void TimerRestart_Callback(object state)
@@ -1215,7 +1216,7 @@ namespace Display
                     System.Threading.Timer t = (System.Threading.Timer)state;
                     t.Dispose();
                 }
-                catch (Exception ex) { Log.Error(ex, "TimerRestart_Callback"); }
+                catch (Exception ex) { Log.Error(ex.Message, "TimerRestart_Callback"); }
                 return;
             }
             else

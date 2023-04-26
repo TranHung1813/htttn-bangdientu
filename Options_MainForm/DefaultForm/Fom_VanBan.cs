@@ -122,7 +122,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Văn bản: {A}", Content.Substring(0, Content.Length / 5));
+                Log.Error(ex.Message, "ShowText: Văn bản: {A}", Content.Substring(0, Content.Length / 5));
             }
 
             this.Visible = true;
