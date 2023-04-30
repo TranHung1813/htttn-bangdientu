@@ -81,7 +81,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "ShowText: Tiêu đề: {A}", Title);
+                Log.Error(ex, "ShowText: Tiêu đề: {A}", Title);
             }
 
             this.Visible = true;
@@ -102,7 +102,7 @@ namespace Display
                 Moving_Tmr.Start();
             }
 
-            Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
+            Duration_Handle(ref Duration_ThongBao_Tmr, Duration, () =>
             {
                 // Stop Media
                 isValid = false;
@@ -124,7 +124,7 @@ namespace Display
             _Priority_ThongBao = Priority;
             ScheduleID_ThongBao = ScheduleId;
         }
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -139,12 +139,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
         public Bitmap ConvertTextToImage(Control control)
         {
@@ -167,15 +166,11 @@ namespace Display
             txtThongBao.Text = "";
             panel_TextRun.Stop();
 
-            if (Duration_ThongBao_Tmr != null)
-            {
-                Duration_ThongBao_Tmr.Stop();
-                Duration_ThongBao_Tmr.Dispose();
-            }
-            if (Moving_Tmr != null)
-            {
-                Moving_Tmr.Stop();
-            }
+            Duration_ThongBao_Tmr?.Stop();
+            Duration_ThongBao_Tmr?.Dispose();
+
+            Moving_Tmr?.Stop();
+
             isValid = false;
             _is_ThongBaoAvailable = false;
             AutoHideScreen_Check();

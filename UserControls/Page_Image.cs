@@ -31,15 +31,12 @@ namespace Display
 
         public void ShowImage(string Url, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            if (form_Image != null)
+            try
             {
-                try
-                {
-                    form_Image.CloseForm();
-                    form_Image.Dispose();
-                }
-                catch { }
+                form_Image?.CloseForm();
+                form_Image?.Dispose();
             }
+            catch { }
 
             form_Image = new Form_Image();
             form_Image.PageImage_FitToContainer(Height, Width);
@@ -73,15 +70,12 @@ namespace Display
         }
         public void Close()
         {
-            if (form_Image != null)
+            try
             {
-                try
-                {
-                    form_Image.CloseForm();
-                    form_Image.Dispose();
-                }
-                catch { }
+                form_Image?.CloseForm();
+                form_Image?.Dispose();
             }
+            catch { }
         }
     }
 }

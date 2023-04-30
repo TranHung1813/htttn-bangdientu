@@ -47,7 +47,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "ShowText: {A}", ScheduleType);
+                    Log.Error(ex, "ShowText: {A}", ScheduleType);
                 }
 
                 panel_TextRun.SetSpeed = 1;
@@ -66,7 +66,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "ShowText: {A}", ScheduleType);
+                    Log.Error(ex, "ShowText: {A}", ScheduleType);
                 }
 
                 //pictureBox1.Width = lb_Content.Width;
@@ -93,15 +93,12 @@ namespace Display
         }
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            if (form_Text != null)
+            try
             {
-                try
-                {
-                    form_Text.CloseForm();
-                    form_Text.Dispose();
-                }
-                catch { }
+                form_Text?.CloseForm();
+                form_Text?.Dispose();
             }
+            catch { }
 
             form_Text = new Form_Text();
 
@@ -246,15 +243,12 @@ namespace Display
             //lb_Title.Text = "";
             //lb_Content.Text = "";
             //panel_TextRun.Stop();
-            if (form_Text != null)
+            try
             {
-                try
-                {
-                    form_Text.CloseForm();
-                    form_Text.Dispose();
-                }
-                catch { }
+                form_Text?.CloseForm();
+                form_Text?.Dispose();
             }
+            catch { }
 
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;

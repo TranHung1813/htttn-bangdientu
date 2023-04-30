@@ -1,17 +1,12 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Display
 {
@@ -43,7 +38,7 @@ namespace Display
             _Priority_Image = Priority;
 
             // Duration Handle
-            Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
+            Duration_Handle(ref Duration_HinhAnh_Tmr, Duration, () =>
             {
                 // Stop Media
                 _is_ImageAvailable = false;
@@ -86,7 +81,7 @@ namespace Display
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex.Message, "LoadImage");
+                            Log.Error(ex, "LoadImage");
                         }
                     }
                     else
@@ -106,7 +101,7 @@ namespace Display
                 LoadImage_Async(Url, ScheduleId);
             }
         }
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -121,12 +116,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
         private void LoadImage_Async(string Url, string ScheduleId)
         {
@@ -138,7 +132,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Image_GetExtension: {Url}", Url);
+                Log.Error(ex, "Image_GetExtension: {Url}", Url);
             }
             _ImageName = Path.Combine(PathFile, "SaveImage--" + ScheduleId + fileExtension);
 
@@ -175,7 +169,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "DownloadAsync_Image_Completed");
+                    Log.Error(ex, "DownloadAsync_Image_Completed");
                 }
             };
         }
@@ -190,11 +184,8 @@ namespace Display
             this.Visible = false;
             //panel_TextRun.Stop();
 
-            if (Duration_HinhAnh_Tmr != null)
-            {
-                Duration_HinhAnh_Tmr.Stop();
-                Duration_HinhAnh_Tmr.Dispose();
-            }
+            Duration_HinhAnh_Tmr?.Stop();
+            Duration_HinhAnh_Tmr?.Dispose();
 
             _is_ImageAvailable = false;
             _Priority_Image = 1000;

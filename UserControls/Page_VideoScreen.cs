@@ -51,7 +51,7 @@ namespace Display
                 {
                     videoView1.Visible = false;
                     videoView1.MediaPlayer = null;
-                    _mp.Stop();
+                    _mp?.Stop();
                     _mp.EncounteredError -= _mp_EncounteredError;
                     _mp.EndReached -= _mp_EndReached;
                     _mp.Playing -= _mp_Playing;
@@ -61,7 +61,7 @@ namespace Display
                 catch { }
             }
             _mp = new MediaPlayer(_libVLC);
-            //_mp.AspectRatio = "4:3";
+            _mp.AspectRatio = ((int)Screen.PrimaryScreen.Bounds.Size.Width).ToString() + ":" + ((int)Screen.PrimaryScreen.Bounds.Size.Height).ToString();
             videoView1.MediaPlayer = _mp;
             _mp.EncounteredError += _mp_EncounteredError;
             _mp.EndReached += _mp_EndReached;
@@ -118,7 +118,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "SetVolume");
+                Log.Error(ex, "SetVolume");
             }
         }
         public void ShowVideo(string url, string ScheduleID, int Priority = 0, int StartPos = 0)
@@ -176,7 +176,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "PlayMedia_Fail: {A}", url);
+                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
                 }
             });
 
@@ -252,7 +252,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
         }

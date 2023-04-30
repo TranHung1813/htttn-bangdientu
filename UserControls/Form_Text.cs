@@ -115,7 +115,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
+                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
             }
 
             this.Visible = true;
@@ -165,7 +165,7 @@ namespace Display
                 Moving_Tmr.Start();
             }
 
-            Duration_Handle(Duration_VanBan_Tmr, ref Duration_VanBan_Tmr, Duration, () =>
+            Duration_Handle(ref Duration_VanBan_Tmr, Duration, () =>
             {
                 // Stop Media
                 isValid = false;
@@ -199,7 +199,7 @@ namespace Display
             this.Focus();
 
         }
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -214,12 +214,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
 
         public Bitmap ConvertTextToImage(Control control)
@@ -399,15 +398,11 @@ namespace Display
             lb_Content.Text = "";
             panel_TextRun.Stop();
 
-            if (Duration_VanBan_Tmr != null)
-            {
-                Duration_VanBan_Tmr.Stop();
-                Duration_VanBan_Tmr.Dispose();
-            }
-            if (Moving_Tmr != null)
-            {
-                Moving_Tmr.Stop();
-            }
+            Duration_VanBan_Tmr?.Stop();
+            Duration_VanBan_Tmr?.Dispose();
+
+            Moving_Tmr?.Stop();
+
             isValid = false;
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;

@@ -71,10 +71,7 @@ namespace Display
         {
             try
             {
-                if (downloadBackgroundWorker != null)
-                {
-                    downloadBackgroundWorker.CancelAsync();
-                }
+                downloadBackgroundWorker?.CancelAsync();
             }
             catch { }
         }

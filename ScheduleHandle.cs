@@ -101,7 +101,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "ValidTime_Handle");
+                Log.Error(ex, "ValidTime_Handle");
             }
         }
 
@@ -247,7 +247,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Duration_Calculate: {A}", url);
+                Log.Error(ex, "Duration_Calculate: {A}", url);
             }
 
             return tcs.Task;
@@ -500,18 +500,13 @@ namespace Display
                 {
                     try
                     {
-                        if (schedule_msg.Schedule_Timer != null)
-                        {
-                            schedule_msg.Schedule_Timer.Stop();
-                            schedule_msg.Schedule_Timer.Dispose();
-                        }
-                        if (schedule_msg.ValidHandle_Timer != null)
-                        {
-                            schedule_msg.ValidHandle_Timer.Stop();
-                            schedule_msg.ValidHandle_Timer.Dispose();
-                        }
+                        schedule_msg.Schedule_Timer?.Stop();
+                        schedule_msg.Schedule_Timer?.Dispose();
 
-                        if (schedule_msg.dlf != null) schedule_msg.dlf.StopDownLoad();
+                        schedule_msg.ValidHandle_Timer?.Stop();
+                        schedule_msg.ValidHandle_Timer?.Dispose();
+
+                        schedule_msg.dlf?.StopDownLoad();
                     }
                     catch { }
                 }
@@ -533,11 +528,11 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
 
-            if (message.dlf != null) message.dlf.StopDownLoad();
+            message.dlf?.StopDownLoad();
             message.dlf = new DownloadFile(Url, _FileName, ScheduleId);
             message.dlf.DownloadAsync();
 

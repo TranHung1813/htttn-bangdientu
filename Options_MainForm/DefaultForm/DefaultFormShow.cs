@@ -72,7 +72,7 @@ namespace Display
                 {
                     videoView1.Visible = false;
                     videoView1.MediaPlayer = null;
-                    _mp.Stop();
+                    _mp?.Stop();
                     _mp.EncounteredError -= _mp_EncounteredError;
                     _mp.EndReached -= _mp_EndReached;
                     _mp.Playing -= _mp_Playing;
@@ -142,7 +142,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "SetVolume");
+                Log.Error(ex, "SetVolume");
             }
         }
 
@@ -156,16 +156,9 @@ namespace Display
 
             try
             {
-                if (form_HA != null)
-                {
-                    try
-                    {
-                        form_HA.CloseForm();
-                        form_HA.Dispose();
-                        form_HA = null;
-                    }
-                    catch { }
-                }
+                form_HA?.CloseForm();
+                form_HA?.Dispose();
+                form_HA = null;
             }
             catch { }
             videoView1.Visible = true;
@@ -220,7 +213,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "PlayMedia_Fail: {A}", url);
+                    Log.Error(ex, "PlayMedia_Fail: {A}", url);
                 }
             });
 
@@ -263,19 +256,13 @@ namespace Display
             {
                 if (_Priority_ThongBao < Priority) return false;
             }
-            else if (form_VB != null)
+            else if (form_VB?._is_VanBanAvailable == true)
             {
-                if (form_VB._is_VanBanAvailable == true)
-                {
-                    if (form_VB._Priority_VanBan < Priority) return false;
-                }
+                if (form_VB?._Priority_VanBan < Priority) return false;
             }
-            else if (form_HA != null)
+            if (form_HA?._is_ImageAvailable == true)
             {
-                if (form_HA._is_ImageAvailable == true)
-                {
-                    if (form_HA._Priority_Image < Priority) return false;
-                }
+                if (form_HA?._Priority_Image < Priority) return false;
             }
             return true;
         }
@@ -285,27 +272,18 @@ namespace Display
             {
                 txtThongBao.Text = "";
                 pictureBox1.Visible = false;
-                if (pictureBox1.Image != null)
+                try
                 {
-                    try
-                    {
-                        pictureBox1.Image.Dispose();
-                    }
-                    catch { }
+                    pictureBox1.Image?.Dispose();
                 }
+                catch { }
                 panelThongBao.Stop();
 
-                if (Duration_ThongBao_Tmr != null)
-                {
-                    Duration_ThongBao_Tmr.Stop();
-                    Duration_ThongBao_Tmr.Dispose();
-                }
+                Duration_ThongBao_Tmr?.Stop();
+                Duration_ThongBao_Tmr?.Dispose();
 
-                if (Duration_Video_Tmr != null)
-                {
-                    Duration_Video_Tmr.Stop();
-                    Duration_Video_Tmr.Dispose();
-                }
+                Duration_Video_Tmr?.Stop();
+                Duration_Video_Tmr?.Dispose();
             }
             catch { }
             Task.Run(() =>
@@ -316,7 +294,7 @@ namespace Display
                     videoView1.MediaPlayer = null;
                     if (_mp != null)
                     {
-                        _mp.Stop();
+                        _mp?.Stop();
                         _mp.EncounteredError -= _mp_EncounteredError;
                         _mp.EndReached -= _mp_EndReached;
                         _mp.Playing -= _mp_Playing;
@@ -325,26 +303,21 @@ namespace Display
                 catch { }
             });
 
-            if (form_VB != null)
+            try
             {
-                try
-                {
-                    form_VB.CloseForm();
-                    form_VB.Dispose();
-                    form_VB = null;
-                }
-                catch { }
+                form_VB?.CloseForm();
+                form_VB?.Dispose();
+                form_VB = null;
             }
-            if (form_HA != null)
+            catch { }
+
+            try
             {
-                try
-                {
-                    form_HA.CloseForm();
-                    form_HA.Dispose();
-                    form_HA = null;
-                }
-                catch { }
+                form_HA?.CloseForm();
+                form_HA?.Dispose();
+                form_HA = null;
             }
+            catch { }
 
             _is_VideoAvailable = false;
             _is_ThongBaoAvailable = false;
@@ -371,7 +344,7 @@ namespace Display
                         videoView1.MediaPlayer = null;
                         if (_mp != null)
                         {
-                            _mp.Stop();
+                            _mp?.Stop();
                             _mp.EncounteredError -= _mp_EncounteredError;
                             _mp.EndReached -= _mp_EndReached;
                             _mp.Playing -= _mp_Playing;
@@ -380,11 +353,8 @@ namespace Display
                     catch { }
                 });
 
-                if (Duration_Video_Tmr != null)
-                {
-                    Duration_Video_Tmr.Stop();
-                    Duration_Video_Tmr.Dispose();
-                }
+                Duration_Video_Tmr?.Stop();
+                Duration_Video_Tmr?.Dispose();
 
                 _is_VideoAvailable = false;
                 AutoHideScreen_Check();
@@ -404,20 +374,14 @@ namespace Display
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
                     pictureBox1.Visible = false;
-                    if (pictureBox1.Image != null)
+                    try
                     {
-                        try
-                        {
-                            pictureBox1.Image.Dispose();
-                        }
-                        catch { }
+                        pictureBox1.Image?.Dispose();
                     }
+                    catch { }
 
-                    if (Duration_ThongBao_Tmr != null)
-                    {
-                        Duration_ThongBao_Tmr.Stop();
-                        Duration_ThongBao_Tmr.Dispose();
-                    }
+                    Duration_ThongBao_Tmr?.Stop();
+                    Duration_ThongBao_Tmr?.Dispose();
 
                     _is_ThongBaoAvailable = false;
                     AutoHideScreen_Check();
@@ -425,71 +389,44 @@ namespace Display
                 }
                 catch { }
             }
-            if (form_VB != null)
+            if (form_VB?.ScheduleID_VanBan == ScheduleId)
             {
-                if (form_VB.ScheduleID_VanBan == ScheduleId)
+                Log.Information("Ban tin Van Ban het thoi gian Valid!");
+                try
                 {
-                    Log.Information("Ban tin Van Ban het thoi gian Valid!");
-                    try
-                    {
-                        if (form_VB != null)
-                        {
-                            try
-                            {
-                                form_VB.CloseForm();
-                                form_VB.Dispose();
-                                form_VB = null;
-                            }
-                            catch { }
-                        }
+                    form_VB?.CloseForm();
+                    form_VB?.Dispose();
+                    form_VB = null;
 
-                        //if (Duration_VanBan_Tmr != null)
-                        //{
-                        //    Duration_VanBan_Tmr.Stop();
-                        //    Duration_VanBan_Tmr.Dispose();
-                        //}
-                        OnNotifyEndProcess();
-                        this.Visible = false;
-                    }
-                    catch { }
+                    //if (Duration_VanBan_Tmr != null)
+                    //{
+                    //    Duration_VanBan_Tmr.Stop();
+                    //    Duration_VanBan_Tmr.Dispose();
+                    //}
+                    OnNotifyEndProcess();
+                    this.Visible = false;
                 }
+                catch { }
             }
-            if (form_HA != null)
+            if (form_HA?._ScheduleID_Image == ScheduleId)
             {
-                if (form_HA._ScheduleID_Image == ScheduleId)
-                {
-                    Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
+                Log.Information("Ban tin Hinh Anh het thoi gian Valid!");
 
-                    try
-                    {
-                        if (form_HA != null)
-                        {
-                            try
-                            {
-                                form_HA.CloseForm();
-                                form_HA.Dispose();
-                                form_HA = null;
-                            }
-                            catch { }
-                        }
-                        OnNotifyEndProcess();
-                        this.Visible = false;
-                    }
-                    catch { }
+                try
+                {
+                    form_HA?.CloseForm();
+                    form_HA?.Dispose();
+                    form_HA = null;
+
+                    OnNotifyEndProcess();
+                    this.Visible = false;
                 }
+                catch { }
             }
         }
         public bool CheckMessage_Available()
         {
-            if (form_VB != null)
-            {
-                if (form_VB._is_VanBanAvailable) return true;
-            }
-            if (form_HA != null)
-            {
-                if (form_HA._is_ImageAvailable) return true;
-            }
-            if (_is_VideoAvailable || _is_ThongBaoAvailable) return true;
+            if (_is_VideoAvailable || _is_ThongBaoAvailable || form_HA?._is_ImageAvailable == true || form_VB?._is_VanBanAvailable == true) return true;
 
             return false;
         }
@@ -512,39 +449,33 @@ namespace Display
                     pictureBox1.Width = panel1.Width;
                     pictureBox1.Height = (int)(this.CreateGraphics().MeasureString(txtThongBao.Text, font, panel1.Width).Height * 1.3);
                     //pictureBox1.Image = ConvertTextToImage(txtThongBao.Text, font, panel1.BackColor, txtThongBao.ForeColor, pictureBox1.Width, pictureBox1.Height);
-                    if(pictureBox1.Image != null)
+                    try
                     {
-                        try
-                        {
-                            pictureBox1.Image.Dispose();
-                        }
-                        catch { }
+                        pictureBox1.Image?.Dispose();
                     }
+                    catch { }
                     pictureBox1.Image = ConvertTextToImage(txtThongBao);
                     pictureBox1.Visible = true;
                     txtThongBao.Visible = false;
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "Set_Infomation_BanTinThongBao");
+                    Log.Error(ex, "Set_Infomation_BanTinThongBao");
                 }
 
 
                 // Duration Handle
-                Duration_Handle(Duration_ThongBao_Tmr, ref Duration_ThongBao_Tmr, Duration, () =>
+                Duration_Handle(ref Duration_ThongBao_Tmr, Duration, () =>
                 {
                     // Stop Media
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
                     pictureBox1.Visible = false;
-                    if (pictureBox1.Image != null)
+                    try
                     {
-                        try
-                        {
-                            pictureBox1.Image.Dispose();
-                        }
-                        catch { }
+                        pictureBox1.Image?.Dispose();
                     }
+                    catch { }
                     _is_ThongBaoAvailable = false;
                     AutoHideScreen_Check();
                     _Priority_ThongBao = 1000;
@@ -582,9 +513,9 @@ namespace Display
             if (form_HA != null)
             {
                 form_HA.Visible = true;
-                form_HA.Activate();
-                form_HA.BringToFront();
-                form_HA.Focus();
+                form_HA?.Activate();
+                form_HA?.BringToFront();
+                form_HA?.Focus();
             }
         }
 
@@ -598,16 +529,13 @@ namespace Display
 
         private void Show_VanBan(string ScheduleID, string Content = "", int Priority = 0, string ColorValue = "", int Duration = MAXVALUE)
         {
-            if (form_VB != null)
+            try
             {
-                try
-                {
-                    form_VB.CloseForm();
-                    form_VB.Dispose();
-                    form_VB = null;
-                }
-                catch { }
+                form_VB?.CloseForm();
+                form_VB?.Dispose();
+                form_VB = null;
             }
+            catch { }
 
             form_VB = new Form_VanBan();
 
@@ -627,7 +555,7 @@ namespace Display
             form_VB.NotifyEndProcess_TextRun -= Form_VB_NotifyEndProcess_TextRun;
         }
 
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -642,12 +570,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
 
         private void DownloadAsync_Video(string Url, string ScheduleId)
@@ -660,22 +587,19 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Path_GetExtension: {Url}", Url);
+                Log.Error(ex, "Path_GetExtension: {Url}", Url);
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
         }
         public void ShowImage(string Url, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            if (form_HA != null)
+            try
             {
-                try
-                {
-                    form_HA.CloseForm();
-                    form_HA.Dispose();
-                    form_HA = null;
-                }
-                catch { }
+                form_HA?.CloseForm();
+                form_HA?.Dispose();
+                form_HA = null;
             }
+            catch { }
 
             form_HA = new Form_HinhAnh();
 
@@ -695,7 +619,7 @@ namespace Display
                     {
                         videoView1.Visible = false;
                         videoView1.MediaPlayer = null;
-                        _mp.Stop();
+                        _mp?.Stop();
                         _mp.EncounteredError -= _mp_EncounteredError;
                         _mp.EndReached -= _mp_EndReached;
                         _mp.Playing -= _mp_Playing;
@@ -728,21 +652,11 @@ namespace Display
         }
         private void AutoHideScreen_Check()
         {
-            bool result = true; // result = true thì HideScreen
-            if (_is_VideoAvailable == true || _is_ThongBaoAvailable == true)
+            if (_is_VideoAvailable == true || _is_ThongBaoAvailable == true || form_VB?._is_VanBanAvailable == true || form_HA?._is_ImageAvailable == true)
             {
-                result = false;
+                // Do nothing...
             }
-            if (form_VB != null)
-            {
-                if (form_VB._is_VanBanAvailable == true) result = false;
-            }
-            if (form_HA != null)
-            {
-                if (form_HA._is_ImageAvailable == true) result = false;
-            }
-
-            if (result == true)
+            else
             {
                 OnNotifyEndProcess();
                 this.Visible = false;

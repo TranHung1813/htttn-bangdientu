@@ -101,25 +101,20 @@ namespace Display
         }
         private void CloseTextOverlay()
         {
-            if (frm_TextOverlay != null)
+            try
             {
-                try
-                {
-                    frm_TextOverlay.CloseForm();
-                    frm_TextOverlay.Dispose();
-                    frm_TextOverlay = null;
-                }
-                catch { }
+                frm_TextOverlay?.CloseForm();
+                frm_TextOverlay?.Dispose();
+                frm_TextOverlay = null;
             }
-            if (backGround != null)
+            catch { }
+
+            try
             {
-                try
-                {
-                    backGround.Dispose();
-                    backGround = null;
-                }
-                catch { }
+                backGround?.Dispose();
+                backGround = null;
             }
+            catch { }
         }
 
         private void ShowPanel(PanelContainer panel, UserControl uc)
@@ -213,25 +208,19 @@ namespace Display
         }
         public void Show_TextOverlay(string Content, string ColorValue = "", int Duration = MAXVALUE)
         {
-            if (frm_TextOverlay != null)
+            if (frm_TextOverlay?.CurrentContent == Content && frm_TextOverlay?.TextColorValue == ColorValue) return;
+            try
             {
-                if (frm_TextOverlay.CurrentContent == Content &&
-                    frm_TextOverlay.TextColorValue == ColorValue) return;
-                try
-                {
-                    frm_TextOverlay.CloseForm();
-                    frm_TextOverlay.Dispose();
-                }
-                catch { }
+                frm_TextOverlay?.CloseForm();
+                frm_TextOverlay?.Dispose();
             }
-            if (backGround != null)
+            catch { }
+
+            try
             {
-                try
-                {
-                    backGround.Dispose();
-                }
-                catch { }
+                backGround?.Dispose();
             }
+            catch { }
 
             frm_TextOverlay = new Frm_TextOverlay();
             backGround = new Transparent_BackGround();

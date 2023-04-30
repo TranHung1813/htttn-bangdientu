@@ -41,7 +41,7 @@ namespace Display
             _is_ImageAvailable = true;
 
             // Duration Handle
-            Duration_Handle(Duration_HinhAnh_Tmr, ref Duration_HinhAnh_Tmr, Duration, () =>
+            Duration_Handle(ref Duration_HinhAnh_Tmr, Duration, () =>
             {
                 // Stop Media
                 this.Visible = false;
@@ -84,7 +84,7 @@ namespace Display
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex.Message, "ShowImage");
+                            Log.Error(ex, "ShowImage");
                         }
                     }
                     else
@@ -105,7 +105,7 @@ namespace Display
             }
         }
 
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -120,12 +120,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
 
         private void LoadImage_Async(string Url, string ScheduleId)
@@ -138,7 +137,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, "Image_GetExtension: {Url}", Url);
+                Log.Error(ex, "Image_GetExtension: {Url}", Url);
             }
             _ImageName = Path.Combine(PathFile, "SaveImage--" + ScheduleId + fileExtension);
 
@@ -178,7 +177,7 @@ namespace Display
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, "DownloadAsync_Image_Completed");
+                    Log.Error(ex, "DownloadAsync_Image_Completed");
                 }
             };
         }
@@ -212,11 +211,8 @@ namespace Display
 
         public void CloseForm()
         {
-            if (Duration_HinhAnh_Tmr != null)
-            {
-                Duration_HinhAnh_Tmr.Stop();
-                Duration_HinhAnh_Tmr.Dispose();
-            }
+            Duration_HinhAnh_Tmr?.Stop();
+            Duration_HinhAnh_Tmr?.Dispose();
 
             this.Visible = false;
             _Priority_Image = 1000;

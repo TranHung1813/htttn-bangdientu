@@ -120,7 +120,7 @@ namespace Display
         {
             try
             {
-                Timer_Transition.Stop();
+                Timer_Transition?.Stop();
             }
             catch { }
 

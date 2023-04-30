@@ -80,7 +80,7 @@ namespace Display
             Moving_Tmr.Start();
 
             // Duration Handle
-            Duration_Handle(Duration_TextOverlay_Tmr, ref Duration_TextOverlay_Tmr, Duration, () =>
+            Duration_Handle(ref Duration_TextOverlay_Tmr, Duration, () =>
             {
                 // Stop Media
                 _isValid = false;
@@ -89,7 +89,7 @@ namespace Display
             _isValid = true;
         }
 
-        private void Duration_Handle(System.Timers.Timer tmr, ref System.Timers.Timer return_tmr, int Duration, Action action)
+        private void Duration_Handle(ref System.Timers.Timer tmr, int Duration, Action action)
         {
             try
             {
@@ -104,12 +104,11 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                tmr.Stop();
-                tmr.Dispose();
+                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
+                thisTimer.Stop();
+                thisTimer.Dispose();
             };
             tmr.Start();
-
-            return_tmr = tmr;
         }
 
         public Bitmap ConvertTextToImage(string txt, Font font, Color bgcolor, Color fcolor,
@@ -154,16 +153,11 @@ namespace Display
         }
         public void CloseForm()
         {
-            if (Moving_Tmr != null)
-            {
-                Moving_Tmr.Stop();
-                Moving_Tmr.Dispose();
-            }
-            if (Duration_TextOverlay_Tmr != null)
-            {
-                Duration_TextOverlay_Tmr.Stop();
-                Duration_TextOverlay_Tmr.Dispose();
-            }
+            Moving_Tmr?.Stop();
+            Moving_Tmr?.Dispose();
+
+            Duration_TextOverlay_Tmr?.Stop();
+            Duration_TextOverlay_Tmr?.Dispose();
 
             CurrentContent = "";
             TextColorValue = "";
