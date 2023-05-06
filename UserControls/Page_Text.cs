@@ -93,12 +93,15 @@ namespace Display
         }
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
-            try
+            if (form_Text != null)
             {
-                form_Text?.CloseForm();
-                form_Text?.Dispose();
+                try
+                {
+                    form_Text.CloseForm();
+                    form_Text.Dispose();
+                }
+                catch { }
             }
-            catch { }
 
             form_Text = new Form_Text();
 
@@ -243,12 +246,15 @@ namespace Display
             //lb_Title.Text = "";
             //lb_Content.Text = "";
             //panel_TextRun.Stop();
-            try
+            if (form_Text != null)
             {
-                form_Text?.CloseForm();
-                form_Text?.Dispose();
+                try
+                {
+                    form_Text.CloseForm();
+                    form_Text.Dispose();
+                }
+                catch { }
             }
-            catch { }
 
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;

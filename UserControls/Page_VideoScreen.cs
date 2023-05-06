@@ -51,7 +51,7 @@ namespace Display
                 {
                     videoView1.Visible = false;
                     videoView1.MediaPlayer = null;
-                    _mp?.Stop();
+                    _mp.Stop();
                     _mp.EncounteredError -= _mp_EncounteredError;
                     _mp.EndReached -= _mp_EndReached;
                     _mp.Playing -= _mp_Playing;

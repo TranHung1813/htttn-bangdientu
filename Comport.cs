@@ -100,7 +100,7 @@ namespace Display
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("SetupComPort_Error: " + ex);
+                        Console.WriteLine("SetupComPort_Error: " + ex.Message);
                     }
 
                     SendManager_trd = new Thread(new ThreadStart(this.SendManager_Thread));
@@ -143,12 +143,19 @@ namespace Display
                     {
                         try
                         {
-                            SendManager_trd?.Abort();
-                            RecvManager_trd?.Abort();
+                            if (SendManager_trd != null)
+                            {
+                                SendManager_trd.Abort();
+                            }
+
+                            if (RecvManager_trd != null)
+                            {
+                                RecvManager_trd.Abort();
+                            }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error_Close: " + ex);
+                            Console.WriteLine("Error_Close: " + ex.Message);
                         }
                         ret = E_OK;
                         //OnNotifyCloseConnect();
@@ -195,7 +202,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Send_Error: " + ex);
+                Console.WriteLine("Send_Error: " + ex.Message);
                 //OnNotifySendRawPacket(ComPort.E_NOT_OK, dataEnc, lengthEnc);
                 ret = E_NOT_OK;
             }
@@ -617,11 +624,14 @@ namespace Display
 
             try
             {
-                FindComPort_trd?.Abort();
+                if (FindComPort_trd != null)
+                {
+                    FindComPort_trd.Abort();
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("FindComPort: " + ex);
+                Console.WriteLine("FindComPort: " + ex.Message);
             }
 
             for (int countChannel = 0; countChannel < MAX_BUFFER_SEND; countChannel++)
@@ -661,7 +671,7 @@ namespace Display
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error_Comport NULL.... " + ex);
+                        Console.WriteLine("Error_Comport NULL.... " + ex.Message);
                     }
 
                     if (ret == E_OK)

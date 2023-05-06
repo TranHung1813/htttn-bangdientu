@@ -139,9 +139,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }
@@ -166,11 +166,15 @@ namespace Display
             txtThongBao.Text = "";
             panel_TextRun.Stop();
 
-            Duration_ThongBao_Tmr?.Stop();
-            Duration_ThongBao_Tmr?.Dispose();
-
-            Moving_Tmr?.Stop();
-
+            if (Duration_ThongBao_Tmr != null)
+            {
+                Duration_ThongBao_Tmr.Stop();
+                Duration_ThongBao_Tmr.Dispose();
+            }
+            if (Moving_Tmr != null)
+            {
+                Moving_Tmr.Stop();
+            }
             isValid = false;
             _is_ThongBaoAvailable = false;
             AutoHideScreen_Check();

@@ -101,20 +101,25 @@ namespace Display
         }
         private void CloseTextOverlay()
         {
-            try
+            if (frm_TextOverlay != null)
             {
-                frm_TextOverlay?.CloseForm();
-                frm_TextOverlay?.Dispose();
-                frm_TextOverlay = null;
+                try
+                {
+                    frm_TextOverlay.CloseForm();
+                    frm_TextOverlay.Dispose();
+                    frm_TextOverlay = null;
+                }
+                catch { }
             }
-            catch { }
-
-            try
+            if (backGround != null)
             {
-                backGround?.Dispose();
-                backGround = null;
+                try
+                {
+                    backGround.Dispose();
+                    backGround = null;
+                }
+                catch { }
             }
-            catch { }
         }
 
         private void ShowPanel(PanelContainer panel, UserControl uc)
@@ -208,19 +213,25 @@ namespace Display
         }
         public void Show_TextOverlay(string Content, string ColorValue = "", int Duration = MAXVALUE)
         {
-            if (frm_TextOverlay?.CurrentContent == Content && frm_TextOverlay?.TextColorValue == ColorValue) return;
-            try
+            if (frm_TextOverlay != null)
             {
-                frm_TextOverlay?.CloseForm();
-                frm_TextOverlay?.Dispose();
+                if (frm_TextOverlay.CurrentContent == Content &&
+                    frm_TextOverlay.TextColorValue == ColorValue) return;
+                try
+                {
+                    frm_TextOverlay.CloseForm();
+                    frm_TextOverlay.Dispose();
+                }
+                catch { }
             }
-            catch { }
-
-            try
+            if (backGround != null)
             {
-                backGround?.Dispose();
+                try
+                {
+                    backGround.Dispose();
+                }
+                catch { }
             }
-            catch { }
 
             frm_TextOverlay = new Frm_TextOverlay();
             backGround = new Transparent_BackGround();

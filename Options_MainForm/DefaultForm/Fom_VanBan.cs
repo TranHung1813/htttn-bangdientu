@@ -344,11 +344,15 @@ namespace Display
             this.Visible = false;
             //panel_TextRun.Stop();
 
-            Duration_VanBan_Tmr?.Stop();
-            Duration_VanBan_Tmr?.Dispose();
-
-            Moving_Tmr?.Stop();
-
+            if (Duration_VanBan_Tmr != null)
+            {
+                Duration_VanBan_Tmr.Stop();
+                Duration_VanBan_Tmr.Dispose();
+            }
+            if (Moving_Tmr != null)
+            {
+                Moving_Tmr.Stop();
+            }
             isValid = false;
             _is_VanBanAvailable = false;
             AutoHideScreen_Check();

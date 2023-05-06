@@ -120,9 +120,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }
@@ -211,8 +211,11 @@ namespace Display
 
         public void CloseForm()
         {
-            Duration_HinhAnh_Tmr?.Stop();
-            Duration_HinhAnh_Tmr?.Dispose();
+            if (Duration_HinhAnh_Tmr != null)
+            {
+                Duration_HinhAnh_Tmr.Stop();
+                Duration_HinhAnh_Tmr.Dispose();
+            }
 
             this.Visible = false;
             _Priority_Image = 1000;

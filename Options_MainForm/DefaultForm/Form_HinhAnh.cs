@@ -1,12 +1,17 @@
 ﻿using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Display
 {
@@ -116,9 +121,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }
@@ -184,8 +189,11 @@ namespace Display
             this.Visible = false;
             //panel_TextRun.Stop();
 
-            Duration_HinhAnh_Tmr?.Stop();
-            Duration_HinhAnh_Tmr?.Dispose();
+            if (Duration_HinhAnh_Tmr != null)
+            {
+                Duration_HinhAnh_Tmr.Stop();
+                Duration_HinhAnh_Tmr.Dispose();
+            }
 
             _is_ImageAvailable = false;
             _Priority_Image = 1000;

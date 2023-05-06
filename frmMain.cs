@@ -758,10 +758,10 @@ namespace Display
             string LocalPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(LocalPath + @"\Log\Info-.log", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(LocalPath + @"\Log\Debug-.log", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(LocalPath + @"\Log\Warning-.log", rollingInterval: RollingInterval.Day))
-                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(LocalPath + @"\Log\Error-.log", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information).WriteTo.File(LocalPath + @"\Log\Info-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug).WriteTo.File(LocalPath + @"\Log\Debug-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Warning).WriteTo.File(LocalPath + @"\Log\Warning-.txt", rollingInterval: RollingInterval.Day))
+                        .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error).WriteTo.File(LocalPath + @"\Log\Error-.txt", rollingInterval: RollingInterval.Day))
                         .WriteTo.File(LocalPath + @"\Log\All-.log", rollingInterval: RollingInterval.Day)
                     .CreateLogger();
         }
@@ -841,183 +841,185 @@ namespace Display
             try
             {
                 var newMessage = mqttMessage.GetMessage;
-                if (newMessage == null) return;
-                var topic = newMessage.Topic;
-                if (newMessage.Topic == mqttMessage.subcribeTopic_Default)
+                if (newMessage != null)
                 {
-                    string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    //Log.Information("ProcessNewMessage: {A}", message);
-                    dynamic payload = JsonConvert.DeserializeObject<object>(message);
-
-                    if (payload.BanTinThongBao != null)
+                    var topic = newMessage.Topic;
+                    if (newMessage.Topic == mqttMessage.subcribeTopic_Default)
                     {
-                        Log.Information("Get_NewMessage: DefaultTopic");
-                        _TxtThongBao = payload.BanTinThongBao;
-                        //ShowText(_TxtThongBao);
-                        _TxtVanBan = payload.BanTinVanBan;
-                        _VideoUrl = payload.VideoUrl;
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                        //customForm.ShowVideo(_VideoUrl);
-                        if (CurrentForm == STREAM_FORM) return;
-                        // Chuyển sang Form Default
-                        if (CurrentForm != DEFAULT_FORM)
+                        if (payload.BanTinThongBao != null)
                         {
-                            customForm.Close();
-                            //Add_UserControl(defaultForm);
-                            defaultForm.Show();
-                            CurrentForm = DEFAULT_FORM;
-                        }
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", _TxtThongBao);
-                        defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", _TxtVanBan);
-                        defaultForm.ShowVideo(_VideoUrl, "");
-                        //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
-                    }
-                }
-                else if (newMessage.Topic == mqttMessage.subcribeTopic_Groups)
-                {
-                    string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    //Log.Information("ProcessNewMessage: {A}", message);
-                    dynamic payload = JsonConvert.DeserializeObject<object>(message);
+                            Log.Information("Get_NewMessage: DefaultTopic");
+                            _TxtThongBao = payload.BanTinThongBao;
+                            //ShowText(_TxtThongBao);
+                            _TxtVanBan = payload.BanTinVanBan;
+                            _VideoUrl = payload.VideoUrl;
 
-                    if (payload.Id != null && payload.Id == MSG_ID_DEVICE_CONFIG)
-                    {
-                        Log.Information("Get_NewMessage: DeviceConfigMessage");
-                        string s = JsonConvert.SerializeObject(payload.Message);
-                        DeviceConfigMessage newGroups_msg = JsonConvert.DeserializeObject<DeviceConfigMessage>(s);
-                        mqttMessage.Subcribe2Groups(newGroups_msg.Groups);
-
-                        DataUser_Groups_Info info_Save = new DataUser_Groups_Info();
-                        info_Save.Id = 0;
-                        foreach (var group in newGroups_msg.Groups)
-                        {
-                            info_Save.Id += 1;
-                            info_Save.GroupId = group.Id;
-                            info_Save.Priority = group.Priority;
-                            info_Save.Name = group.Name;
-                            info_Save.MasterType = group.MasterType;
-
-                            SqLiteDataAccess.SaveInfo_Groups(info_Save);
-                        }
-                        Load_Groups_Info();
-
-                        NodeId = payload.Message.Id;
-                        NodeName = payload.Message.Name;
-
-                        DataUser_DeviceInfo info = new DataUser_DeviceInfo();
-                        info.Id = 1;
-                        info.NodeId = payload.Message.Id;
-                        info.NodeName = payload.Message.Name;
-                        SqLiteDataAccess.SaveInfo_Device(info);
-                    }
-                    else if (payload.Id != null && payload.Id == MSG_ID_SET_CFG)
-                    {
-                        // MSG_SET_CFG
-                        string s = JsonConvert.SerializeObject(payload.Message);
-                        SetConfigMessage SetCfg_Msg = JsonConvert.DeserializeObject<SetConfigMessage>(s);
-                        Log.Information("Get_NewMessage: SetConfigMessage");
-                        int VolumeValue = -1;
-                        string VolumeCmd = "";
-                        if (SetCfg_Msg.Cmd != null)
-                        {
-                            List<string> List_Cmd = SetCfg_Msg.Cmd.Split(' ').OfType<string>().ToList();
-                            int index_VolumeCmd = List_Cmd.FindIndex(i => (i.Split(',').OfType<string>().ToList().Contains("96") ||
-                                                                            i.Split(',').OfType<string>().ToList().Contains("97")));
-                            if (index_VolumeCmd != -1)
+                            //customForm.ShowVideo(_VideoUrl);
+                            if (CurrentForm == STREAM_FORM) return;
+                            // Chuyển sang Form Default
+                            if (CurrentForm != DEFAULT_FORM)
                             {
-                                VolumeCmd = List_Cmd[index_VolumeCmd].Split(',')[2].Replace("(", "").Replace(")", "");
+                                customForm.Close();
+                                //Add_UserControl(defaultForm);
+                                defaultForm.Show();
+                                CurrentForm = DEFAULT_FORM;
                             }
-                        }
-                        else if (SetCfg_Msg.Obj != null)
-                        {
-                            int index_VolumeCmd = SetCfg_Msg.Obj.FindIndex(i => (i.C == 96 || i.C == 97));
-                            if (index_VolumeCmd != -1)
-                            {
-                                VolumeCmd = SetCfg_Msg.Obj[index_VolumeCmd].V.ToString();
-                            }
-                        }
-                        if (Int32.TryParse(VolumeCmd, out VolumeValue))
-                        {
-                            if (VolumeValue < 0 && VolumeValue > 100) return;
-                            if (CurrentForm == DEFAULT_FORM)
-                            {
-                                defaultForm.SetVolume(VolumeValue);
-                            }
-                            else if (CurrentForm == CUSTOM_FORM)
-                            {
-                                customForm.SetVolume(VolumeValue);
-                            }
-                            else if (CurrentForm == STREAM_FORM)
-                            {
-                                streamForm.SetVolume(VolumeValue);
-                            }
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinThongBao, "", _TxtThongBao);
+                            defaultForm.Set_Infomation(DisplayScheduleType.BanTinVanBan, "", _TxtVanBan);
+                            defaultForm.ShowVideo(_VideoUrl, "");
+                            //customForm.ShowVideo("https://live.hungyentv.vn/hytvlive/tv1live.m3u8");
                         }
                     }
-                }
-                else
-                {
-                    int Priority = -1;
-                    int index = Message.GroupsList.FindIndex(s => newMessage.Topic.Contains(s.Id) == true);
-                    if (index != -1)
+                    else if (newMessage.Topic == mqttMessage.subcribeTopic_Groups)
                     {
-                        Priority = Message.GroupsList[index].Priority;
-                    }
-                    string message = Encoding.UTF8.GetString(newMessage.Payload);
-                    //Log.Information("ProcessNewMessage: {A}", message);
-                    dynamic payload = JsonConvert.DeserializeObject<object>(message);
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                    // Schedule Message
-                    if (payload.Message.Schedule != null)
-                    {
-                        string s = JsonConvert.SerializeObject(payload.Message.Schedule);
-                        Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
-                        Log.Information("Get_NewMessage: ScheduleMessage, Id: {A}, isActive: {B}, Type: {C}",
-                                                                                    newSchedule_msg.Id,
-                                                                                    newSchedule_msg.IsActive.ToString(),
-                                                                                    newSchedule_msg.ScheduleType);
-                        //System.Threading.Tasks.Task.Run(() =>
-                        //{
-                        //    scheduleHandle.Schedule(newSchedule_msg, Priority);
-                        //});
-                        scheduleHandle.Schedule(newSchedule_msg, Priority);
-                    }
-                    // Stream Command
-                    else if (payload.Message.StreamInfo != null)
-                    {
-                        string s = JsonConvert.SerializeObject(payload.Message);
-                        StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
-                        Log.Information("Get_NewMessage: StreamCommandMessage, Command: {A}, Url: {B}",
-                                                                                    StreamCmd.CmdCode,
-                                                                                    StreamCmd.StreamInfo.Uri);
-
-                        if (StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
+                        if (payload.Id != null && payload.Id == MSG_ID_DEVICE_CONFIG)
                         {
-                            if (StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
+                            Log.Information("Get_NewMessage: DeviceConfigMessage");
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            DeviceConfigMessage newGroups_msg = JsonConvert.DeserializeObject<DeviceConfigMessage>(s);
+                            mqttMessage.Subcribe2Groups(newGroups_msg.Groups);
+
+                            DataUser_Groups_Info info_Save = new DataUser_Groups_Info();
+                            info_Save.Id = 0;
+                            foreach (var group in newGroups_msg.Groups)
                             {
-                                if (_isRelayOpened == false)
+                                info_Save.Id += 1;
+                                info_Save.GroupId = group.Id;
+                                info_Save.Priority = group.Priority;
+                                info_Save.Name = group.Name;
+                                info_Save.MasterType = group.MasterType;
+
+                                SqLiteDataAccess.SaveInfo_Groups(info_Save);
+                            }
+                            Load_Groups_Info();
+
+                            NodeId = payload.Message.Id;
+                            NodeName = payload.Message.Name;
+
+                            DataUser_DeviceInfo info = new DataUser_DeviceInfo();
+                            info.Id = 1;
+                            info.NodeId = payload.Message.Id;
+                            info.NodeName = payload.Message.Name;
+                            SqLiteDataAccess.SaveInfo_Device(info);
+                        }
+                        else if (payload.Id != null && payload.Id == MSG_ID_SET_CFG)
+                        {
+                            // MSG_SET_CFG
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            SetConfigMessage SetCfg_Msg = JsonConvert.DeserializeObject<SetConfigMessage>(s);
+                            Log.Information("Get_NewMessage: SetConfigMessage");
+                            int VolumeValue = -1;
+                            string VolumeCmd = "";
+                            if (SetCfg_Msg.Cmd != null)
+                            {
+                                List<string> List_Cmd = SetCfg_Msg.Cmd.Split(' ').OfType<string>().ToList();
+                                int index_VolumeCmd = List_Cmd.FindIndex(i => (i.Split(',').OfType<string>().ToList().Contains("96") ||
+                                                                                i.Split(',').OfType<string>().ToList().Contains("97")));
+                                if (index_VolumeCmd != -1)
                                 {
-                                    // Bat man hinh
-                                    OpenRelay();
+                                    VolumeCmd = List_Cmd[index_VolumeCmd].Split(',')[2].Replace("(", "").Replace(")", "");
                                 }
-                                CloseCurrentForm();
-                                Add_UserControl(streamForm);
-                                CurrentForm = STREAM_FORM;
                             }
-                            else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_START)
+                            else if (SetCfg_Msg.Obj != null)
                             {
-                                CloseCurrentForm();
-                                Add_UserControl(streamForm);
-                                CurrentForm = STREAM_FORM;
-
-                                streamForm.ShowLiveStream(StreamCmd.StreamInfo.Uri, StreamCmd.Volume, StreamCmd.MasterImei);
-                            }
-                            else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_STOP)
-                            {
-                                if (CurrentForm == STREAM_FORM)
+                                int index_VolumeCmd = SetCfg_Msg.Obj.FindIndex(i => (i.C == 96 || i.C == 97));
+                                if (index_VolumeCmd != -1)
                                 {
-                                    streamForm.Close();
-                                    panelContainer.Controls.Clear();
+                                    VolumeCmd = SetCfg_Msg.Obj[index_VolumeCmd].V.ToString();
+                                }
+                            }
+                            if (Int32.TryParse(VolumeCmd, out VolumeValue))
+                            {
+                                if (VolumeValue < 0 && VolumeValue > 100) return;
+                                if (CurrentForm == DEFAULT_FORM)
+                                {
+                                    defaultForm.SetVolume(VolumeValue);
+                                }
+                                else if (CurrentForm == CUSTOM_FORM)
+                                {
+                                    customForm.SetVolume(VolumeValue);
+                                }
+                                else if (CurrentForm == STREAM_FORM)
+                                {
+                                    streamForm.SetVolume(VolumeValue);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int Priority = -1;
+                        int index = Message.GroupsList.FindIndex(s => newMessage.Topic.Contains(s.Id) == true);
+                        if (index != -1)
+                        {
+                            Priority = Message.GroupsList[index].Priority;
+                        }
+                        string message = Encoding.UTF8.GetString(newMessage.Payload);
+                        //Log.Information("ProcessNewMessage: {A}", message);
+                        dynamic payload = JsonConvert.DeserializeObject<object>(message);
 
-                                    CurrentForm = 0;
+                        // Schedule Message
+                        if (payload.Message.Schedule != null)
+                        {
+                            string s = JsonConvert.SerializeObject(payload.Message.Schedule);
+                            Schedule newSchedule_msg = JsonConvert.DeserializeObject<Schedule>(s);
+                            Log.Information("Get_NewMessage: ScheduleMessage, Id: {A}, isActive: {B}, Type: {C}",
+                                                                                        newSchedule_msg.Id,
+                                                                                        newSchedule_msg.IsActive.ToString(),
+                                                                                        newSchedule_msg.ScheduleType);
+                            //System.Threading.Tasks.Task.Run(() =>
+                            //{
+                            //    scheduleHandle.Schedule(newSchedule_msg, Priority);
+                            //});
+                            scheduleHandle.Schedule(newSchedule_msg, Priority);
+                        }
+                        // Stream Command
+                        else if (payload.Message.StreamInfo != null)
+                        {
+                            string s = JsonConvert.SerializeObject(payload.Message);
+                            StreamCommandMessage StreamCmd = JsonConvert.DeserializeObject<StreamCommandMessage>(s);
+                            Log.Information("Get_NewMessage: StreamCommandMessage, Command: {A}, Url: {B}",
+                                                                                        StreamCmd.CmdCode,
+                                                                                        StreamCmd.StreamInfo.Uri);
+
+                            if (StreamCmd.IsAll == true || StreamCmd.Serial.Contains(GUID_Value))
+                            {
+                                if (StreamCmd.CmdCode == commandCode.CMD_STREAM_PREPAIR)
+                                {
+                                    if (_isRelayOpened == false)
+                                    {
+                                        // Bat man hinh
+                                        OpenRelay();
+                                    }
+                                    CloseCurrentForm();
+                                    Add_UserControl(streamForm);
+                                    CurrentForm = STREAM_FORM;
+                                }
+                                else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_START)
+                                {
+                                    CloseCurrentForm();
+                                    Add_UserControl(streamForm);
+                                    CurrentForm = STREAM_FORM;
+
+                                    streamForm.ShowLiveStream(StreamCmd.StreamInfo.Uri, StreamCmd.Volume, StreamCmd.MasterImei);
+                                }
+                                else if (StreamCmd.CmdCode == commandCode.CMD_STREAM_STOP)
+                                {
+                                    if (CurrentForm == STREAM_FORM)
+                                    {
+                                        streamForm.Close();
+                                        panelContainer.Controls.Clear();
+
+                                        CurrentForm = 0;
+                                    }
                                 }
                             }
                         }
@@ -1152,8 +1154,11 @@ namespace Display
         {
             try
             {
-                Timer_SendPing?.Stop();
-                Timer_SendPing?.Dispose();
+                if (Timer_SendPing != null)
+                {
+                    Timer_SendPing.Stop();
+                    Timer_SendPing.Dispose();
+                }
             }
             catch (Exception ex)
             {
@@ -1179,7 +1184,7 @@ namespace Display
             if (Hour < 0 || Hour > 24) return;
             try
             {
-                var t = new System.Threading.Timer(TimerRestart_Callback);
+                var t = new System.Threading.Timer((sender) => { TimerRestart_Callback(sender, Hour); });
 
                 // Figure how much time until 2:00 AM
                 DateTime now = DateTime.Now;
@@ -1201,7 +1206,7 @@ namespace Display
                 Log.Error(ex, "ComputerRestart_Handle");
             }
         }
-        private void TimerRestart_Callback(object state)
+        private void TimerRestart_Callback(object state, double Hour)
         {
             if (CheckMessage_Available() == true)
             {
@@ -1213,6 +1218,8 @@ namespace Display
                     t.Dispose();
                 }
                 catch (Exception ex) { Log.Error(ex, "TimerRestart_Callback"); }
+
+                ComputerRestart_Handle(Hour);
                 return;
             }
             else

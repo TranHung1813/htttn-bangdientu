@@ -104,9 +104,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }
@@ -153,11 +153,16 @@ namespace Display
         }
         public void CloseForm()
         {
-            Moving_Tmr?.Stop();
-            Moving_Tmr?.Dispose();
-
-            Duration_TextOverlay_Tmr?.Stop();
-            Duration_TextOverlay_Tmr?.Dispose();
+            if (Moving_Tmr != null)
+            {
+                Moving_Tmr.Stop();
+                Moving_Tmr.Dispose();
+            }
+            if (Duration_TextOverlay_Tmr != null)
+            {
+                Duration_TextOverlay_Tmr.Stop();
+                Duration_TextOverlay_Tmr.Dispose();
+            }
 
             CurrentContent = "";
             TextColorValue = "";

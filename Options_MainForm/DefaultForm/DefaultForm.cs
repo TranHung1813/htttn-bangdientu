@@ -74,7 +74,7 @@ namespace Display
                 {
                     videoView1.Visible = false;
                     videoView1.MediaPlayer = null;
-                    _mp?.Stop();
+                    _mp.Stop();
                     _mp.EncounteredError -= _mp_EncounteredError;
                     _mp.EndReached -= _mp_EndReached;
                     _mp.Playing -= _mp_Playing;
@@ -294,17 +294,29 @@ namespace Display
                 panelThongBao.Stop();
                 panelVanBan.Stop();
 
-                Duration_ThongBao_Tmr?.Stop();
-                Duration_ThongBao_Tmr?.Dispose();
+                if (Duration_ThongBao_Tmr != null)
+                {
+                    Duration_ThongBao_Tmr.Stop();
+                    Duration_ThongBao_Tmr.Dispose();
+                }
 
-                Duration_VanBan_Tmr?.Stop();
-                Duration_VanBan_Tmr?.Dispose();
+                if (Duration_VanBan_Tmr != null)
+                {
+                    Duration_VanBan_Tmr.Stop();
+                    Duration_VanBan_Tmr.Dispose();
+                }
 
-                Duration_HinhAnh_Tmr?.Stop();
-                Duration_HinhAnh_Tmr?.Dispose();
+                if (Duration_HinhAnh_Tmr != null)
+                {
+                    Duration_HinhAnh_Tmr.Stop();
+                    Duration_HinhAnh_Tmr.Dispose();
+                }
 
-                Duration_Video_Tmr?.Stop();
-                Duration_Video_Tmr?.Dispose();
+                if(Duration_Video_Tmr != null)
+                {
+                    Duration_Video_Tmr.Stop();
+                    Duration_Video_Tmr.Dispose();
+                }
             }
             catch { }
             Task.Run(() =>
@@ -315,7 +327,7 @@ namespace Display
                     videoView1.MediaPlayer = null;
                     if (_mp != null)
                     {
-                        _mp?.Stop();
+                        _mp.Stop();
                         _mp.EncounteredError -= _mp_EncounteredError;
                         _mp.EndReached -= _mp_EndReached;
                         _mp.Playing -= _mp_Playing;
@@ -350,8 +362,11 @@ namespace Display
                     videoView1.Visible = true;
                 });
 
-                Duration_Video_Tmr?.Stop();
-                Duration_Video_Tmr?.Dispose();
+                if (Duration_Video_Tmr != null)
+                {
+                    Duration_Video_Tmr.Stop();
+                    Duration_Video_Tmr.Dispose();
+                }
 
                 _is_VideoAvailable = false;
                 AutoHideScreen_Check();
@@ -370,8 +385,11 @@ namespace Display
                 picBox_Image.Image = null;
                 picBox_Image.Visible = false;
 
-                Duration_HinhAnh_Tmr?.Stop();
-                Duration_HinhAnh_Tmr?.Dispose();
+                if (Duration_HinhAnh_Tmr != null)
+                {
+                    Duration_HinhAnh_Tmr.Stop();
+                    Duration_HinhAnh_Tmr.Dispose();
+                }
 
                 _is_ImageAvailable = false;
                 AutoHideScreen_Check();
@@ -385,8 +403,11 @@ namespace Display
                     panelThongBao.Stop();
                     txtThongBao.Text = "";
 
-                    Duration_ThongBao_Tmr?.Stop();
-                    Duration_ThongBao_Tmr?.Dispose();
+                    if (Duration_ThongBao_Tmr != null)
+                    {
+                        Duration_ThongBao_Tmr.Stop();
+                        Duration_ThongBao_Tmr.Dispose();
+                    }
 
                     _is_ThongBaoAvailable = false;
                     AutoHideScreen_Check();
@@ -402,8 +423,11 @@ namespace Display
                     panelVanBan.Stop();
                     txtVanBan.Text = "";
 
-                    Duration_VanBan_Tmr?.Stop();
-                    Duration_VanBan_Tmr?.Dispose();
+                    if (Duration_VanBan_Tmr != null)
+                    {
+                        Duration_VanBan_Tmr.Stop();
+                        Duration_VanBan_Tmr.Dispose();
+                    }
 
                     _is_VanBanAvailable = false;
                     AutoHideScreen_Check();
@@ -555,9 +579,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }

@@ -214,9 +214,9 @@ namespace Display
             {
                 action();
                 // Stop this Timer
-                System.Timers.Timer thisTimer = (System.Timers.Timer)o;
-                thisTimer.Stop();
-                thisTimer.Dispose();
+                System.Timers.Timer this_timer = (System.Timers.Timer)o;
+                this_timer.Stop();
+                this_timer.Dispose();
             };
             tmr.Start();
         }
@@ -398,11 +398,15 @@ namespace Display
             lb_Content.Text = "";
             panel_TextRun.Stop();
 
-            Duration_VanBan_Tmr?.Stop();
-            Duration_VanBan_Tmr?.Dispose();
-
-            Moving_Tmr?.Stop();
-
+            if (Duration_VanBan_Tmr != null)
+            {
+                Duration_VanBan_Tmr.Stop();
+                Duration_VanBan_Tmr.Dispose();
+            }
+            if (Moving_Tmr != null)
+            {
+                Moving_Tmr.Stop();
+            }
             isValid = false;
             _is_ThongBaoAvailable = false;
             _is_VanBanAvailable = false;

@@ -141,7 +141,7 @@ namespace Display
                     // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
                     int StartPosition = (int)(-NearestTime);
                     if (StartPosition <= 3) StartPosition = 0;
-                    int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds;
+                    int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
                     int Duration = (int)((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops - (CurrentSecond - NewTimes[0]) - message.msg.IdleTime);
                     OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
                                        message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, StartPosition);
@@ -200,6 +200,10 @@ namespace Display
         }
         private List<int> Caculate_TimeList(Schedule message)
         {
+            // Convert UTC time to current Time
+            int TimeZoneDiff = (int)(DateTime.Now.TimeOfDay.TotalSeconds - DateTime.UtcNow.TimeOfDay.TotalSeconds) + 1;
+            int TotalTime1Day = 24 * 60 * 60;
+            message.Times[0] = (message.Times[0] + TimeZoneDiff - TotalTime1Day) < 0 ? (message.Times[0] + TimeZoneDiff) : (message.Times[0] + TimeZoneDiff - TotalTime1Day);
             List<int> TimesList_Return = new List<int>();
             if (message.ScheduleType == DisplayScheduleType.BanTinThongBao || message.ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
@@ -264,7 +268,7 @@ namespace Display
             if (TimeList.Count <= 0) return;
 
             int d = (int)DateTime.Now.DayOfWeek;
-            int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds + 24 * 3600 * (d - 1);
+            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds + 24 * 3600 * (d - 1);
             int TotalSecond_1Week = 7 * 24 * 3600;
 
             TimeList = TimeList.Distinct().ToList();
@@ -315,7 +319,7 @@ namespace Display
         {
             if (TimeList.Count <= 0) return;
 
-            int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds;
+            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
 
             TimeList = TimeList.Distinct().ToList();
             TimeList.Sort();
@@ -500,13 +504,18 @@ namespace Display
                 {
                     try
                     {
-                        schedule_msg.Schedule_Timer?.Stop();
-                        schedule_msg.Schedule_Timer?.Dispose();
+                        if (schedule_msg.Schedule_Timer != null)
+                        {
+                            schedule_msg.Schedule_Timer.Stop();
+                            schedule_msg.Schedule_Timer.Dispose();
+                        }
+                        if (schedule_msg.ValidHandle_Timer != null)
+                        {
+                            schedule_msg.ValidHandle_Timer.Stop();
+                            schedule_msg.ValidHandle_Timer.Dispose();
+                        }
 
-                        schedule_msg.ValidHandle_Timer?.Stop();
-                        schedule_msg.ValidHandle_Timer?.Dispose();
-
-                        schedule_msg.dlf?.StopDownLoad();
+                        if (schedule_msg.dlf != null) schedule_msg.dlf.StopDownLoad();
                     }
                     catch { }
                 }
@@ -532,7 +541,7 @@ namespace Display
             }
             _FileName = Path.Combine(PathFile, "SaveVideo-" + ScheduleId + fileExtension);
 
-            message.dlf?.StopDownLoad();
+            if (message.dlf != null) message.dlf.StopDownLoad();
             message.dlf = new DownloadFile(Url, _FileName, ScheduleId);
             message.dlf.DownloadAsync();
 
