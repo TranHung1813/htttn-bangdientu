@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.panelContainer = new System.Windows.Forms.Panel();
             this.Timer_FindComPort = new System.Windows.Forms.Timer(this.components);
+            this.Timer_FindHDMI = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // panelContainer
@@ -46,6 +47,12 @@
             this.Timer_FindComPort.Enabled = true;
             this.Timer_FindComPort.Interval = 2000;
             this.Timer_FindComPort.Tick += new System.EventHandler(this.Timer_FindComPort_Tick);
+            // 
+            // Timer_FindHDMI
+            // 
+            this.Timer_FindHDMI.Enabled = true;
+            this.Timer_FindHDMI.Interval = 15000;
+            this.Timer_FindHDMI.Tick += new System.EventHandler(this.Timer_FindHDMI_Tick);
             // 
             // frmMain
             // 
@@ -67,6 +74,7 @@
         #endregion
         private System.Windows.Forms.Panel panelContainer;
         private System.Windows.Forms.Timer Timer_FindComPort;
+        private System.Windows.Forms.Timer Timer_FindHDMI;
     }
 }
 

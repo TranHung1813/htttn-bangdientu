@@ -1246,6 +1246,27 @@ namespace Display
             }
             return false;
         }
+
+        private void Timer_FindHDMI_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                int HDMI_Monitors = 0;
+                ManagementClass mClass = new ManagementClass(@"\\localhost\ROOT\WMI:WmiMonitorConnectionParams");
+                foreach (ManagementObject mObject in mClass.GetInstances())
+                {
+                    if (mObject["VideoOutputTechnology"].ToString() == "5") //Because D3DKMDT_VOT_HDMI = 5
+                    {
+                        HDMI_Monitors += 1;
+                    }
+                }
+                if (HDMI_Monitors == 0) Log.Error("HDMI Device not connected!!!");
+            }
+            catch 
+            {
+                Log.Error("HDMI Device not connected!!!");
+            }
+        }
     }
 
     public class DisplayMessage

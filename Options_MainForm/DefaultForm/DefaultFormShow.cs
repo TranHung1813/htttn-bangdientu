@@ -448,8 +448,7 @@ namespace Display
                         //    Duration_VanBan_Tmr.Stop();
                         //    Duration_VanBan_Tmr.Dispose();
                         //}
-                        OnNotifyEndProcess();
-                        this.Visible = false;
+                        AutoHideScreen_Check();
                     }
                     catch { }
                 }
@@ -472,8 +471,7 @@ namespace Display
                             }
                             catch { }
                         }
-                        OnNotifyEndProcess();
-                        this.Visible = false;
+                        AutoHideScreen_Check();
                     }
                     catch { }
                 }
