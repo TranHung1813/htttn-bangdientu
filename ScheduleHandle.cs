@@ -130,7 +130,7 @@ namespace Display
                 // Check xem Current Time có chung ngày với FromTime không?
                 long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 DateTime FromTime = UnixTimeStampToDateTime(message.msg.From);
-                if (DateTime.Now.DayOfWeek != FromTime.DayOfWeek) return;
+                if (DateTime.UtcNow.DayOfWeek != FromTime.DayOfWeek) return;
             }
 
             // Còn Time Valid && Đang chạy dở => Chạy tiếp
@@ -141,7 +141,7 @@ namespace Display
                     // Notify First Time to Play (StartPosition = Điểm bắt đầu chạy tiếp)
                     int StartPosition = (int)(-NearestTime);
                     if (StartPosition <= 3) StartPosition = 0;
-                    int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+                    int CurrentSecond = (int)DateTime.UtcNow.TimeOfDay.TotalSeconds;
                     int Duration = (int)((message.msg.Duration + message.msg.IdleTime) * message.msg.Loops - (CurrentSecond - NewTimes[0]) - message.msg.IdleTime);
                     OnNotify_Time2Play(message.msg.Id, message.Priority, message.msg.ScheduleType, message.msg.TextContent, message.msg.Songs, message.msg.FullScreen,
                                        message.msg.IdleTime, message.msg.Loops, Duration, message.msg.ColorValue, message.msg.Title, message.msg.TextContent, StartPosition);
@@ -201,9 +201,9 @@ namespace Display
         private List<int> Caculate_TimeList(Schedule message)
         {
             // Convert UTC time to current Time
-            int TimeZoneDiff = (int)(DateTime.Now.TimeOfDay.TotalSeconds - DateTime.UtcNow.TimeOfDay.TotalSeconds) + 1;
-            int TotalTime1Day = 24 * 60 * 60;
-            message.Times[0] = (message.Times[0] + TimeZoneDiff - TotalTime1Day) < 0 ? (message.Times[0] + TimeZoneDiff) : (message.Times[0] + TimeZoneDiff - TotalTime1Day);
+            //int TimeZoneDiff = (int)(DateTime.Now.TimeOfDay.TotalSeconds - DateTime.UtcNow.TimeOfDay.TotalSeconds) + 1;
+            //int TotalTime1Day = 24 * 60 * 60;
+            //message.Times[0] = (message.Times[0] + TimeZoneDiff - TotalTime1Day) < 0 ? (message.Times[0] + TimeZoneDiff) : (message.Times[0] + TimeZoneDiff - TotalTime1Day);
             List<int> TimesList_Return = new List<int>();
             if (message.ScheduleType == DisplayScheduleType.BanTinThongBao || message.ScheduleType == DisplayScheduleType.BanTinVanBan)
             {
@@ -268,7 +268,8 @@ namespace Display
             if (TimeList.Count <= 0) return;
 
             int d = (int)DateTime.Now.DayOfWeek;
-            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds + 24 * 3600 * (d - 1);
+            TimeSpan time = TimeSpan.FromSeconds(24 * 3600 * (d - 1));
+            DateTime CurrentSecond = DateTime.Now.Add(time);
             int TotalSecond_1Week = 7 * 24 * 3600;
 
             TimeList = TimeList.Distinct().ToList();
@@ -285,7 +286,7 @@ namespace Display
             }
 
             // This week Time List Handle
-            TimeList = TimeList.Select(x => x - CurrentSecond).ToList();
+            TimeList = TimeList.Select(x => (int)(GetDateTime_Utc(x) - CurrentSecond).TotalSeconds).ToList();
 
             // Lấy giá trị gần giá trị hiện tại nhất
             int index = TimeList.FindLastIndex(i => i <= 0);
@@ -315,17 +316,34 @@ namespace Display
             NewTimeList = NewTimeList.Where(x => x > 0).ToArray();
         }
 
+        private DateTime GetDateTime_Utc(int seconds)
+        {
+            int TimeZoneDiff = (int)(DateTime.Now.TimeOfDay.TotalSeconds - DateTime.UtcNow.TimeOfDay.TotalSeconds) + 1;
+            int TotalTime1Day = 24 * 60 * 60;
+            // Từ 7h -> 24h
+            if (seconds < (TotalTime1Day - TimeZoneDiff))
+            {
+                seconds += TimeZoneDiff;
+            }
+            else // Từ 0h -> 7h
+            {
+                seconds = seconds - (TotalTime1Day - TimeZoneDiff);
+            }
+            TimeSpan time = TimeSpan.FromSeconds(seconds);
+            return DateTime.Today.Add(time);
+        }
+
         private void TimeList_Handle(List<int> TimeList, ref int[] NewTimeList, ref int NearestValue)
         {
             if (TimeList.Count <= 0) return;
 
-            int CurrentSecond = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+            DateTime CurrentSecond = DateTime.Now;
 
             TimeList = TimeList.Distinct().ToList();
             TimeList.Sort();
 
             // This week Time List Handle
-            TimeList = TimeList.Select(x => x - CurrentSecond).ToList();
+            TimeList = TimeList.Select(x => (int)(GetDateTime_Utc(x) - CurrentSecond).TotalSeconds).ToList();
 
             // Lấy giá trị gần giá trị hiện tại nhất
             int index = TimeList.FindLastIndex(i => i <= 0);

@@ -25,7 +25,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("14.248.80.124")]
+        [global::System.Configuration.DefaultSettingValueAttribute("171.244.61.139")]
         public string MqttAddress {
             get {
                 return ((string)(this["MqttAddress"]));
@@ -34,7 +34,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("vs.speaker")]
+        [global::System.Configuration.DefaultSettingValueAttribute("ttn.emqx")]
         public string MqttUserName {
             get {
                 return ((string)(this["MqttUserName"]));
@@ -43,7 +43,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("vs.speaker20993")]
+        [global::System.Configuration.DefaultSettingValueAttribute("emqx938slk0")]
         public string MqttPassword {
             get {
                 return ((string)(this["MqttPassword"]));
@@ -52,7 +52,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2011")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2023")]
         public int MqttPort {
             get {
                 return ((int)(this["MqttPort"]));
@@ -64,8 +64,7 @@ namespace Display.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("868686868686868")]
         public string ClientId {
             get {
-                //return ((string)(this["ClientId"]));
-                return "868686868686868";
+                return ((string)(this["ClientId"]));
             }
         }
     }

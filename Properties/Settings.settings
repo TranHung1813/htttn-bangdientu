@@ -3,19 +3,19 @@
   <Profiles />
   <Settings>
     <Setting Name="MqttAddress" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">14.248.80.124</Value>
+      <Value Profile="(Default)">171.244.61.139</Value>
     </Setting>
     <Setting Name="MqttUserName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">vs.speaker</Value>
+      <Value Profile="(Default)">ttn.emqx</Value>
     </Setting>
     <Setting Name="MqttPassword" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">vs.speaker20993</Value>
+      <Value Profile="(Default)">emqx938slk0</Value>
     </Setting>
     <Setting Name="MqttPort" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">2011</Value>
+      <Value Profile="(Default)">2023</Value>
     </Setting>
     <Setting Name="ClientId" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">864848737373768</Value>
+      <Value Profile="(Default)">868686868686868</Value>
     </Setting>
   </Settings>
 </SettingsFile>
