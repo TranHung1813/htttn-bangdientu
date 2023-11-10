@@ -91,6 +91,10 @@ namespace Display
                 DeleteMessage_by_Id(message.Id, "Trùng ScheduleId với bản tin trong DB");
                 OnNotify_Time2Delete(message.Id, false);
             }
+
+            // Check Loops
+            if (message.Loops <= 0) message.Loops = 1;
+
             ScheduleMsg_Type new_messsage = new ScheduleMsg_Type();
             new_messsage.msg = message;
             new_messsage.Priority = Priority;
@@ -215,13 +219,14 @@ namespace Display
             }
             else if (message.ScheduleType == DisplayScheduleType.BanTinVideo)
             {
-                if (message.Duration == 0)
+                if (message.Duration <= 0)
                 {
                     TimesList_Return.Add(message.Times[0]);
                 }
                 else
                 {
-                    for (int CountTimeLoop = 0; CountTimeLoop < message.Loops; CountTimeLoop++)
+                    TimesList_Return.Add(message.Times[0]);
+                    for (int CountTimeLoop = 1; CountTimeLoop < message.Loops; CountTimeLoop++)
                     {
                         int Value = message.Times[0] + (message.Duration + message.IdleTime) * CountTimeLoop;
                         TimesList_Return.Add(Value);
@@ -372,7 +377,7 @@ namespace Display
             long CurrentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             // Tính Duration cho video nếu server chưa có
-            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo && message.msg.Duration == 0)
+            if (message.msg.ScheduleType == DisplayScheduleType.BanTinVideo && message.msg.Duration <= 0)
             {
                 int timeout = 5000;
                 Task<int> task = Duration_Calculate(message.msg.Songs[0]).Result;

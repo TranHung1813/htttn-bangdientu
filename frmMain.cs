@@ -495,7 +495,7 @@ namespace Display
                 }
                 if (e.ScheduleType == DisplayScheduleType.BanTinThongBao || e.ScheduleType == DisplayScheduleType.BanTinVanBan)
                 {
-                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, e.Text.Length / 5), e.ColorValue, e.Duration, e.FullScreen);
+                    Log.Information("NotifyTime2Play: {A}, Id : {id}, Content: {B}, Color: {C}, Duration: {D}, FullScreen: {E}", e.ScheduleType, e.ScheduleId, e.Text.Substring(0, Math.Min(e.Text.Length / 5, 50)), e.ColorValue, e.Duration, e.FullScreen);
                     defaultForm.Set_Infomation(e.ScheduleType, e.ScheduleId, e.Text, e.Priority, Duration: e.Duration * 1000);
 
                     if (e.ScheduleType == DisplayScheduleType.BanTinVanBan)

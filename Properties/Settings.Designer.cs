@@ -12,7 +12,7 @@ namespace Display.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("171.244.61.139")]
+        [global::System.Configuration.DefaultSettingValueAttribute("14.248.80.124")]
         public string MqttAddress {
             get {
                 return ((string)(this["MqttAddress"]));
@@ -34,7 +34,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ttn.emqx")]
+        [global::System.Configuration.DefaultSettingValueAttribute("vs.speaker")]
         public string MqttUserName {
             get {
                 return ((string)(this["MqttUserName"]));
@@ -43,7 +43,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("emqx938slk0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("vs.speaker20993")]
         public string MqttPassword {
             get {
                 return ((string)(this["MqttPassword"]));
@@ -52,7 +52,7 @@ namespace Display.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2023")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2011")]
         public int MqttPort {
             get {
                 return ((int)(this["MqttPort"]));

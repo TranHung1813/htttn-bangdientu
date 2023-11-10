@@ -105,7 +105,7 @@ namespace Display
         public void ShowText(string Title, string Content, string ScheduleId, int Priority = 0, int Duration = MAXVALUE)
         {
             this.Location = new Point(0, 0);
-            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
+            Log.Information("ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Math.Min(Content.Length / 5, 50)));
             if (lb_Content.Text == Content && lb_Title.Text == Title) return;
             try
             {
@@ -115,7 +115,7 @@ namespace Display
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Content.Length / 5));
+                Log.Error(ex, "ShowText: Tiêu đề: {A}, Nội dung: {B}", Title, Content.Substring(0, Math.Min(Content.Length / 5, 50)));
             }
 
             this.Visible = true;

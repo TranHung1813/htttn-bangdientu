@@ -208,6 +208,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ScheduleHandle.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SqLiteDataAccess.cs" />
     <Compile Include="TextOverlay\Transparent_BackGround.cs">
       <SubType>Form</SubType>
